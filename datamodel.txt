@@ -38,3 +38,15 @@ Job-to-Job Groups table "job_groups"
 
 
 ## Large data in AWS S3
+
+All information is in one bucket. Below it is assumed the bucket name is "ubcc3", and the job id is speccified by <job-id>,
+which will be replaced by a UUID.
+
+ubcc3/<job-id>/geometry.orig - geometry file of the job, in whatever format it was originally sent by the user
+ubcc3/<job-id>/geometry.xyz - final geometry file of the job, converted to xyz, after all changes were made on the UI
+ubcc3/<job-id>/core-hamiltonian.bin - core hamiltonian of the system
+ubcc3/<job-id>/overlap.bin - overlap matrix of the system
+ubcc3/<job-id>/initial-guess.bin - initial density guess
+ubcc3/<job-id>/two-electron/- directory containing the parts of the two-electron integrals. File names are ERI_x_0_0_0_y_0_0_0.bin, where x and y are two indices between 0 and the number of basis functions.
+ubcc3/<job-id>/fock-matrix/- directory containing the various fock matrices created while computing, in the format fock_matrix_n.bin , where n is the iteration number
+ubcc3/<job-id>/densities/- directory containing the various densities matrices created while computing, in the format density_n.bin , where n is the iteration number
