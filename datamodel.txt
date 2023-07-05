@@ -1,0 +1,40 @@
+### Data Model
+
+Data is either stored at a database (e.g. Postgres ) or in large files on AWS
+S3, depending on data size.
+
+
+## Information in a Database
+
+Users table - "users"
+   
+  * username - an email address - unique key
+  * last login - date/time
+  * SSO authentication mechanism - enum : "google", "UBC" etc.
+  * 
+
+Jobs table - "jobs"
+
+  * job ID - UUID, unique key. Eg. "978b13f7-4e8b-4944-aba8-647651bdddba"
+  * job name - as entered by the user (string)
+  * job submission date/time
+  * username that submitted the job
+  * job start time - first time the job has ran
+  * job finish time - last time the jb has ran
+  * job status - enum: "submitted", "running", "failed", "stopped", "done"
+  * job parameter - JSON with all parameters needed for the job. E.g. basis set
+
+Job Groups table "job_groups"
+  * Group ID - UUID, unique key. 
+  * username that owns the group
+  * Group name as entered by the user (string)
+
+Job-to-Job Groups table "job_groups"
+
+
+  * job ID - UUID
+  * group ID - UUID
+  unique key is the combined two fields
+
+
+## Large data in AWS S3
