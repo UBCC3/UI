@@ -11,7 +11,7 @@ Users table - "users"
   * username - an email address - unique key
   * last login - date/time
   * SSO authentication mechanism - enum : "google", "UBC" etc.
-  * 
+  * login count - how many times the user logged in
 
 Jobs table - "jobs"
 
@@ -22,7 +22,12 @@ Jobs table - "jobs"
   * job start time - first time the job has ran
   * job finish time - last time the jb has ran
   * job status - enum: "submitted", "running", "failed", "stopped", "done"
-  * job parameter - JSON with all parameters needed for the job. E.g. basis set
+  * job parameter - JSON with all parameters needed for the job. E.g. basis set:
+         {
+               "basis_set": "STO-3G",
+               "max_iteration" : 30
+               "use_diis" : true
+         }
 
 Job Groups table "job_groups"
   * Group ID - UUID, unique key. 
