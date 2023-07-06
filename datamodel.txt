@@ -1,4 +1,4 @@
-### Data Model
+# Data Model
 
 Data is either stored at a database (e.g. Postgres ) or in large files on AWS
 S3, depending on data size.
@@ -6,52 +6,73 @@ S3, depending on data size.
 
 ## Information in a Database
 
-Users table - "users"
-   
+Users table
+
   * username - an email address - unique key
   * last login - date/time
   * SSO authentication mechanism - enum : "google", "UBC" etc.
   * login count - how many times the user logged in
 
-Jobs table - "jobs"
+Structure table
 
-  * job ID - UUID, unique key. Eg. "978b13f7-4e8b-4944-aba8-647651bdddba"
+  * Structure ID - UUID4, unique key. Eg. "978b13f7-4e8b-4944-aba8-647651bdddba"
+  * source: enum "uploaded by user", "calculated"
+  * created_by_job_id: JobID or NULL
+  * username
+  * structure name - as entered by the user (string)
+
+Struture properties table
+  * Structure ID - UUID4
+  * Job ID that calculated the property
+  * energy - number
+  * molecular orbitals -  if we calculated MOs, the UUID of the job that did the calculaion. Else, NULL
+  * vib. freq. - if we calculated v.f., the UUID of the job that did the calculaion. Else, NULL
+  * unique key: Structure ID + Job ID
+
+Jobs table
+
+  * job ID - UUID4, unique key. Eg. "978b13f7-4e8b-4944-aba8-647651bdddba"
   * job name - as entered by the user (string)
   * job submission date/time
   * username that submitted the job
   * job start time - first time the job has ran
   * job finish time - last time the jb has ran
-  * job status - enum: "submitted", "running", "failed", "stopped", "done"
-  * job parameter - JSON with all parameters needed for the job. E.g. basis set:
+  * job status - technical job status : enum: "submitted", "running", "failed", "stopped", "completed". It does not signify that the calculation goal was achieved
+  * job tags ( pairs of name=value)
+  * job parameter - JSON with all parameters needed for the job. E.g.
+
          {
+                "calculation_type": "scf",
+                "package" : "psi4",
+                "calculation_goal": [ "energy" "molecular orbitals" ],
                "basis_set": "STO-3G",
-               "max_iteration" : 30
-               "use_diis" : true
-         }
-
-Job Groups table "job_groups"
-  * Group ID - UUID, unique key. 
-  * username that owns the group
-  * Group name as entered by the user (string)
-
-Job-to-Job Groups table "job_groups"
-
-
-  * job ID - UUID
-  * group ID - UUID
-  unique key is the combined two fields
+               "max_iteration" : 30,
+               "use_diis" : true,
+                "structures" [UUID, UUID]
+           }
 
 
 ## Large data in AWS S3
 
-All information is in one bucket. Below it is assumed the bucket name is "ubcc3", and the job id is speccified by <job-id>,
+All information is in one bucket. Below it is assumed the bucket name is "ubcc3", and the job id is specified by <job-id>,
 which will be replaced by a UUID.
 
-ubcc3/<job-id>/geometry.orig - geometry file of the job, in whatever format it was originally sent by the user
-ubcc3/<job-id>/geometry.xyz - final geometry file of the job, converted to xyz, after all changes were made on the UI
-ubcc3/<job-id>/core-hamiltonian.bin - core hamiltonian of the system
-ubcc3/<job-id>/overlap.bin - overlap matrix of the system
-ubcc3/<job-id>/initial-guess.bin - initial density guess
-ubcc3/<job-id>/two-electron/- directory containing the parts of the two-electron integrals. File names are ERI_x_0_0_0_y_0_0_0.bin, where x and y are two indices between 0 and the number of basis functions.
-ubcc3/<job-id>/fock-matrix/- directory containing the various fock matrices created while computing, in the format fock_matrix_n.bin , where n is the iteration number
-ubcc3/<job-id>/densities/- directory containing the various densities matrices created while computing, in the format density_n.bin , where n is the iteration number
+* ubcc3/structures/<UUID>.mol - geometry file of the job, in whatever format it was originally sent by the user
+* ubcc3/structures/<UUID>.mo - molecular orbitals of the structure
+* ubcc3/structures/<UUID>.freq - vibrational frequencies of the structure
+The output files are stored in a subdirectory named after the job id, and package-specific files are under
+a subdirectory named after the package used.
+
+* ubcc3/<job-id>/mo-energies.bin - molecular orbital energies
+
+* ubcc3/<job-id>/<package>/core-hamiltonian.bin - core hamiltonian of the system
+
+* ubcc3/<job-id>/<package>/overlap.bin - overlap matrix of the system
+
+* ubcc3/<job-id>/<package>/initial-guess.bin - initial density guess
+
+* ubcc3/<job-id>/<package>/two-electron/- directory containing the parts of the two-electron integrals. File names are ERI_x_0_0_0_y_0_0_0.bin, where x and y are two indices between 0 and the number of basis functions.
+
+* ubcc3/<job-id>/<package>/fock-matrix/- directory containing the various fock matrices created while computing, in the format fock_matrix_n.bin , where n is the iteration number
+
+* ubcc3/<job-id>/<package>/densities/- directory containing the various densities matrices created while computing, in the format density_n.bin , where n is the iteration number
