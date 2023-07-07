@@ -39,7 +39,7 @@ jobs:
               run: npm ci
 
             - name: Build Project
-              run: npm run build:ci
+              run: npm run build
 
             - name: List files in current directory
               run: ls -al
