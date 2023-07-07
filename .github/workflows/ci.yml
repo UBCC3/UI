@@ -1,0 +1,100 @@
+name: 'CI'
+
+on:
+    pull_request:
+        branches:
+            - main
+            - develop
+    workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+
+env:
+    ARTIFACT_NAME: ubc-c3-ui
+    ARTIFACT_PATH: dist
+    #     GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GH_TOKEN }}
+    #     GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GH_TOKEN }}
+    NODE_MODULES_CACHE_PATH: node_modules
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout project
+              uses: actions/checkout@v3
+
+            - name: Setup Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.14.0
+                  cache: 'npm' # caches the npm global cache directory, but NOT node_modules
+
+            - name: Download cache
+              uses: actions/cache@v3
+              id: cache-dependencies
+              with:
+                  path: ${{ env.NODE_MODULES_CACHE_PATH }}
+                  key: ${{ runner.os }}-dependencies-${{ hashFiles('**/package-lock.json') }}
+
+            - if: ${{ steps.cache-dependencies.outputs.cache-hit != 'true' }}
+              name: Cache dependencies
+              run: npm ci
+
+            - name: Build Project
+              run: npm run build:ci
+
+            - name: List files in current directory
+              run: ls -al
+
+            - uses: actions/upload-artifact@v3
+              with:
+                  name: ${{ env.ARTIFACT_NAME }}
+                  path: ${{ env.ARTIFACT_PATH }}
+
+    lint:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout project
+              uses: actions/checkout@v3
+
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.14.0
+                  cache: 'npm'
+
+            - name: Download cache
+              uses: actions/cache@v3
+              with:
+                  path: ${{ env.NODE_MODULES_CACHE_PATH }}
+                  key: ${{ runner.os }}-dependencies-${{ hashFiles('**/package-lock.json') }}
+
+            - name: List the state of node modules
+              run: npm ls
+
+            - name: Lint
+              run: npm run lint
+
+    test:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout project
+              uses: actions/checkout@v3
+
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.14.0
+                  cache: 'npm'
+
+            - name: Download cache
+              uses: actions/cache@v3
+              with:
+                  path: ${{ env.NODE_MODULES_CACHE_PATH }}
+                  key: ${{ runner.os }}-dependencies-${{ hashFiles('**/package-lock.json') }}
+
+            - name: List the state of node modules
+              run: npm ls
+
+            - name: Unit Test
+              run: npm run test
