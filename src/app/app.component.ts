@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    template: `<core-container></core-container>`,
+    styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  title = 'ubc-c3-ui';
-}
+export class AppComponent {}
