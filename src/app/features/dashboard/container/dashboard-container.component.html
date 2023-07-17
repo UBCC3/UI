@@ -1,0 +1,17 @@
+<app-layout>
+    <p>dashboard-container works!</p>
+
+    <button (click)="testApi()">test API</button>
+    <button (click)="testPost()">test Post</button>
+
+    <div class="result-block-container" *ngIf="responseJson">
+        <div class="result-block" [ngClass]="{ show: !!responseJson }">
+            <h6 class="muted">Result</h6>
+            <pre>
+            <code class="js rounded">
+                {{responseJson}}
+            </code>
+          </pre>
+        </div>
+    </div>
+</app-layout>
