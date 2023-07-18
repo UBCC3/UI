@@ -9,13 +9,10 @@ import { Observable } from 'rxjs';
     styleUrls: ['./dashboard-container.component.scss'],
 })
 export class DashboardContainerComponent implements OnInit {
-    token$: Observable<any>;
     responseJson!: string;
     hasApiError = false;
 
-    constructor(public auth: AuthService, public http: HttpClient) {
-        this.token$ = new Observable();
-    }
+    constructor(public auth: AuthService, public http: HttpClient) {}
 
     ngOnInit() {
         this.auth.user$.subscribe((res) => console.log('user', res));
