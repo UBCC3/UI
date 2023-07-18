@@ -75,4 +75,30 @@ module.exports = {
             },
         },
     },
+    daisyui: {
+        themes: [
+            {
+                mytheme: {
+                    primary: '#FF4405',
+
+                    secondary: '#fff4ed',
+
+                    accent: '#1fb2a6',
+
+                    neutral: '#2a323c',
+
+                    'base-100': '#F9FAFB',
+
+                    info: '#3abff8',
+
+                    success: '#12B76A',
+
+                    warning: '#F79009',
+
+                    error: '#F04438',
+                },
+            },
+        ],
+    },
+    plugins: [require('daisyui')],
 };
