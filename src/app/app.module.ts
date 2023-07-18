@@ -8,6 +8,7 @@ import { AuthHttpInterceptor, AuthModule } from '@auth0/auth0-angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from './shared/shared.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { environment } from '../environments/environments';
 
 @NgModule({
     declarations: [AppComponent],
@@ -17,14 +18,9 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
         SharedModule,
         HttpClientModule,
         AuthModule.forRoot({
-            domain: 'dev-18wlpvkeky26dv7g.us.auth0.com',
-            clientId: 'dPLeUwe5IKuhwMSduPBy9ZbiH88IC6tj',
-            authorizationParams: {
-                audience: 'https:/test-fast-api.com',
-                redirect_uri: window.location.origin,
-            },
+            ...environment.auth0,
             httpInterceptor: {
-                allowedList: ['http://localhost:8000/*'],
+                ...environment.httpInterceptor,
             },
         }),
         BrowserAnimationsModule,
