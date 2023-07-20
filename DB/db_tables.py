@@ -24,5 +24,5 @@ class Structure_Property(Base):
     __table__ = Table(STRUCTURE_PROPERTIES_TABLE_NAME, Base.metadata, autoload_with=db_engine.engine)
 
 
-class Job(Base):
+class Job_Tags(Base):
     __table__ = Table(JOB_TAGS_TABLE_NAME, Base.metadata, autoload_with=db_engine.engine)
