@@ -11,7 +11,7 @@ def check_user_exists(email: str) -> bool:
 
 def add_new_user(email: str) -> bool:
     with Session(db_engine.engine) as session:
-        user = User(email=email, ACTIVE=True, ADMIN=False)
+        user = User(email=email, active=True, admin=False)
         session.add(user)
         session.commit()
     return True

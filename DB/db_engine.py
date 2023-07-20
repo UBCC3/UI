@@ -10,7 +10,7 @@ class DB_Engine(BaseModel):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        host = "44.232.152.206"
+        host = "webqc.urysegal.com"
         db_username = "ccc"
         db_passwd = os.environ["PG_PASSWD"]
 
