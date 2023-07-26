@@ -1,6 +1,8 @@
 from sqlalchemy import Engine, create_engine, text
 from pydantic import BaseModel, PrivateAttr
-from DB.entity_names import DB_NAME
+
+# from .entity_names import DB_NAME
+from .entity_names import DB_NAME
 import logging
 import os
 
@@ -26,9 +28,9 @@ class DB_Engine(BaseModel):
             result = conn.execute(text("select 'test'"))
 
 
-handler = logging.FileHandler('/tmp/ubcc3-sql.log')
+handler = logging.FileHandler("/tmp/ubcc3-sql.log")
 handler.setLevel(logging.DEBUG)
-logger = logging.getLogger('sqlalchemy.engine')
+logger = logging.getLogger("sqlalchemy.engine")
 logger.propagate = False
 logger.addHandler(handler)
 

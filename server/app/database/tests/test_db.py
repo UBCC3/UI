@@ -1,6 +1,6 @@
 import unittest
-from DB.db_engine import db_engine
-from DB.user_management import check_user_exists, add_new_user, remove_user
+from database.db_engine import db_engine
+from database.user_management import check_user_exists, add_new_user, remove_user
 
 
 class TestDB(unittest.TestCase):
@@ -19,6 +19,5 @@ class TestDB(unittest.TestCase):
         self.assertTrue(remove_user(username_for_test))
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
