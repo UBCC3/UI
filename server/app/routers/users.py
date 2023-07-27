@@ -45,9 +45,7 @@ async def get_user_exists(
         response.status_code = status.HTTP_400_BAD_REQUEST
         return result
 
-    user_exists = check_user_exists(email)
-    # return check_user_exists(email)
-    return user_exists
+    return check_user_exists(email)
 
 
 @router.post("/", response_model=UserModel)

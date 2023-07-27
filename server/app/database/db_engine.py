@@ -1,7 +1,6 @@
 from sqlalchemy import Engine, create_engine, text
 from pydantic import BaseModel, PrivateAttr
 
-# from .entity_names import DB_NAME
 from .entity_names import DB_NAME
 import logging
 import os

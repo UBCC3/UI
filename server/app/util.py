@@ -1,38 +1,19 @@
 import os
 import jwt
 from configparser import ConfigParser
+from dotenv import load_dotenv
 
 
 def set_up():
     """Sets up configuration for the app"""
+    load_dotenv()
 
-    env = os.getenv("ENV", ".config")
-
-    if env == ".config":
-        config = ConfigParser()
-        config.read(".config")
-        print(len(config.sections()))
-        # config = config["AUTH0"]
-        config = dict(config.items("AUTH0"))
-        from pprint import pprint
-
-        print(pprint(config))
-    else:
-        config = {
-            "DOMAIN": os.getenv("DOMAIN", "your.domain.com"),
-            "API_AUDIENCE": os.getenv("API_AUDIENCE", "your.audience.com"),
-            "ISSUER": os.getenv("ISSUER", "https://your.domain.com/"),
-            "ALGORITHMS": os.getenv("ALGORITHMS", "RS256"),
-        }
-
-    # config = {
-    #     "DOMAIN": os.getenv("DOMAIN", "dev-18wlpvkeky26dv7g.us.auth0.com"),
-    #     "API_AUDIENCE": os.getenv(
-    #         "API_AUDIENCE", "https://dev-18wlpvkeky26dv7g.us.auth0.com/api/v2/"
-    #     ),
-    #     "ISSUER": os.getenv("ISSUER", "https://dev-18wlpvkeky26dv7g.us.auth0.com/"),
-    #     "ALGORITHMS": os.getenv("ALGORITHMS", "RS256"),
-    # }
+    config = {
+        "DOMAIN": os.getenv("DOMAIN", "your.domain.com"),
+        "API_AUDIENCE": os.getenv("API_AUDIENCE", "your.audience.com"),
+        "ISSUER": os.getenv("ISSUER", "https://your.domain.com/"),
+        "ALGORITHMS": os.getenv("ALGORITHMS", "RS256"),
+    }
 
     return config
 

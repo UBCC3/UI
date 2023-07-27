@@ -11,6 +11,7 @@ class TestDB(unittest.TestCase):
         self.assertFalse(check_user_exists("this_user_does_not_exist"))
 
     def test_add_and_remove_user(self):
+        # TODO: update test to reflect new return type from add user
         username_for_test = "test_user@test_domain.com"
         if check_user_exists(username_for_test):
             self.assertTrue(remove_user(username_for_test))
