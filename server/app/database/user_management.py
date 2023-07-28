@@ -4,6 +4,7 @@ from .db_engine import db_engine
 # from database.db_tables import User
 from .db_tables import User
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 
 
 from ..models import UserModel
@@ -23,11 +24,10 @@ def add_new_user(email: str) -> UserModel:
             session.add(user)
             session.commit()
             session.refresh(user)
-            # return True
             return user
-        except Exception as e:
+        except SQLAlchemyError as e:
             session.rollback()
-            print("Error {e}")
+            return f"Error: {str(e)}"
 
 
 def remove_user(email: str) -> bool:
@@ -45,3 +45,23 @@ def get_all_users() -> List[UserModel]:
         users = session.query(User).all()
 
     return users
+
+
+def update_user(
+    user: UserModel,
+) -> UserModel:
+    with Session(db_engine.engine) as session:
+        try:
+            update_user = session.query(User).filter_by(email=user.email).first()
+
+            if not update_user:
+                return False
+
+            update_user.lastlogin = user.lastlogin
+            session.commit()
+            session.refresh(update_user)
+
+            return update_user
+        except SQLAlchemyError as e:
+            session.rollback()
+            return f"Error: {str(e)}"

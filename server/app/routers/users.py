@@ -5,6 +5,7 @@ from ..database.user_management import (
     add_new_user,
     remove_user,
     get_all_users,
+    update_user,
 )
 from ..database.db_tables import User
 from ..models import UserModel
@@ -66,3 +67,21 @@ async def create_user(
 
     new_user = add_new_user(user.email)
     return new_user.__dict__
+
+
+@router.patch("/", response_model=UserModel)
+async def patch_user(
+    user: UserModel, response: Response, token: str = Depends(token_auth_schema)
+):
+    result = VerifyToken(token.credentials).verify()
+
+    if result.get("status"):
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return result
+
+    res = update_user(user)
+
+    if not res:
+        raise HTTPException(status_code=404, detail="User not found")
+    else:
+        return update_user(user)
