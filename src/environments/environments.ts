@@ -5,7 +5,7 @@ export const environment = {
         clientId: 'dPLeUwe5IKuhwMSduPBy9ZbiH88IC6tj',
         authorizationParams: {
             redirect_uri: 'http://localhost:4200/callback',
-            audience: 'https:/test-fast-api.com',
+            audience: 'https://dev-18wlpvkeky26dv7g.us.auth0.com/api/v2/',
         },
         errorPath: '/callback',
     },
