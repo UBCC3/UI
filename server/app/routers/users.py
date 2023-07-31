@@ -28,7 +28,6 @@ token_auth_schema = HTTPBearer()
 )
 async def get_users(response: Response, token: str = Depends(token_auth_schema)):
     result = VerifyToken(token.credentials).verify()
-    print("results", result)
 
     if result.get("status"):
         response.status_code = status.HTTP_400_BAD_REQUEST
@@ -54,7 +53,6 @@ async def create_user(
     user: UserModel, response: Response, token: str = Depends(token_auth_schema)
 ):
     result = VerifyToken(token.credentials).verify()
-    # need result.email and result.sub from jwt to store into db
     # TODO: update user schema to include auth type (email or social)
 
     if result.get("status"):
