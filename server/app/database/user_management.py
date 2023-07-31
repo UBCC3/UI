@@ -17,14 +17,14 @@ def check_user_exists(email: str) -> bool:
     return exists
 
 
-def add_new_user(email: str) -> UserModel:
+def add_new_user(email: str) -> bool:
     with Session(db_engine.engine) as session:
         try:
             user = User(email=email, active=True, admin=False)
             session.add(user)
             session.commit()
-            session.refresh(user)
-            return user
+
+            return True
         except SQLAlchemyError as e:
             session.rollback()
             return f"Error: {str(e)}"
@@ -49,7 +49,7 @@ def get_all_users() -> List[UserModel]:
 
 def update_user(
     user: UserModel,
-) -> UserModel:
+) -> bool:
     with Session(db_engine.engine) as session:
         try:
             update_user = session.query(User).filter_by(email=user.email).first()
@@ -59,9 +59,8 @@ def update_user(
 
             update_user.lastlogin = user.lastlogin
             session.commit()
-            session.refresh(update_user)
 
-            return update_user
+            return True
         except SQLAlchemyError as e:
             session.rollback()
             return f"Error: {str(e)}"

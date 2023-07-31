@@ -71,6 +71,5 @@ def get_ngrok_url():
 
 @app.get("/")
 async def root():
-    ngrok_url = get_ngrok_url()
     print("public url... ", public_url)
     return {"ngrok_url": public_url}

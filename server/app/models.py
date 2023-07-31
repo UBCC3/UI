@@ -9,3 +9,8 @@ class UserModel(BaseModel):
     lastlogin: Optional[datetime] = None
     active: Optional[bool] = None
     admin: Optional[bool] = None
+
+
+class JwtErrorModel(BaseModel):
+    status: str
+    msg: str
