@@ -1,1 +1,19 @@
-<p>callback works!</p>
+<ng-container *ngIf="error$ | async as error; else noError">
+    <app-layout>
+        <div>
+            <h1>Error</h1>
+        </div>
+        <div>
+            {{ error.message }}
+        </div>
+    </app-layout>
+</ng-container>
+
+<ng-template #noError>
+    <div>
+        <app-nav-bar></app-nav-bar>
+        <div>
+            <ng-content></ng-content>
+        </div>
+    </div>
+</ng-template>

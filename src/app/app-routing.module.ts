@@ -14,18 +14,23 @@ const routes: Routes = [
         canActivate: [AuthGuard],
     },
     {
+        path: 'profile',
+        loadChildren: () => import('./features/profile/profile.module').then((m) => m.ProfileModule),
+        canActivate: [AuthGuard],
+    },
+    {
+        path: 'settings',
+        loadChildren: () => import('./features/settings/settings.module').then((m) => m.SettingsModule),
+        canActivate: [AuthGuard],
+    },
+    {
         path: 'callback',
         loadChildren: () => import('./features/callback/callback.module').then((m) => m.CallbackModule),
     },
-    // TODO: add not found module
-    //   {
-    //     path: '**',
-    //     loadChildren: () =>
-    //       import('./features/not-found/not-found.module').then(
-    //         (m) => m.NotFoundModule
-    //       ),
-    //   }
-    // {
+    {
+        path: '**',
+        loadChildren: () => import('./features/not-found/not-found.module').then((m) => m.NotFoundModule),
+    },
 ];
 
 @NgModule({
