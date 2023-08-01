@@ -40,7 +40,8 @@
                     </div>
                 </div>
             </div>
-            <div class="dropdown dropdown-end ml-3" *ngIf="auth.user$ | async as user">
+            <!-- dropdown -->
+            <div class="dropdown dropdown-end ml-3" *ngIf="user$ | async as user">
                 <label tabindex="0" class="btn btn-ghost btn-circle avatar">
                     <div class="w-10 rounded-full">
                         <img [src]="user.picture" alt="profile-picture" />

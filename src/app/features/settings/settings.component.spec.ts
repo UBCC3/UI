@@ -3,6 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SettingsComponent } from './settings.component';
 import { AuthService } from '@auth0/auth0-angular';
 import { SharedModule } from '../../shared/shared.module';
+import { StoreModule } from '@ngrx/store';
+import { reducers } from '../../store';
 
 describe('SettingsComponent', () => {
     let component: SettingsComponent;
@@ -15,7 +17,7 @@ describe('SettingsComponent', () => {
 
         TestBed.configureTestingModule({
             declarations: [SettingsComponent],
-            imports: [SharedModule],
+            imports: [SharedModule, StoreModule.forRoot(reducers)],
             providers: [AuthService, { provide: AuthService, useValue: authServiceSpy }],
         });
         fixture = TestBed.createComponent(SettingsComponent);
