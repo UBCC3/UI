@@ -5,6 +5,132 @@ import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../store';
 import { selectUser } from '../../../store/selectors/user.selectors';
 import { Observable } from 'rxjs';
+import * as moment from 'moment';
+
+const date = new Date();
+
+const inProgress = [
+    {
+        id: '98ecc611-f384-490c-9f8a-3f5084110341',
+        created: new Date(),
+        userid: 'a.yang223@gmail.com',
+        job_name: 'test job name',
+        submitted: '2023-08-01 19:58:27.094',
+        started: '2023-08-01 19:58:27.094',
+        finished: null,
+        status: 'running',
+        parameters: {
+            calculation: 'Geometry Optimization',
+        },
+    },
+    {
+        id: '07010fe6-1591-44dc-b188-b04610320969',
+        created: new Date(),
+        userid: 'a.yang223@gmail.com',
+        job_name: 'test job name2',
+        submitted: new Date(),
+        started: new Date(),
+        finished: null,
+        status: 'stopped',
+        parameters: {
+            calculation: 'Natural Bond Orbitals',
+        },
+    },
+    {
+        id: '07010fe6-1591-44dc-b188-b04610320969',
+        created: new Date(),
+        userid: 'a.yang223@gmail.com',
+        job_name: 'test job name3',
+        submitted: new Date(),
+        started: new Date(),
+        finished: null,
+        status: 'submitted',
+        parameters: {
+            calculation: 'Natural Bond Orbitals',
+        },
+    },
+    {
+        id: '07010fe6-1591-44dc-b188-b04610320969',
+        created: new Date(),
+        userid: 'a.yang223@gmail.com',
+        job_name: 'test job name3',
+        submitted: new Date(),
+        started: new Date(),
+        finished: null,
+        status: 'submitted',
+        parameters: {
+            calculation: 'Natural Bond Orbitals',
+        },
+    },
+];
+
+const isCompleted = [
+    {
+        id: '98ecc611-f384-490c-9f8a-3f5084110341',
+        created: new Date(),
+        userid: 'a.yang223@gmail.com',
+        job_name: 'test job name',
+        submitted: new Date(),
+        started: '2023-08-01 19:58:27.094',
+        finished: '2023-08-01 20:58:27.094',
+        status: 'completed',
+        parameters: {
+            calculation: 'Geometry Optimization',
+        },
+    },
+    {
+        id: '07010fe6-1591-44dc-b188-b04610320969',
+        created: new Date(),
+        userid: 'a.yang223@gmail.com',
+        job_name: 'test job name2',
+        submitted: new Date(),
+        started: '2023-08-01 19:58:27.094',
+        finished: '2023-08-02 09:58:27.094',
+        status: 'completed',
+        parameters: {
+            calculation: 'Natural Bond Orbitals',
+        },
+    },
+    {
+        id: '07010fe6-1591-44dc-b188-b04610320969',
+        created: new Date(),
+        userid: 'a.yang223@gmail.com',
+        job_name: 'test job name3',
+        submitted: new Date(),
+        started: '2023-08-01 19:58:27.094',
+        finished: '2023-08-01 21:58:27.094',
+        status: 'failed',
+        parameters: {
+            calculation: 'Natural Bond Orbitals',
+        },
+    },
+    {
+        id: '07010fe6-1591-44dc-b188-b04610320969',
+        created: new Date(),
+        userid: 'a.yang223@gmail.com',
+        job_name: 'test job name3',
+        submitted: new Date(),
+        started: '2023-07-01 19:58:27.094',
+        finished: '2023-07-016 19:58:27.094',
+        status: 'cancelled',
+        parameters: {
+            calculation: 'Natural Bond Orbitals',
+        },
+    },
+];
+
+// CREATE TABLE JOBS (
+//     ID UUID PRIMARY KEY,
+//     CREATED TIMESTAMP DEFAULT NOW(),
+//     USERID VARCHAR(255) NOT NULL,
+//     JOB_NAME VARCHAR(255) NOT NULL,
+//     SUBMITTED TIMESTAMP DEFAULT NULL,
+//     STARTED TIMESTAMP DEFAULT NULL,
+//     FINISHED TIMESTAMP DEFAULT NULL,
+//     STATUS JOB_STATUS DEFAULT 'SUBMITTED',
+//     PARAMETERS JSONB DEFAULT NULL,
+//     FOREIGN KEY (USERID) REFERENCES USERS(EMAIL)
+// );
 
 @Component({
     selector: 'app-dashboard-container',
@@ -15,14 +141,30 @@ export class DashboardContainerComponent implements OnInit {
     responseJson!: string;
     hasApiError = false;
 
+    userName!: string | undefined;
+
     user$!: Observable<User | undefined>;
 
-    constructor(public auth: AuthService, public http: HttpClient, public store: Store<AppState>) {}
+    inProgress: any;
+    isCompleted: any;
+
+    show: string = 'All';
+    page = 1;
+    set isSelected(isSelected: boolean) {}
+
+    constructor(public auth: AuthService, public http: HttpClient, public store: Store<AppState>) {
+        this.inProgress = inProgress;
+        this.isCompleted = isCompleted;
+    }
 
     ngOnInit() {
         this.user$ = this.store.pipe(select(selectUser));
-        this.user$.subscribe((res) => console.log('user', res));
         this.auth.getAccessTokenSilently().subscribe((token) => console.log('token', token));
+        this.getUserName();
+    }
+
+    newStructureClick(): void {
+        console.log('new structure click');
     }
 
     testApi() {
@@ -47,5 +189,58 @@ export class DashboardContainerComponent implements OnInit {
                 },
                 error: () => (this.hasApiError = true),
             });
+    }
+
+    getUserName(): void {
+        this.user$.subscribe((res) => {
+            this.userName = res?.given_name ? res.given_name : res?.email;
+        });
+    }
+
+    getTimeDifference(start: Date, finished: Date) {
+        const startTime = moment(start);
+        const endTime = moment(finished);
+        const duartionInMs = endTime.diff(startTime);
+        return moment.duration(duartionInMs).humanize();
+    }
+
+    onShowClick(index: number): void {
+        switch (index) {
+            case 0:
+                this.show = 'All';
+                // TODO: send action
+                return;
+            case 1:
+                this.show = 'Completed';
+                return;
+            case 2:
+                this.show = 'Failed';
+                return;
+            default:
+                this.show = 'All';
+                return;
+        }
+    }
+
+    selectJob(isSelected: boolean, jobName: string): void {
+        console.log(isSelected, jobName);
+    }
+
+    selectAllJobs(event: any, page: number): void {
+        console.log(event);
+
+        for (let i = 5 * (page - 1); i < 5 * (page - 1) + 5; i++) {
+            // get list
+            if (i <= this.isCompleted.length - 1) {
+                this.isCompleted[i].selected = event.target.checked;
+            }
+        }
+    }
+
+    get isSelected() {
+        const itemIndex = 5 * (this.page - 1);
+        const itemsInCurrentPage = this.isCompleted.slice(itemIndex, itemIndex + 5);
+        const isSelected = itemsInCurrentPage.every((item: any) => item.selected);
+        return isSelected;
     }
 }
