@@ -117,6 +117,45 @@ const isCompleted = [
             calculation: 'Natural Bond Orbitals',
         },
     },
+    {
+        id: '07010fe6-1591-44dc-b188-b04610320969',
+        created: new Date(),
+        userid: 'a.yang223@gmail.com',
+        job_name: 'test job name4',
+        submitted: new Date(),
+        started: '2023-07-01 19:58:27.094',
+        finished: '2023-07-016 19:58:27.094',
+        status: 'cancelled',
+        parameters: {
+            calculation: 'Natural Bond Orbitals',
+        },
+    },
+    {
+        id: '07010fe6-1591-44dc-b188-b04610320969',
+        created: new Date(),
+        userid: 'a.yang223@gmail.com',
+        job_name: 'test job name5',
+        submitted: new Date(),
+        started: '2023-07-01 19:58:27.094',
+        finished: '2023-07-016 19:58:27.094',
+        status: 'cancelled',
+        parameters: {
+            calculation: 'Natural Bond Orbitals',
+        },
+    },
+    {
+        id: '07010fe6-1591-44dc-b188-b04610320969',
+        created: new Date(),
+        userid: 'a.yang223@gmail.com',
+        job_name: 'test job name6',
+        submitted: new Date(),
+        started: '2023-07-01 19:58:27.094',
+        finished: '2023-07-016 19:58:27.094',
+        status: 'cancelled',
+        parameters: {
+            calculation: 'Natural Bond Orbitals',
+        },
+    },
 ];
 
 // CREATE TABLE JOBS (
@@ -150,6 +189,7 @@ export class DashboardContainerComponent implements OnInit {
 
     show: string = 'All';
     page = 1;
+    pageSize = 5;
     set isSelected(isSelected: boolean) {}
 
     constructor(public auth: AuthService, public http: HttpClient, public store: Store<AppState>) {
@@ -235,6 +275,11 @@ export class DashboardContainerComponent implements OnInit {
                 this.isCompleted[i].selected = event.target.checked;
             }
         }
+    }
+
+    handlePageChange(event: any): void {
+        // TODO: change to server side render
+        this.page = event;
     }
 
     get isSelected() {

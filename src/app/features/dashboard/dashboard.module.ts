@@ -4,9 +4,17 @@ import { DashboardContainerComponent } from './container/dashboard-container.com
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { SharedModule } from '../../shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
     declarations: [DashboardContainerComponent],
-    imports: [CommonModule, DashboardRoutingModule, SharedModule, FormsModule, ReactiveFormsModule],
+    imports: [
+        CommonModule,
+        DashboardRoutingModule,
+        SharedModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NgxPaginationModule,
+    ],
 })
 export class DashboardModule {}
