@@ -80,9 +80,8 @@
                                 60%
                             </td>
                             <td>
-                                <!-- TODO: make status comp -->
                                 <div>
-                                    {{ job.status }}
+                                    <shrd-status-icon [status]="job.status"></shrd-status-icon>
                                 </div>
                             </td>
                             <td>
@@ -223,7 +222,7 @@
                             </td>
                             <td>
                                 <div>
-                                    {{ job.status }}
+                                    <shrd-status-icon [status]="job.status"></shrd-status-icon>
                                 </div>
                             </td>
                             <th>

@@ -5,9 +5,10 @@ import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../store';
 import { selectUser } from '../../../store/selectors/user.selectors';
 import { Observable } from 'rxjs';
-import * as moment from 'moment';
+// import * as moment from 'moment';
+import moment from 'moment';
 
-const date = new Date();
+// const moment = require('moment');
 
 const inProgress = [
     {
@@ -31,7 +32,7 @@ const inProgress = [
         submitted: new Date(),
         started: new Date(),
         finished: null,
-        status: 'stopped',
+        status: 'stopped', // NOTE: stopped can mean paused or cancel, update db enum?
         parameters: {
             calculation: 'Natural Bond Orbitals',
         },
@@ -44,7 +45,7 @@ const inProgress = [
         submitted: new Date(),
         started: new Date(),
         finished: null,
-        status: 'submitted',
+        status: 'submitted', // NOTE: submitted mean server has the job but did not start so no in progress yet
         parameters: {
             calculation: 'Natural Bond Orbitals',
         },
@@ -57,7 +58,7 @@ const inProgress = [
         submitted: new Date(),
         started: new Date(),
         finished: null,
-        status: 'submitted',
+        status: 'paused',
         parameters: {
             calculation: 'Natural Bond Orbitals',
         },
