@@ -29,7 +29,7 @@
             class="text-xs px-1"
             [class.text-success-700]="status === 'completed'"
             [class.text-error-700]="status === 'failed'"
-            [class.text-blue-500]="status === 'running'"
+            [class.text-blue-500]="status === 'running' || status === 'submitted'"
             [class.text-gray-700]="status === 'cancelled' || status === 'paused'"
         >
             {{ status === 'running' ? 'In Progress' : (status | titlecase) }}
