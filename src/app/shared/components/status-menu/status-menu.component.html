@@ -1,0 +1,126 @@
+<div tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-white rounded-box w-52">
+    <div class="flex flex-col" *ngIf="status === 'running'">
+        <li>
+            <span
+                tabindex="0"
+                class="text-gray-700 text-xs"
+                (click)="onStatusMenuClick('pause')"
+                (keydown.enter)="onStatusMenuClick('pause')"
+                ><img src="../../../../assets/pause-circle.svg" alt="pause" />
+                Pause
+            </span>
+        </li>
+    </div>
+
+    <div class="flex flex-col" *ngIf="status === 'failed'">
+        <li>
+            <span
+                tabindex="0"
+                class="text-error-600 text-xs hover:text-error-600"
+                (click)="onStatusMenuClick('delete')"
+                (keydown.enter)="onStatusMenuClick('delete')"
+                ><img src="../../../../assets/trash-icon.svg" alt="delete" />
+                Delete
+            </span>
+        </li>
+    </div>
+
+    <!-- NOTE: -->
+    <!-- status paused does not exits in db enum -->
+    <div class="flex flex-col" *ngIf="status === 'paused'">
+        <li>
+            <span
+                tabindex="0"
+                class="text-gray-700 text-xs"
+                (click)="onStatusMenuClick('refresh')"
+                (keydown.enter)="onStatusMenuClick('refresh')"
+                ><img src="../../../../assets/refresh-ccw-icon.svg" alt="pause" />
+                Resume
+            </span>
+        </li>
+        <li>
+            <span
+                tabindex="0"
+                class="text-gray-700 text-xs"
+                (click)="onStatusMenuClick('cancel')"
+                (keydown.enter)="onStatusMenuClick('cancel')"
+                ><img src="../../../../assets/cancel-icon.svg" alt="pause" />
+                Cancel
+            </span>
+        </li>
+    </div>
+
+    <!-- NOTE: -->
+    <!-- canclled does not exists in db enum -->
+    <div class="flex flex-col" *ngIf="status === 'cancelled'">
+        <li>
+            <span
+                tabindex="0"
+                class="text-error-600 text-xs hover:text-error-600"
+                (click)="onStatusMenuClick('delete')"
+                (keydown.enter)="onStatusMenuClick('delete')"
+                ><img src="../../../../assets/trash-icon.svg" alt="delete" />
+                Delete
+            </span>
+        </li>
+    </div>
+
+    <div class="flex flex-col" *ngIf="status === 'completed'">
+        <div class="flex flex-col py-1 my-1 border-b">
+            <li>
+                <span
+                    tabindex="0"
+                    class="text-gray-700 text-xs"
+                    (click)="onStatusMenuClick('report')"
+                    (keydown.enter)="onStatusMenuClick('report')"
+                    ><img src="../../../../assets/book-open-icon.svg" alt="summary report" />
+                    Summary Report
+                </span>
+            </li>
+            <li>
+                <span
+                    tabindex="0"
+                    class="text-gray-700 text-xs"
+                    (click)="onStatusMenuClick('calculations')"
+                    (keydown.enter)="onStatusMenuClick('calculations')"
+                    ><img src="../../../../assets/calculator-icon.svg" alt="calculation" />
+                    Detailed Calculation
+                </span>
+            </li>
+        </div>
+        <div class="flex flex-col py-1 my-1 border-b">
+            <li>
+                <span
+                    tabindex="0"
+                    class="text-gray-700 text-xs"
+                    (click)="onStatusMenuClick('duplicate')"
+                    (keydown.enter)="onStatusMenuClick('duplicate')"
+                    ><img src="../../../../assets/copy-icon.svg" alt="duplicate" />
+                    Duplicate
+                </span>
+            </li>
+            <li>
+                <span
+                    tabindex="0"
+                    class="text-gray-700 text-xs"
+                    (click)="onStatusMenuClick('download')"
+                    (keydown.enter)="onStatusMenuClick('download')"
+                    ><img src="../../../../assets/download-cloud-icon.svg" alt="download" />
+                    Download
+                </span>
+            </li>
+        </div>
+        <div class="flex flex-col py-1">
+            <li>
+                <span
+                    tabindex="0"
+                    class="text-error-600 text-xs hover:text-error-600"
+                    (click)="onStatusMenuClick('delete')"
+                    (keydown.enter)="onStatusMenuClick('delete')"
+                    ><img src="../../../../assets/trash-icon.svg" alt="delete" />
+                    Delete
+                </span>
+            </li>
+        </div>
+    </div>
+</div>

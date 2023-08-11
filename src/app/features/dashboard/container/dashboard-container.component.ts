@@ -188,14 +188,14 @@ export class DashboardContainerComponent implements OnInit {
     inProgress: any;
     isCompleted: any;
 
-    show: string = 'All';
+    show: string;
     page = 1;
     pageSize = 5;
-    set isSelected(isSelected: boolean) {}
 
     constructor(public auth: AuthService, public http: HttpClient, public store: Store<AppState>) {
         this.inProgress = inProgress;
         this.isCompleted = isCompleted;
+        this.show = 'All';
     }
 
     ngOnInit() {
@@ -283,10 +283,17 @@ export class DashboardContainerComponent implements OnInit {
         this.page = event;
     }
 
+    handleStatusMenuClick(type: string): void {
+        // TODO: handle event
+        console.log('handle event emitted by status menu', type);
+    }
+
     get isSelected() {
         const itemIndex = 5 * (this.page - 1);
         const itemsInCurrentPage = this.isCompleted.slice(itemIndex, itemIndex + 5);
         const isSelected = itemsInCurrentPage.every((item: any) => item.selected);
         return isSelected;
     }
+
+    // set isSelected(isSelected: boolean) {}
 }
