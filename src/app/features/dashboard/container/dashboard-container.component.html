@@ -7,8 +7,8 @@
                 <div
                     tabindex="0"
                     class="btn bg-white border-gray-200 normal-case p-6 h-auto w-64 mr-6 items-start hover:bg-gray-50 lg:w-80 flex-col"
-                    (click)="newStructureClick()"
-                    (keydown.enter)="newStructureClick()"
+                    (click)="openModal()"
+                    (keydown.enter)="openModal()"
                 >
                     <div class="bg-primary-100 h-10 w-10 rounded-full flex justify-center items-center mb-2">
                         <img src="../../../../assets/plus-circle.svg" alt="add icon" />
@@ -270,3 +270,98 @@
         </div>
     </div>
 </ng-template>
+
+<!-- modal -->
+<dialog id="new_structure_modal" class="modal" #newStructureModal>
+    <div method="dialog" class="modal-box w-11/12 max-w-5xl bg-white">
+        <button
+            class="btn btn-sm btn-circle btn-ghost text-gray-500 absolute right-2 top-2"
+            (click)="closeModal()"
+            (keydown.enter)="closeModal()"
+        >
+            <!-- onclick="new_structure_modal.close()" -->
+            ✕
+        </button>
+        <div class="p-6">
+            <form *ngIf="newStructureStep == 1" class="flex flex-col mt-2">
+                <h3 class="text-gray-900 font-bold text-2xl py-2">What type of structure do you want to calculate?</h3>
+                <p class="text-gray-500 text-base">
+                    We will provide calculation recommendations based on your selection
+                </p>
+                <div
+                    *ngFor="let types of structureType; let last = last"
+                    tabindex="0"
+                    class="btn bg-white border-gray-200 normal-case  h-auto w-full mr-6 items-start justify-between hover:bg-gray-50 {{
+                        last ? '' : 'mb-4'
+                    }}"
+                    [ngClass]="{ 'selected-structure': newStructureForm.get('structureType')?.value === types.name }"
+                >
+                    <label class="label cursor-pointer w-full p-6">
+                        <div class="flex items-center">
+                            <div class="bg-primary-100 h-10 w-10 rounded-full flex justify-center items-center mb-2">
+                                <img [src]="types.imgSrc" [alt]="types.alt" />
+                            </div>
+                            <div class="flex flex-col items-start pl-4">
+                                <span class="label-text text-gray-700">{{ types.name }}</span>
+                                <span class="label-text text-gray-500">{{ types.description }}</span>
+                            </div>
+                        </div>
+                        <input
+                            type="radio"
+                            name="radio-2"
+                            class="radio radio-primary"
+                            (change)="structureTypeClick(types.name)"
+                            [checked]="newStructureForm.get('structureType')?.value === types.name"
+                        />
+                    </label>
+                </div>
+                <div class="flex justify-end mt-6">
+                    <button
+                        class="btn btn-primary rounded-full px-4"
+                        [class.btn-disabled]="!newStructureForm.valid"
+                        (click)="onContinuePress()"
+                        (keydown.enter)="onContinuePress()"
+                    >
+                        Continue
+                    </button>
+                </div>
+            </form>
+            <div *ngIf="newStructureStep == 2">
+                <div class="">
+                    <h3 class="text-gray-900 font-bold text-2xl py-2">Import your file</h3>
+                    <p class="text-gray-500 text-base mb-4">
+                        We will set up calculation recommendations based on your selection
+                    </p>
+
+                    <div
+                        tabindex="0"
+                        class="btn bg-white border-gray-200 normal-case p-6 h-auto w-64 mr-6 items-start hover:bg-gray-50 lg:w-80 flex-col"
+                        (click)="uploadFromFile()"
+                        (keydown.enter)="uploadFromFile()"
+                    >
+                        <div class="bg-primary-100 h-10 w-10 rounded-full flex justify-center items-center mb-2">
+                            <img src="../../../../assets/arrow-up-circle.svg" alt="upload icon" />
+                        </div>
+                        <div class="flex flex-col items-start justify-center">
+                            <p class="">From File</p>
+                        </div>
+                    </div>
+
+                    <div
+                        tabindex="0"
+                        class="btn bg-white border-gray-200 normal-case p-6 h-auto w-64 mr-6 items-start hover:bg-gray-50 lg:w-80 flex-col"
+                        (click)="uploadFromDatabase()"
+                        (keydown.enter)="uploadFromDatabase()"
+                    >
+                        <div class="bg-primary-100 h-10 w-10 rounded-full flex justify-center items-center mb-2">
+                            <img src="../../../../assets/arrow-up-circle.svg" alt="upload icon" />
+                        </div>
+                        <div class="flex flex-col items-start justify-center">
+                            <p class="">From Database</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</dialog>

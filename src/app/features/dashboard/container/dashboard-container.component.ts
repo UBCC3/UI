@@ -1,14 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AuthService, User } from '@auth0/auth0-angular';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../store';
 import { selectUser } from '../../../store/selectors/user.selectors';
 import { Observable } from 'rxjs';
-// import * as moment from 'moment';
 import moment from 'moment';
-
-// const moment = require('moment');
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 const inProgress = [
     {
@@ -172,6 +170,40 @@ const isCompleted = [
 //     FOREIGN KEY (USERID) REFERENCES USERS(EMAIL)
 // );
 
+const structureType = [
+    {
+        // NOTE: id needed?
+        name: 'Organic',
+        description: 'Small to medium-sized organic molecules',
+        imgSrc: '../../../../assets/organic-icon.svg',
+        alt: 'organic',
+    },
+    {
+        name: 'Inorganic ',
+        description: 'Inorganic compounds, transition metals',
+        imgSrc: '../../../../assets/inorganic-icon.svg',
+        alt: 'inorganic',
+    },
+    {
+        name: 'Biochemistry ',
+        description: 'Large biomolecules like proteins, nucleic acids, complex carbohydrates',
+        imgSrc: '../../../../assets/biochemistry-icon.svg',
+        alt: 'biochemistry',
+    },
+    {
+        name: 'Materials ',
+        description: 'Crystals and solid-state materials',
+        imgSrc: '../../../../assets/materials-icon.svg',
+        alt: 'materials',
+    },
+    {
+        name: 'Spectroscopy ',
+        description: 'Spectropic properties',
+        imgSrc: '../../../../assets/spectroscopy-icon.svg',
+        alt: 'spectroscopy',
+    },
+];
+
 @Component({
     selector: 'app-dashboard-container',
     templateUrl: './dashboard-container.component.html',
@@ -185,17 +217,33 @@ export class DashboardContainerComponent implements OnInit {
 
     user$!: Observable<User | undefined>;
 
+    newStructureForm: FormGroup;
+
+    // for test data
     inProgress: any;
     isCompleted: any;
+    structureType: any;
 
     show: string;
     page = 1;
     pageSize = 5;
+    newStructureStep = 1;
 
-    constructor(public auth: AuthService, public http: HttpClient, public store: Store<AppState>) {
+    @ViewChild('newStructureModal') newStructureModal!: ElementRef;
+    constructor(
+        public auth: AuthService,
+        public http: HttpClient,
+        public store: Store<AppState>,
+        private formBuilder: FormBuilder
+    ) {
         this.inProgress = inProgress;
         this.isCompleted = isCompleted;
+        this.structureType = structureType;
         this.show = 'All';
+        this.newStructureForm = this.formBuilder.group({
+            structureType: new FormControl(null, [Validators.required.bind(this)]),
+            file: new FormControl(null),
+        });
     }
 
     ngOnInit() {
@@ -286,6 +334,36 @@ export class DashboardContainerComponent implements OnInit {
     handleStatusMenuClick(type: string): void {
         // TODO: handle event
         console.log('handle event emitted by status menu', type);
+    }
+
+    structureTypeClick(structureType: string): void {
+        // TODO: add form handling
+        const control = this.newStructureForm.get('structureType');
+        control?.patchValue(structureType);
+    }
+
+    onContinuePress(): void {
+        this.newStructureStep++;
+    }
+
+    openModal(): void {
+        const modalElement: HTMLDialogElement = this.newStructureModal.nativeElement;
+        modalElement.showModal();
+    }
+
+    closeModal(): void {
+        const modalElement: HTMLDialogElement = this.newStructureModal.nativeElement;
+        modalElement.close();
+        this.newStructureStep = 1;
+        this.newStructureForm.reset();
+    }
+
+    uploadFromFile(): void {
+        // TODO:
+    }
+
+    uploadFromDatabase(): void {
+        // TODO:
     }
 
     get isSelected() {
