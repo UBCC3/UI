@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { AuthService, User } from '@auth0/auth0-angular';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../store';
@@ -354,6 +354,16 @@ export class DashboardContainerComponent implements OnInit {
     closeModal(): void {
         const modalElement: HTMLDialogElement = this.newStructureModal.nativeElement;
         modalElement.close();
+        this.resetForm();
+    }
+
+    // NOTE: change to custom Directive
+    @HostListener('document:keydown.escape')
+    onEscapeKey(): void {
+        this.closeModal();
+    }
+
+    resetForm(): void {
         this.newStructureStep = 1;
         this.newStructureForm.reset();
     }
