@@ -14,6 +14,12 @@ const routes: Routes = [
         canActivate: [AuthGuard],
     },
     {
+        path: 'new-calculation',
+        loadChildren: () =>
+            import('./features/new-calculation/new-calculation.module').then((m) => m.NewCalculationModule),
+        canActivate: [AuthGuard],
+    },
+    {
         path: 'profile',
         loadChildren: () => import('./features/profile/profile.module').then((m) => m.ProfileModule),
         canActivate: [AuthGuard],
