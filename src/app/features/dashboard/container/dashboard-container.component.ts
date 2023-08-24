@@ -7,6 +7,7 @@ import { selectUser } from '../../../store/selectors/user.selectors';
 import { Observable } from 'rxjs';
 import moment from 'moment';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 const inProgress = [
     {
@@ -26,37 +27,11 @@ const inProgress = [
         id: '07010fe6-1591-44dc-b188-b04610320969',
         created: new Date(),
         userid: 'a.yang223@gmail.com',
-        job_name: 'test job name2',
-        submitted: new Date(),
-        started: new Date(),
-        finished: null,
-        status: 'stopped', // NOTE: stopped can mean paused or cancel, update db enum?
-        parameters: {
-            calculation: 'Natural Bond Orbitals',
-        },
-    },
-    {
-        id: '07010fe6-1591-44dc-b188-b04610320969',
-        created: new Date(),
-        userid: 'a.yang223@gmail.com',
         job_name: 'test job name3',
         submitted: new Date(),
         started: new Date(),
         finished: null,
         status: 'submitted', // NOTE: submitted mean server has the job but did not start so no in progress yet
-        parameters: {
-            calculation: 'Natural Bond Orbitals',
-        },
-    },
-    {
-        id: '07010fe6-1591-44dc-b188-b04610320969',
-        created: new Date(),
-        userid: 'a.yang223@gmail.com',
-        job_name: 'test job name3',
-        submitted: new Date(),
-        started: new Date(),
-        finished: null,
-        status: 'paused',
         parameters: {
             calculation: 'Natural Bond Orbitals',
         },
@@ -234,12 +209,14 @@ export class DashboardContainerComponent implements OnInit {
         public auth: AuthService,
         public http: HttpClient,
         public store: Store<AppState>,
+        public router: Router,
         private formBuilder: FormBuilder
     ) {
         this.inProgress = inProgress;
         this.isCompleted = isCompleted;
         this.structureType = structureType;
         this.show = 'All';
+        // NOTE: form is part of modal
         this.newStructureForm = this.formBuilder.group({
             structureType: new FormControl(null, [Validators.required.bind(this)]),
             file: new FormControl(null),
@@ -252,10 +229,12 @@ export class DashboardContainerComponent implements OnInit {
         this.getUserName();
     }
 
-    newStructureClick(): void {
-        console.log('new structure click');
+    startACalculationClick(): void {
+        // console.log('start a calculation');
+        this.router.navigate(['new-calculation']);
     }
 
+    // NOTE: delete after
     testApi() {
         this.http.get('http://localhost:8000/api/private').subscribe({
             next: (res) => {
@@ -267,6 +246,7 @@ export class DashboardContainerComponent implements OnInit {
         });
     }
 
+    // NOTE: delete after
     testPost() {
         this.http
             .post('http://localhost:8000/api/private', { name: 'test name', content: 'some text for content' })
@@ -336,21 +316,25 @@ export class DashboardContainerComponent implements OnInit {
         console.log('handle event emitted by status menu', type);
     }
 
+    // NOTE: part of modal
     structureTypeClick(structureType: string): void {
         // TODO: add form handling
         const control = this.newStructureForm.get('structureType');
         control?.patchValue(structureType);
     }
 
+    // NOTE: part of modal
     onContinuePress(): void {
         this.newStructureStep++;
     }
 
+    // NOTE: no longer need modal
     openModal(): void {
         const modalElement: HTMLDialogElement = this.newStructureModal.nativeElement;
         modalElement.showModal();
     }
 
+    // NOTE: no longer need modal
     closeModal(): void {
         const modalElement: HTMLDialogElement = this.newStructureModal.nativeElement;
         modalElement.close();
@@ -358,20 +342,24 @@ export class DashboardContainerComponent implements OnInit {
     }
 
     // NOTE: change to custom Directive
+    // NOTE: no longer need modal
     @HostListener('document:keydown.escape')
     onEscapeKey(): void {
         this.closeModal();
     }
 
+    // NOTE: form part of modal
     resetForm(): void {
         this.newStructureStep = 1;
         this.newStructureForm.reset();
     }
 
+    // NOTE: part of modal
     uploadFromFile(): void {
         // TODO:
     }
 
+    // NOTE: part of modal
     uploadFromDatabase(): void {
         // TODO:
     }

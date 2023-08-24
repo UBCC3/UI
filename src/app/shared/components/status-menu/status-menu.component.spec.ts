@@ -25,7 +25,7 @@ describe('StatusMenuComponent', () => {
 
     it('should emit custom event when button is clicked', () => {
         component.status = 'running';
-        const emittedData = 'pause';
+        const emittedData = 'cancel';
         let receivedData: string | undefined;
         jest.spyOn(component, 'onStatusMenuClick');
 
@@ -40,6 +40,6 @@ describe('StatusMenuComponent', () => {
         fixture.detectChanges();
 
         expect(receivedData).toBe(emittedData);
-        expect(component.onStatusMenuClick).toHaveBeenCalledWith('pause');
+        expect(component.onStatusMenuClick).toHaveBeenCalledWith('cancel');
     });
 });

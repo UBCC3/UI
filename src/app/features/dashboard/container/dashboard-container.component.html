@@ -7,30 +7,14 @@
                 <div
                     tabindex="0"
                     class="btn bg-white border-gray-200 normal-case p-6 h-auto w-64 mr-6 items-start hover:bg-gray-50 lg:w-80 flex-col"
-                    (click)="openModal()"
-                    (keydown.enter)="openModal()"
+                    (click)="startACalculationClick()"
+                    (keydown.enter)="startACalculationClick()"
                 >
                     <div class="bg-primary-100 h-10 w-10 rounded-full flex justify-center items-center mb-2">
                         <img src="../../../../assets/plus-circle.svg" alt="add icon" />
                     </div>
                     <div class="flex flex-col items-start justify-center">
-                        <p class="">New Structure</p>
-                        <p class="text-xs text-gray-700">Start a new file</p>
-                    </div>
-                </div>
-
-                <div
-                    tabindex="0"
-                    class="btn bg-white border-gray-200 normal-case p-6 h-auto w-64 flex-col items-start hover:bg-gray-50 lg:w-80"
-                    (click)="openModal()"
-                    (keydown.enter)="openModal()"
-                >
-                    <div class="bg-primary-100 h-10 w-10 rounded-full flex justify-center items-center mb-2">
-                        <img src="../../../../assets/arrow-up-circle.svg" alt="upload icon" />
-                    </div>
-                    <div class="flex flex-col items-start justify-center">
-                        <p class="">Import Structure</p>
-                        <p class="text-xs text-gray-700">Bring in a file from another tool</p>
+                        <p class="">Start a Calculation</p>
                     </div>
                 </div>
             </div>
@@ -262,18 +246,18 @@
             </p>
             <button
                 class="btn btn-primary h-6 text-white font-normal rounded-full"
-                (click)="newStructureClick()"
-                (keydown.enter)="newStructureClick()"
+                (click)="startACalculationClick()"
+                (keydown.enter)="startACalculationClick()"
             >
                 <img src="../../../../assets/plus-circle-white.svg" alt="add icon" />
-                New Structure
+                Start a Calculation
             </button>
         </div>
     </div>
 </ng-template>
 
 <!-- modal -->
-<!-- <dialog id="new_structure_modal" class="modal" #newStructureModal (keydown.escape)="onEscapeKey()"> -->
+<!-- NOTE: not needed for now, -->
 <dialog id="new_structure_modal" class="modal" #newStructureModal>
     <div method="dialog" class="modal-box w-11/12 max-w-5xl bg-white">
         <button
@@ -285,11 +269,11 @@
         </button>
         <div class="p-6">
             <form class="flex flex-col mt-2">
-                <div *ngIf="newStructureStep == 1" class="flex flex-col">
+                <div *ngIf="newStructureStep === 1" class="flex flex-col">
                     <h3 class="text-gray-900 font-bold text-2xl py-2">
                         What type of structure do you want to calculate?
                     </h3>
-                    <p class="text-gray-500 text-base">
+                    <p class="text-gray-500 text-base mb-2">
                         We will provide calculation recommendations based on your selection
                     </p>
                     <div
@@ -334,7 +318,7 @@
                         </button>
                     </div>
                 </div>
-                <div *ngIf="newStructureStep == 2">
+                <div *ngIf="newStructureStep === 2">
                     <div class="">
                         <h3 class="text-gray-900 font-bold text-2xl py-2">Import your file</h3>
                         <p class="text-gray-500 text-base mb-4">
