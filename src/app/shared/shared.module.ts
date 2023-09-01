@@ -6,10 +6,19 @@ import { LayoutComponent } from './components/layout/layout.component';
 import { SplashComponent } from './components/splash/splash.component';
 import { StatusIconComponent } from './components/status-icon/status-icon.component';
 import { StatusMenuComponent } from './components/status-menu/status-menu.component';
+import { EditStructureComponent } from './components/edit-structure/edit-structure.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
-    declarations: [NavBarComponent, LayoutComponent, SplashComponent, StatusIconComponent, StatusMenuComponent],
-    imports: [CommonModule, RouterModule],
+    declarations: [
+        NavBarComponent,
+        LayoutComponent,
+        SplashComponent,
+        StatusIconComponent,
+        StatusMenuComponent,
+        EditStructureComponent,
+    ],
+    imports: [CommonModule, RouterModule, FormsModule],
     exports: [
         RouterModule,
         LayoutComponent,
@@ -17,6 +26,7 @@ import { StatusMenuComponent } from './components/status-menu/status-menu.compon
         NavBarComponent,
         StatusIconComponent,
         StatusMenuComponent,
+        EditStructureComponent,
     ],
 })
 export class SharedModule {}

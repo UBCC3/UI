@@ -14,6 +14,7 @@ import { reducers } from './store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { UserEffects } from './store/effects/user.effects';
+import { LayoutComponent } from './shared/components/layout/layout.component';
 
 @NgModule({
     declarations: [AppComponent],
