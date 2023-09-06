@@ -1,0 +1,72 @@
+<div class="flex flex-col px-10 pb-6">
+    <p class="text-xl text-gray-700 px-6">In Progress</p>
+    <div class="bg-white rounded-lg border border-grey-200 mt-4">
+        <table class="table">
+            <!-- head -->
+            <thead>
+                <tr>
+                    <th><div class="pl-6">Job</div></th>
+                    <th>Name</th>
+                    <th>Calculation</th>
+                    <th>Progress</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let job of inProgressJobs; let last = last">
+                <tr class="py-4 {{ last ? 'border-b-0' : '' }}">
+                    <th>
+                        <label>
+                            <input
+                                type="checkbox"
+                                class="checkbox ml-6 h-4 w-4 rounded-md"
+                                [checked]="isSelected(job)"
+                                (change)="toggleSelection(job, $event)"
+                            />
+                        </label>
+                    </th>
+                    <td>
+                        <div class="flex items-center space-x-3">
+                            <div>
+                                <div class="text-sm">{{ job.job_name }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="text-sm text-gray-500">
+                            {{ job.parameters.calculation }}
+                        </div>
+                    </td>
+
+                    <td>
+                        <!-- NOTE: need to get progress -->
+                        60%
+                    </td>
+                    <td>
+                        <div>
+                            <shrd-status-icon [status]="job.status"></shrd-status-icon>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            {{ job.started | date : 'dd/MM/yyy' }}
+                        </div>
+                    </td>
+                    <th>
+                        <!-- dropdown -->
+                        <div class="dropdown dropdown-end">
+                            <label tabindex="0" class="btn btn-circle btn-ghost btn-xs text-info">
+                                <img src="../../../../assets/dots-vertical.svg" alt="menu" />
+                            </label>
+                            <shrd-status-menu
+                                [status]="job.status"
+                                (statusMenuClick)="handleStatusMenuClick($event)"
+                            ></shrd-status-menu>
+                        </div>
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

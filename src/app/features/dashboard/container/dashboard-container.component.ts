@@ -1,19 +1,18 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService, User } from '@auth0/auth0-angular';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../store';
 import { selectUser } from '../../../store/selectors/user.selectors';
 import { Observable } from 'rxjs';
 import moment from 'moment';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 const inProgress = [
     {
         id: '98ecc611-f384-490c-9f8a-3f5084110341',
         created: new Date(),
-        userid: 'a.yang223@gmail.com',
+        userid: 'email@gmail.com',
         job_name: 'test job name',
         submitted: '2023-08-01 19:58:27.094',
         started: '2023-08-01 19:58:27.094',
@@ -26,12 +25,12 @@ const inProgress = [
     {
         id: '07010fe6-1591-44dc-b188-b04610320969',
         created: new Date(),
-        userid: 'a.yang223@gmail.com',
+        userid: 'email@gmail.com',
         job_name: 'test job name3',
         submitted: new Date(),
         started: new Date(),
         finished: null,
-        status: 'submitted', // NOTE: submitted mean server has the job but did not start so no in progress yet
+        status: 'submitted',
         parameters: {
             calculation: 'Natural Bond Orbitals',
         },
@@ -145,40 +144,6 @@ const isCompleted = [
 //     FOREIGN KEY (USERID) REFERENCES USERS(EMAIL)
 // );
 
-const structureType = [
-    {
-        // NOTE: id needed?
-        name: 'Organic',
-        description: 'Small to medium-sized organic molecules',
-        imgSrc: '../../../../assets/organic-icon.svg',
-        alt: 'organic',
-    },
-    {
-        name: 'Inorganic ',
-        description: 'Inorganic compounds, transition metals',
-        imgSrc: '../../../../assets/inorganic-icon.svg',
-        alt: 'inorganic',
-    },
-    {
-        name: 'Biochemistry ',
-        description: 'Large biomolecules like proteins, nucleic acids, complex carbohydrates',
-        imgSrc: '../../../../assets/biochemistry-icon.svg',
-        alt: 'biochemistry',
-    },
-    {
-        name: 'Materials ',
-        description: 'Crystals and solid-state materials',
-        imgSrc: '../../../../assets/materials-icon.svg',
-        alt: 'materials',
-    },
-    {
-        name: 'Spectroscopy ',
-        description: 'Spectropic properties',
-        imgSrc: '../../../../assets/spectroscopy-icon.svg',
-        alt: 'spectroscopy',
-    },
-];
-
 @Component({
     selector: 'app-dashboard-container',
     templateUrl: './dashboard-container.component.html',
@@ -192,35 +157,21 @@ export class DashboardContainerComponent implements OnInit {
 
     user$!: Observable<User | undefined>;
 
-    newStructureForm: FormGroup;
-
     // for test data
     inProgress: any;
     isCompleted: any;
-    structureType: any;
 
     show: string;
-    page = 1;
-    pageSize = 5;
-    newStructureStep = 1;
 
-    @ViewChild('newStructureModal') newStructureModal!: ElementRef;
     constructor(
         public auth: AuthService,
         public http: HttpClient,
         public store: Store<AppState>,
-        public router: Router,
-        private formBuilder: FormBuilder
+        public router: Router
     ) {
         this.inProgress = inProgress;
         this.isCompleted = isCompleted;
-        this.structureType = structureType;
         this.show = 'All';
-        // NOTE: form is part of modal
-        this.newStructureForm = this.formBuilder.group({
-            structureType: new FormControl(null, [Validators.required.bind(this)]),
-            file: new FormControl(null),
-        });
     }
 
     ngOnInit() {
@@ -265,111 +216,4 @@ export class DashboardContainerComponent implements OnInit {
             this.userName = res?.given_name ? res.given_name : res?.email;
         });
     }
-
-    getTimeDifference(start: Date, finished: Date) {
-        const startTime = moment(start);
-        const endTime = moment(finished);
-        const duartionInMs = endTime.diff(startTime);
-        return moment.duration(duartionInMs).humanize();
-    }
-
-    onShowClick(index: number): void {
-        switch (index) {
-            case 0:
-                this.show = 'All';
-                // TODO: send action
-                return;
-            case 1:
-                this.show = 'Completed';
-                return;
-            case 2:
-                this.show = 'Failed';
-                return;
-            default:
-                this.show = 'All';
-                return;
-        }
-    }
-
-    selectJob(isSelected: boolean, jobName: string): void {
-        console.log(isSelected, jobName);
-    }
-
-    selectAllJobs(event: any, page: number): void {
-        console.log(event);
-
-        for (let i = 5 * (page - 1); i < 5 * (page - 1) + 5; i++) {
-            // get list
-            if (i <= this.isCompleted.length - 1) {
-                this.isCompleted[i].selected = event.target.checked;
-            }
-        }
-    }
-
-    handlePageChange(event: any): void {
-        // TODO: change to server side render
-        this.page = event;
-    }
-
-    handleStatusMenuClick(type: string): void {
-        // TODO: handle event
-        console.log('handle event emitted by status menu', type);
-    }
-
-    // NOTE: part of modal
-    structureTypeClick(structureType: string): void {
-        // TODO: add form handling
-        const control = this.newStructureForm.get('structureType');
-        control?.patchValue(structureType);
-    }
-
-    // NOTE: part of modal
-    onContinuePress(): void {
-        this.newStructureStep++;
-    }
-
-    // NOTE: no longer need modal
-    openModal(): void {
-        const modalElement: HTMLDialogElement = this.newStructureModal.nativeElement;
-        modalElement.showModal();
-    }
-
-    // NOTE: no longer need modal
-    closeModal(): void {
-        const modalElement: HTMLDialogElement = this.newStructureModal.nativeElement;
-        modalElement.close();
-        this.resetForm();
-    }
-
-    // NOTE: change to custom Directive
-    // NOTE: no longer need modal
-    @HostListener('document:keydown.escape')
-    onEscapeKey(): void {
-        this.closeModal();
-    }
-
-    // NOTE: form part of modal
-    resetForm(): void {
-        this.newStructureStep = 1;
-        this.newStructureForm.reset();
-    }
-
-    // NOTE: part of modal
-    uploadFromFile(): void {
-        // TODO:
-    }
-
-    // NOTE: part of modal
-    uploadFromDatabase(): void {
-        // TODO:
-    }
-
-    get isSelected() {
-        const itemIndex = 5 * (this.page - 1);
-        const itemsInCurrentPage = this.isCompleted.slice(itemIndex, itemIndex + 5);
-        const isSelected = itemsInCurrentPage.every((item: any) => item.selected);
-        return isSelected;
-    }
-
-    // set isSelected(isSelected: boolean) {}
 }
