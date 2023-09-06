@@ -1,5 +1,10 @@
 <div class="flex flex-col h-screen">
-    <app-nav-bar></app-nav-bar>
+    <app-nav-bar *ngIf="!isEditStructure"></app-nav-bar>
+    <shrd-edit-structure-header
+        *ngIf="isEditStructure"
+        [jobStatus]="jobStatus"
+        [name]="name"
+    ></shrd-edit-structure-header>
     <!-- NOTE: SIDEBAR ADDED IN FUTURE -->
     <div class="flex flex-col h-screen">
         <ng-content></ng-content>
