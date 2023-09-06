@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { trigger, state, style, transition, animate, AUTO_STYLE } from '@angular/animations';
 
 const calculationType = [
     {
@@ -16,16 +17,26 @@ const calculationType = [
     selector: 'app-new-calculation',
     templateUrl: './new-calculation.component.html',
     styleUrls: ['./new-calculation.component.scss'],
+    animations: [
+        trigger('collapse', [
+            state('false', style({ height: AUTO_STYLE, visibility: AUTO_STYLE })),
+            state('true', style({ height: '0', visibility: 'hidden' })),
+            transition('false => true', animate(100 + 'ms ease-in')),
+            transition('true => false', animate(100 + 'ms ease-out')),
+        ]),
+    ],
 })
 export class NewCalculationComponent implements OnInit {
     form: FormGroup;
     moreSettings: boolean;
     file: any;
+    isEditStructure: boolean;
 
     // NOTE: for testdata
     calculationType: any;
     constructor(private formBuilder: FormBuilder) {
         this.moreSettings = false;
+        this.isEditStructure = false;
         this.calculationType = calculationType;
         this.form = this.formBuilder.group({
             calculationName: new FormControl(null, [Validators.required.bind(this)]),
@@ -67,5 +78,6 @@ export class NewCalculationComponent implements OnInit {
         console.log(this.form.value);
         console.log(this.form.valid);
         // console.log(this.form.get('file')?.value.name);
+        // this.isEditStructure = true;
     }
 }
