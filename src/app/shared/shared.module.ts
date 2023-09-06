@@ -8,6 +8,9 @@ import { StatusIconComponent } from './components/status-icon/status-icon.compon
 import { StatusMenuComponent } from './components/status-menu/status-menu.component';
 import { EditStructureComponent } from './components/edit-structure/edit-structure.component';
 import { FormsModule } from '@angular/forms';
+import { EditStructureHeaderComponent } from './components/edit-structure-header/edit-structure-header.component';
+
+import { FocusRemoverDirective } from './directives/focus-remover.directive';
 
 @NgModule({
     declarations: [
@@ -17,6 +20,8 @@ import { FormsModule } from '@angular/forms';
         StatusIconComponent,
         StatusMenuComponent,
         EditStructureComponent,
+        EditStructureHeaderComponent,
+        FocusRemoverDirective,
     ],
     imports: [CommonModule, RouterModule, FormsModule],
     exports: [
@@ -27,6 +32,8 @@ import { FormsModule } from '@angular/forms';
         StatusIconComponent,
         StatusMenuComponent,
         EditStructureComponent,
+        EditStructureHeaderComponent,
+        FocusRemoverDirective,
     ],
 })
 export class SharedModule {}
