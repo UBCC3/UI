@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { StatusMenuService } from './status-menu.service';
 
 @Component({
     selector: 'shrd-status-menu',
@@ -12,11 +13,13 @@ export class StatusMenuComponent {
     @Output()
     statusMenuClick: EventEmitter<any>;
 
-    constructor() {
+    constructor(private service: StatusMenuService) {
         this.statusMenuClick = new EventEmitter<any>();
     }
 
     onStatusMenuClick(type: string): void {
-        this.statusMenuClick.emit(type);
+        // this.statusMenuClick.emit(type);
+        // NOTE: maybe move service file from shared to status-menu and have specific emitter for comp
+        this.service.emitStatusMenuEvent(type);
     }
 }

@@ -7,6 +7,7 @@ import { selectUser } from '../../../store/selectors/user.selectors';
 import { Observable } from 'rxjs';
 import moment from 'moment';
 import { Router } from '@angular/router';
+import { StatusMenuService } from '../../../shared/components/status-menu/status-menu.service';
 
 const inProgress = [
     {
@@ -167,7 +168,8 @@ export class DashboardContainerComponent implements OnInit {
         public auth: AuthService,
         public http: HttpClient,
         public store: Store<AppState>,
-        public router: Router
+        public router: Router,
+        private statusMenuService: StatusMenuService
     ) {
         this.inProgress = inProgress;
         this.isCompleted = isCompleted;
@@ -178,6 +180,9 @@ export class DashboardContainerComponent implements OnInit {
         this.user$ = this.store.pipe(select(selectUser));
         this.auth.getAccessTokenSilently().subscribe((token) => console.log('token', token));
         this.getUserName();
+        this.statusMenuService.getStatusMenuEvent().subscribe((data: any) => {
+            this.handleEmitterService(data);
+        });
     }
 
     startACalculationClick(): void {
@@ -215,5 +220,9 @@ export class DashboardContainerComponent implements OnInit {
         this.user$.subscribe((res) => {
             this.userName = res?.given_name ? res.given_name : res?.email;
         });
+    }
+
+    handleEmitterService(data: any): void {
+        console.log('event from status menu handled');
     }
 }
