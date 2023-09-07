@@ -24,8 +24,6 @@ token_auth_schema = HTTPBearer()
 
 def token_auth(token: str = Depends(token_auth_schema)):
     result = VerifyToken(token.credentials).verify()
-    print("token", token)
-    print("res", result)
     if result.get("status"):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result)
 
