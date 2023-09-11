@@ -104,36 +104,10 @@ export class EditStructureComponent implements OnInit, AfterViewInit {
         }
     }
 
-    // loadFile() {
-    //     // Perform actions to load the uploaded file into JSmol
-    //     // You can access the file reference and pass it to JSmol methods as needed
-    //     // Example: this.jmolApplet.script('load FILE "path/to/file.xyz"');
-    //     const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-
-    //     if (fileInput && fileInput.files && fileInput.files.length > 0) {
-    //         const file = fileInput.files[0];
-    //         const reader = new FileReader();
-    //         reader.onload = (event) => {
-
-    //             const fileContents = event.target?.result as string;
-    //             console.log('file contents', fileContents + 'END');
-    //             // const fileContentsAppended = `load data "test" ${fileContents} end "test"`;
-    //             const fileContentsAppended = `load data "model" ${fileContents} end "model"`;
-    //             console.log('files appended', fileContentsAppended);
-    //             // Pass the file contents to JSmol for loading
-    //             Jmol.script(this.appletObject, fileContentsAppended);
-    //             // Jmol.script(this.appletObject, "load :caffeine");
-    //         };
-    //         reader.readAsText(file);
-    //     }
-    // }
-
     loadFile() {
         if (this.file) {
-            console.log('has file');
             const reader = new FileReader();
             reader.onload = (event) => {
-                console.log('reader onload', event);
                 const fileContents = event.target?.result as string;
                 const fileContentsAppended = `load data "model" ${fileContents} end "model"`;
                 Jmol.script(this.appletObject, fileContentsAppended);
