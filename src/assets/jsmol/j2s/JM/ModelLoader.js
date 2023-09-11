@@ -206,7 +206,7 @@ this.ms.setInfo (this.baseModelIndex, "initialBondCount", info.get ("initialBond
 this.initializeBonding ();
 }this.finalizeGroupBuild ();
 if (this.is2D && this.doMinimize) {
-this.applyStereochemistry ();
+this.setupMinimization ();
 }if (this.doAddPDBHydrogens) this.jbr.finalizeHydrogens ();
 if (adapter != null) {
 this.ms.calculatePolymers (this.groups, this.groupCount, this.baseGroupIndex, null);
@@ -668,7 +668,7 @@ var m = atom1.getModelIndex ();
 if (m != this.lastModel) {
 this.lastModel = m;
 var info = this.ms.getModelAuxiliaryInfo (m);
-this.isMOL2D = (info != null && "2D".equals (info.get ("dimension")));
+this.isMOL2D = (this.is2D || info != null && "2D".equals (info.get ("dimension")));
 }bond = this.ms.bondMutually (atom1, atom2, (this.isMOL2D ? order : 513), this.ms.getDefaultMadFromOrder (1), 0);
 if (this.isMOL2D) {
 if (this.vStereo == null) {
@@ -720,16 +720,15 @@ var atoms = this.ms.at;
 var modelIndex = -1;
 var c = null;
 var isFractional = false;
-var roundCoords = (!this.vwr.getBoolean (603979831) && !this.vwr.getBoolean (603979874));
 for (var i = this.baseAtomIndex; i < this.ms.ac; i++) {
 if (atoms[i].mi != modelIndex) {
 modelIndex = atoms[i].mi;
 c = this.ms.getUnitCell (modelIndex);
 isFractional = (c != null && c.getCoordinatesAreFractional ());
 }if (isFractional) {
-c = atoms[i].getUnitCell ();
-c.toCartesian (c.toSupercell (atoms[i]), false);
-if (roundCoords) JU.PT.fixPtFloats (atoms[i], 10000.0);
+var m = this.ms.getModulation (i);
+var uca = (m == null ? c : atoms[i].getUnitCell ());
+uca.toCartesian (uca.toSupercell (atoms[i]), false);
 }}
 for (var imodel = this.baseModelIndex; imodel < this.ms.mc; imodel++) if (this.ms.isTrajectory (imodel)) this.ms.trajectory.setUnitCell (imodel);
 
@@ -859,10 +858,9 @@ if (n >= JU.Elements.elementNumberMax) n = JU.Elements.elementNumberMax + JU.Ele
 this.ms.elementsPresent[a.mi].set (n);
 }
 });
-Clazz.defineMethod (c$, "applyStereochemistry", 
+Clazz.defineMethod (c$, "setupMinimization", 
  function () {
-var atomCount = this.ms.ac;
-this.set2DLengths (this.baseAtomIndex, atomCount);
+this.initialize2DMin ();
 var v =  new JU.V3 ();
 if (this.vStereo != null) {
 out : for (var i = this.vStereo.size (); --i >= 0; ) {
@@ -879,10 +877,9 @@ if ((b.order == 1025) == (v.y < 0)) this.stereodir = -1;
 break out;
 }}
 }
-}this.set2dZ (this.baseAtomIndex, atomCount, v);
+}this.set2dZ (v);
 if (this.vStereo != null) {
-var bsToTest =  new JU.BS ();
-bsToTest.setBits (this.baseAtomIndex, atomCount);
+var bsToTest = JU.BSUtil.newBitSet2 (this.baseAtomIndex, this.vwr.ms.ac);
 for (var i = this.vStereo.size (); --i >= 0; ) {
 var b = this.vStereo.get (i);
 var dz2 = (b.order == 1025 ? 3 : -3);
@@ -898,13 +895,20 @@ b.atom2.y = (b.atom1.y + b.atom2.y) / 2;
 this.vStereo = null;
 }this.is2D = false;
 });
-Clazz.defineMethod (c$, "set2DLengths", 
- function (iatom1, iatom2) {
+Clazz.defineMethod (c$, "initialize2DMin", 
+ function () {
 var scaling = 0;
 var n = 0;
-for (var i = iatom1; i < iatom2; i++) {
+var lastModel = -1;
+var i0 = this.baseAtomIndex;
+var i1 = this.vwr.ms.ac;
+for (var i = i0; i < i1; i++) {
 var a = this.ms.at[i];
-var bonds = a.bonds;
+var m = a.getModelIndex ();
+if (m != lastModel) {
+lastModel = m;
+this.ms.setInfo (m, "dimension", "3D");
+}var bonds = a.bonds;
 if (bonds == null) continue;
 for (var j = bonds.length; --j >= 0; ) {
 if (bonds[j] == null) continue;
@@ -916,12 +920,14 @@ n++;
 }
 if (n == 0) return;
 scaling = 1.45 / (scaling / n);
-for (var i = iatom1; i < iatom2; i++) {
+for (var i = i0; i < i1; i++) {
 this.ms.at[i].scale (scaling);
 }
-}, "~N,~N");
+});
 Clazz.defineMethod (c$, "set2dZ", 
- function (iatom1, iatom2, v) {
+ function (v) {
+var iatom1 = this.baseAtomIndex;
+var iatom2 = this.vwr.ms.ac;
 var atomlist = JU.BS.newN (iatom2);
 var bsBranch =  new JU.BS ();
 var v0 = JU.V3.new3 (0, 1, 0);
@@ -932,13 +938,12 @@ for (var i = iatom1; i < iatom2; i++) if (!atomlist.get (i) && !bsBranch.get (i)
 bsBranch = this.getBranch2dZ (i, -1, bs0, bsBranch, v, v0, v1, this.stereodir);
 atomlist.or (bsBranch);
 }
-}, "~N,~N,JU.V3");
+}, "JU.V3");
 Clazz.defineMethod (c$, "getBranch2dZ", 
  function (atomIndex, atomIndexNot, bs0, bsBranch, v, v0, v1, dir) {
 var bs = JU.BS.newN (this.ms.ac);
 if (atomIndex < 0) return bs;
-var bsToTest =  new JU.BS ();
-bsToTest.or (bs0);
+var bsToTest = JU.BSUtil.copy (bs0);
 if (atomIndexNot >= 0) bsToTest.clear (atomIndexNot);
 JM.ModelLoader.setBranch2dZ (this.ms.at[atomIndex], bs, bsToTest, v, v0, v1, dir);
 return bs;

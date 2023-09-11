@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JM.FF");
-Clazz.load (["JM.FF.Calculations"], "JM.FF.CalculationsMMFF", ["JU.Lst", "$.PT", "JM.MinAtom", "$.MinObject", "JM.FF.MMFFAngleCalc", "$.MMFFDistanceCalc", "$.MMFFESCalc", "$.MMFFOOPCalc", "$.MMFFSBCalc", "$.MMFFTorsionCalc", "$.MMFFVDWCalc"], function () {
+Clazz.load (["JM.FF.Calculations"], "JM.FF.CalculationsMMFF", ["JU.Lst", "$.PT", "JM.MinObject", "JM.FF.MMFFAngleCalc", "$.MMFFDistanceCalc", "$.MMFFESCalc", "$.MMFFOOPCalc", "$.MMFFSBCalc", "$.MMFFTorsionCalc", "$.MMFFVDWCalc"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bondCalc = null;
 this.angleCalc = null;
@@ -12,8 +12,8 @@ this.mmff = null;
 Clazz.instantialize (this, arguments);
 }, JM.FF, "CalculationsMMFF", JM.FF.Calculations);
 Clazz.makeConstructor (c$, 
-function (ff, ffParams, minAtoms, minBonds, minAngles, minTorsions, minPositions, constraints) {
-Clazz.superConstructor (this, JM.FF.CalculationsMMFF, [ff, minAtoms, minBonds, minAngles, minTorsions, minPositions, constraints]);
+function (ff, ffParams, minAtoms, minBonds, minAngles, minTorsions, constraints) {
+Clazz.superConstructor (this, JM.FF.CalculationsMMFF, [ff, minAtoms, minBonds, minAngles, minTorsions, constraints]);
 this.mmff = ff;
 this.ffParams = ffParams;
 this.bondCalc =  new JM.FF.MMFFDistanceCalc ().set (this);
@@ -23,7 +23,7 @@ this.torsionCalc =  new JM.FF.MMFFTorsionCalc ().set (this);
 this.oopCalc =  new JM.FF.MMFFOOPCalc ().set (this);
 this.vdwCalc =  new JM.FF.MMFFVDWCalc ().set (this);
 this.esCalc =  new JM.FF.MMFFESCalc ().set (this);
-}, "JM.FF.ForceField,java.util.Map,~A,~A,~A,~A,~A,JU.Lst");
+}, "JM.FF.ForceField,java.util.Map,~A,~A,~A,~A,JU.Lst");
 Clazz.overrideMethod (c$, "getUnits", 
 function () {
 return "kcal";
@@ -56,7 +56,7 @@ return true;
 });
 Clazz.overrideMethod (c$, "isLinear", 
 function (i) {
-return JM.MinAtom.isLinear (this.minAtoms[i]);
+return this.mmff.isLinear (this.minAtoms[i]);
 }, "~N");
 c$.isInvertible = Clazz.defineMethod (c$, "isInvertible", 
  function (a) {

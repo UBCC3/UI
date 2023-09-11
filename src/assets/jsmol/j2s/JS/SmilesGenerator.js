@@ -38,6 +38,7 @@ this.iHypervalent = 0;
 this.is2D = false;
 this.haveSmilesAtoms = false;
 this.noBranches = false;
+this.allComponents = false;
 this.ptAtom = 0;
 this.ptSp2Atom0 = 0;
 this.atemp = null;
@@ -93,6 +94,7 @@ this.noStereo = ((flags & 32) == 32);
 this.isPolyhedral = ((flags & 65536) == 65536);
 this.is2D = ((flags & 134217728) == 134217728);
 this.noBranches = false;
+this.allComponents = ((flags & 32768) == 32768);
 return this.getSmilesComponent (atoms[ipt], bsSelected, true, false, false);
 }, "JS.SmilesMatcher,~A,~N,JU.BS,~S,~N");
 Clazz.defineMethod (c$, "getBioSmiles", 
@@ -211,6 +213,9 @@ sb.append (JU.Elements.elementNameFromNumber (atom.getElementNumber ()));
 }, "JU.SB,JU.Node,~S,~B");
 Clazz.defineMethod (c$, "getSmilesComponent", 
  function (atom, bs, allowBioResidues, allowConnectionsToOutsideWorld, forceBrackets) {
+var ret = "";
+while (true) {
+if (atom == null) atom = this.atoms[bs.nextSetBit (0)];
 atom = this.checkFirstAtom (atom);
 this.bsSelected = JU.JmolMolecule.getBranchBitSet (this.atoms, atom.getIndex (), JU.BSUtil.copy (bs), null, -1, true, allowBioResidues);
 bs.andNot (this.bsSelected);
@@ -274,7 +279,13 @@ s = s0;
 throw e;
 }
 }
-}return s;
+}ret += s;
+var ipt = bs.nextSetBit (0);
+if (ipt < 0 || !this.allComponents) break;
+ret += ".";
+atom = null;
+}
+return ret;
 }, "JU.Node,JU.BS,~B,~B,~B");
 Clazz.defineMethod (c$, "checkFirstAtom", 
  function (atom) {

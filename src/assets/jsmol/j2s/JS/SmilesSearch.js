@@ -109,6 +109,7 @@ if (strFlags.indexOf ("NOAROMATIC") >= 0 || strFlags.indexOf ("NONAROMATIC") >= 
 if (strFlags.indexOf ("AROMATICDOUBLE") >= 0) flags |= 512;
 if (strFlags.indexOf ("AROMATICDEFINED") >= 0) flags |= 128;
 if (strFlags.indexOf ("MMFF94") >= 0) flags |= 768;
+if (strFlags.indexOf ("ALLCOMPONENTS") >= 0) flags |= 32768;
 if (strFlags.indexOf ("TOPOLOGY") >= 0) flags |= 16384;
 if (strFlags.indexOf ("NOATOMCLASS") >= 0) flags |= 2048;
 if (strFlags.indexOf ("NOSTEREO") >= 0) {
@@ -1086,6 +1087,7 @@ return b;
 }, "~N");
 Clazz.defineMethod (c$, "setAtoms", 
 function (a, b, c) {
+this.$hasRingData = false;
 this.nodes = a;
 this.ac = b;
 this.selectedAtomCount = (c == null ? b : c.cardinality ());

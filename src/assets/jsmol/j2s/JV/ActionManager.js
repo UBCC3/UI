@@ -684,6 +684,7 @@ this.vwr.selectStatus (bs, false, 0, true, true);
 break;
 }
 this.vwr.moveAtomWithHydrogens (this.dragAtomIndex, deltaX, deltaY, (this.bnd (dragWheelAction, [14]) ? -deltaY : -2147483648), bs);
+this.vwr.checkCoordinatesChanged ();
 }return;
 }
 }if (this.dragAtomIndex >= 0 && mode == 1 && this.bnd (this.clickAction, [0]) && this.apm == 32) {

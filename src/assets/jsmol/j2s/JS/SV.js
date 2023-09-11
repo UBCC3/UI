@@ -682,7 +682,7 @@ var tokenOut = JS.SV.newSV (tokenIn.tok, 2147483647, null);
 switch (tokenIn.tok) {
 case 10:
 if (Clazz.instanceOf (tokenIn.value, JM.BondSet)) {
-bs = JM.BondSet.newBS (tokenIn.value, (tokenIn.value).associatedAtoms);
+bs = JM.BondSet.newBS (tokenIn.value);
 len = bs.cardinality ();
 } else {
 bs = JU.BSUtil.copy (tokenIn.value);
@@ -879,7 +879,7 @@ if (v == null) v = JU.Escape.uABsM (s);
 if (Clazz.instanceOf (v, JU.P3)) return (JS.SV.newV (8, v));
 if (Clazz.instanceOf (v, JU.P4)) return JS.SV.newV (9, v);
 if (Clazz.instanceOf (v, JU.BS)) {
-if (s != null && s.indexOf ("[{") == 0) v = JM.BondSet.newBS (v, null);
+if (s != null && s.indexOf ("[{") == 0) v = JM.BondSet.newBS (v);
 return JS.SV.newV (10, v);
 }if (Clazz.instanceOf (v, JU.M34)) return (JS.SV.newV (Clazz.instanceOf (v, JU.M3) ? 11 : 12, v));
 return o;
@@ -1169,6 +1169,8 @@ dim = 4;
 break;
 case 7:
 return this;
+case 1275068418:
+return this.arrayToList ( new JS.SV ());
 default:
 o2 =  new JU.Lst ();
 o2.addLast (this);
@@ -1183,6 +1185,18 @@ o2.addLast (JS.SV.getVariableAF (a));
 }
 return JS.SV.newV (7, o2);
 });
+Clazz.defineMethod (c$, "arrayToList", 
+function (target) {
+if (this.tok != 1275068418 || target == null) return null;
+var ao = this.value;
+var v =  new JU.Lst ();
+for (var i = 0, n = ao.length; i < n; i++) {
+v.addLast (JS.SV.getVariable (ao[i]));
+}
+target.tok = 7;
+target.value = v;
+return target;
+}, "JS.SV");
 Clazz.defineMethod (c$, "mapValue", 
 function (key) {
 switch (this.tok) {
@@ -1196,7 +1210,16 @@ return null;
 }, "~S");
 Clazz.defineMethod (c$, "getList", 
 function () {
-return (this.tok == 7 ? this.value : null);
+switch (this.tok) {
+case 7:
+return this.value;
+case 1275068418:
+this.tok = 7;
+this.value = this.toArray ().value;
+return this.value;
+default:
+return null;
+}
 });
 c$.isScalar = Clazz.defineMethod (c$, "isScalar", 
 function (x) {

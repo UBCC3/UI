@@ -280,7 +280,7 @@ for (var i = this.legendres.size (); --i >= 0; ) {
 var key = this.legendres.get (i);
 var pt = this.htModulation.get (key);
 if (pt != null) {
-var key1 = "O_id0#0" + key.substring (key.indexOf (";"));
+var key1 = "O_0#0" + key.substring (key.indexOf (";"));
 var pt1 = this.htModulation.get (key1);
 if (pt1 == null) {
 JU.Logger.error ("Crenel " + key1 + " not found for legendre modulation " + key);
@@ -296,23 +296,24 @@ if (this.cr.fixJavaFloat) for (var i = pt.length; --i >= 0; ) pt[i] = JU.PT.fixD
 }, "~A");
 Clazz.overrideMethod (c$, "getQCoefs", 
 function (key) {
-var fn = Math.max (0, this.cr.parseIntAt (key, 4));
-if (fn == 0) {
-System.err.println ("MSRdr missing cell wave vector for atom wave vector for " + key);
+var id = key.charAt (2);
+var fn = ("STL0".indexOf (id) >= 0 ? 0 : this.cr.parseIntAt (key, 2));
+if (fn < 0) System.err.println ("warning only -- MSRdr missing cell wave vector for atom wave vector for " + key + " 1 assumed");
+if (fn <= 0) {
 if (this.qlist100 == null) {
 this.qlist100 =  Clazz.newDoubleArray (this.modDim, 0);
 this.qlist100[0] = 1;
 }return this.qlist100;
 }var p = this.getMod ("F_" + fn + "_coefs_");
 if (p == null) {
-p = this.getMod ("F_coefs_id" + fn);
+p = this.getMod ("F_coefs_" + fn);
 }return p;
 }, "~S");
 Clazz.overrideMethod (c$, "getModType", 
 function (key) {
 var type = key.charAt (0);
 var id = key.charAt (2);
-return (id == 'S' ? 's' : id == 'T' ? 't' : id == 'L' ? (type == 'D' ? 'l' : 'L') : id == '0' ? 'c' : type == 'D' ? 'f' : type == 'O' ? 'o' : type == 'M' ? 'm' : type == 'U' ? 'u' : '?');
+return (type == 'D' && id == 'S' ? 's' : type == 'D' && id == 'L' ? 'l' : type == 'O' && id == '0' ? 'c' : type == 'M' && id == 'T' ? 't' : type == 'U' && id == 'L' ? 'L' : type == 'D' ? 'f' : type == 'O' ? 'o' : type == 'M' ? 'm' : type == 'U' ? 'u' : '?');
 }, "~S");
 Clazz.defineMethod (c$, "calculateQCoefs", 
  function (p) {
@@ -418,11 +419,7 @@ this.cr.asc.setU (atom, i, val + atom.anisoBorU[i]);
 }, "J.adapter.smarter.Atom,~S,~N");
 Clazz.defineMethod (c$, "modulateAtom", 
  function (a) {
-if (this.modCoord && this.htSubsystems != null) {
-var ptc = JU.P3.newP (a);
-var spt = this.getSymmetry (a);
-spt.toCartesian (ptc, true);
-}var list = this.htAtomMods.get (a.atomName);
+var list = this.htAtomMods.get (a.atomName);
 if (list == null && a.altLoc != '\0' && this.htSubsystems != null) {
 list =  new JU.Lst ();
 }if (list == null || this.symmetry == null || a.bsSymmetry == null) return;
@@ -450,8 +447,8 @@ t.isUnmodulated = true;
 JU.Logger.error ("MOD RDR cannot modulate nonexistent atom anisoBorU for atom " + a.atomName);
 } else {
 if (JU.Logger.debuggingHigh) {
-JU.Logger.info ("setModulation Uij(initial)=" + JU.Escape.eAF (a.anisoBorU));
-JU.Logger.info ("setModulation tensor=" + JU.Escape.e ((a.tensors.get (0)).getInfo ("all")));
+JU.Logger.info ("setModulation Uij(initial) " + a.atomName + " =" + JU.Escape.eAF (a.anisoBorU));
+JU.Logger.info ("setModulation tensor " + a.atomName + "=" + JU.Escape.e ((a.tensors.get (0)).getInfo ("all")));
 }for (var e, $e = ms.htUij.entrySet ().iterator (); $e.hasNext () && ((e = $e.next ()) || true);) this.addUStr (a, e.getKey (), e.getValue ().floatValue ());
 
 var sym = this.getAtomSymmetry (a, this.symmetry);

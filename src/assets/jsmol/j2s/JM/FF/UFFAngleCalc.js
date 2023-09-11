@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JM.FF");
-Clazz.load (["JM.FF.Calculation"], "JM.FF.UFFAngleCalc", ["JM.FF.CalculationsUFF"], function () {
+Clazz.load (["JM.FF.Calculation"], "JM.FF.UFFAngleCalc", ["java.lang.Boolean", "JM.FF.CalculationsUFF"], function () {
 c$ = Clazz.declareType (JM.FF, "UFFAngleCalc", JM.FF.Calculation);
 Clazz.defineMethod (c$, "setData", 
 function (calc, angle) {
@@ -43,7 +43,7 @@ if (bond.isAmide) bondorder = 1.41;
 var rbc = JM.FF.CalculationsUFF.calculateR0 (this.calcs.parB.dVal[0], this.calcs.parC.dVal[0], this.calcs.parB.dVal[8], this.calcs.parC.dVal[8], bondorder);
 var rac = Math.sqrt (this.rab * this.rab + rbc * rbc - 2.0 * this.rab * rbc * cosT0);
 var ka = (2696.8016159999997) * (zi * zk / (Math.pow (rac, 5.0))) * (3.0 * this.rab * rbc * (1.0 - cosT0 * cosT0) - rac * rac * cosT0);
-calc.addLast ( Clazz.newArray (-1, [ Clazz.newIntArray (-1, [this.ia, this.ib, this.ic, coordination]),  Clazz.newDoubleArray (-1, [ka, theta0 * 57.29577951308232, c0 - c2, c1, 2 * c2, preliminaryMagnification * ka])]));
+calc.addLast ( Clazz.newArray (-1, [this.iData =  Clazz.newIntArray (-1, [this.ia, this.ib, this.ic, coordination]),  Clazz.newDoubleArray (-1, [ka, theta0 * 57.29577951308232, c0 - c2, c1, 2 * c2, preliminaryMagnification * ka]), this.isLoggable (3)]));
 }, "JU.Lst,~A");
 Clazz.overrideMethod (c$, "compute", 
 function (dataIn) {
@@ -89,7 +89,7 @@ default:
 this.dE = -ka * (a1 * sinT - 2.0 * a2 * cosT * sinT);
 }
 this.calcs.addForces (this, 3);
-}if (this.calcs.logging) this.calcs.appendLogData (this.calcs.getDebugLine (1, this));
+}if (this.calcs.logging && dataIn[2] === Boolean.TRUE) this.calcs.appendLogData (this.calcs.getDebugLine (1, this));
 return this.energy;
 }, "~A");
 });

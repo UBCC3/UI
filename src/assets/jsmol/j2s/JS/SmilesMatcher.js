@@ -54,42 +54,6 @@ for (var j = a.length; --j >= 0; ) a[j] = (search.target.nodes[a[j]]).mapIndex;
 }
 return array;
 }, "~S,~S,~N");
-Clazz.overrideMethod (c$, "hasStructure", 
-function (pattern, smilesSet, flags) {
-var ret =  Clazz.newIntArray (smilesSet.length, 0);
-if ((flags & 1) != 1) {
-flags = flags | 2;
-}this.clearExceptions ();
-pattern = JS.SmilesParser.cleanPattern (pattern);
-try {
-var search = JS.SmilesParser.newSearch (pattern, true, false);
-for (var i = 0; i < smilesSet.length; i++) {
-var smiles = JS.SmilesParser.cleanPattern (smilesSet[i]);
-var searchTarget = JS.SmilesParser.newSearch (smiles, false, true);
-searchTarget.setFlags (searchTarget.flags | JS.SmilesParser.getFlags (pattern));
-try {
-this.clearExceptions ();
-ret[i] = (this.matchPattern (search, null, 0, null, null, false, flags | 8, 5, searchTarget) === Boolean.TRUE ? 1 : 0);
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-ret[i] = -1;
-e.printStackTrace ();
-} else {
-throw e;
-}
-}
-}
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-if (JU.Logger.debugging) e.printStackTrace ();
-if (JS.InvalidSmilesException.getLastError () == null) this.clearExceptions ();
-throw  new JS.InvalidSmilesException (JS.InvalidSmilesException.getLastError ());
-} else {
-throw e;
-}
-}
-return ret;
-}, "~S,~A,~N");
 Clazz.overrideMethod (c$, "getAtoms", 
 function (target) {
 this.clearExceptions ();
@@ -248,8 +212,8 @@ ac = searchTarget.target.nodes.length;
 if (isSmarts) {
 var a1 = searchTarget.elementCounts;
 var a2 = search.elementCounts;
-var n = searchTarget.elementNumberMax;
-if (n == search.elementNumberMax) {
+var n = search.elementNumberMax;
+if (n <= searchTarget.elementNumberMax) {
 for (var i = 1; i <= n; i++) {
 if (a1[i] < a2[i]) {
 this.okMF = false;
@@ -402,6 +366,42 @@ ss.target.setAtoms (atoms, atomCount, bsSelected);
 ss.targetSet = true;
 return ss;
 }, "~A,~N,JU.BS");
+Clazz.overrideMethod (c$, "hasStructure", 
+function (pattern, smilesSet, flags) {
+var ret =  Clazz.newIntArray (smilesSet.length, 0);
+if ((flags & 1) != 1) {
+flags = flags | 2;
+}this.clearExceptions ();
+pattern = JS.SmilesParser.cleanPattern (pattern);
+try {
+var search = JS.SmilesParser.newSearch (pattern, true, false);
+for (var i = 0; i < smilesSet.length; i++) {
+var smiles = JS.SmilesParser.cleanPattern (smilesSet[i]);
+var searchTarget = JS.SmilesParser.newSearch (smiles, false, true);
+searchTarget.setFlags (searchTarget.flags | JS.SmilesParser.getFlags (pattern));
+try {
+this.clearExceptions ();
+ret[i] = (this.matchPattern (search, null, 0, null, null, false, flags | 8, 5, searchTarget) === Boolean.TRUE ? 1 : 0);
+} catch (e) {
+if (Clazz.exceptionOf (e, Exception)) {
+ret[i] = -1;
+e.printStackTrace ();
+} else {
+throw e;
+}
+}
+}
+} catch (e) {
+if (Clazz.exceptionOf (e, Exception)) {
+if (JU.Logger.debugging) e.printStackTrace ();
+if (JS.InvalidSmilesException.getLastError () == null) this.clearExceptions ();
+throw  new JS.InvalidSmilesException (JS.InvalidSmilesException.getLastError ());
+} else {
+throw e;
+}
+}
+return ret;
+}, "~S,~A,~N");
 Clazz.defineStatics (c$,
 "MODE_BITSET", 0x01,
 "MODE_ARRAY", 0x02,

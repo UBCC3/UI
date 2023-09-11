@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JM.FF");
-Clazz.load (["JU.AU", "$.SB", "$.V3d"], "JM.FF.Calculations", ["java.lang.Float", "JU.Lst", "$.PT", "JM.Util"], function () {
+Clazz.load (["JU.AU", "$.SB", "$.V3d"], "JM.FF.Calculations", ["java.lang.Boolean", "$.Float", "JU.Lst", "$.PT", "JM.Util"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.parA = null;
 this.parB = null;
@@ -15,7 +15,6 @@ this.minAtoms = null;
 this.minBonds = null;
 this.minAngles = null;
 this.minTorsions = null;
-this.minPositions = null;
 this.constraintsByType = null;
 this.haveConstraints = false;
 this.isPreliminary = false;
@@ -53,19 +52,18 @@ function (o) {
 return this.ffParams.get (o);
 }, "~O");
 Clazz.makeConstructor (c$, 
-function (ff, minAtoms, minBonds, minAngles, minTorsions, minPositions, constraints) {
+function (ff, minAtoms, minBonds, minAngles, minTorsions, constraints) {
 this.ff = ff;
 this.minAtoms = minAtoms;
 this.minBonds = minBonds;
 this.minAngles = minAngles;
 this.minTorsions = minTorsions;
-this.minPositions = minPositions;
 this.ac = minAtoms.length;
 this.bondCount = minBonds.length;
 this.angleCount = minAngles.length;
 this.torsionCount = minTorsions.length;
 this.setConstraints (constraints);
-}, "JM.FF.ForceField,~A,~A,~A,~A,~A,JU.Lst");
+}, "JM.FF.ForceField,~A,~A,~A,~A,JU.Lst");
 Clazz.defineMethod (c$, "setConstraints", 
 function (constraints) {
 if (constraints == null || constraints.isEmpty ()) return;
@@ -269,6 +267,7 @@ var trailer = "-----------------------------------------------------------------
 var sb =  new JU.SB ();
 sb.append ("\n" + title + "\n\n" + " ATOM    X        Y        Z    TYPE       GRADX    GRADY    GRADZ  " + "---------BONDED ATOMS--------\n" + trailer);
 for (var i = 0; i < this.ac; i++) {
+if (this.ff.minimizer.isLoggable (null, i) === Boolean.FALSE) continue;
 var atom = this.minAtoms[i];
 var others = atom.getBondedAtomIndexes ();
 var iVal =  Clazz.newIntArray (others.length + 2, 0);

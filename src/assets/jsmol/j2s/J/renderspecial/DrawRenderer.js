@@ -355,6 +355,7 @@ var haveFont = false;
 for (var i = this.dmesh.pc; --i >= 0; ) if (this.isPolygonDisplayable (i)) {
 if (!haveFont || this.dmesh.fontID != lastFID) {
 f = this.vwr.shm.getShapePropertyIndex (22, "font", i);
+if (f == null) f = f0;
 lastFID = f.fid;
 this.vwr.gdata.setFont (this.imageFontScaling == 1 ? f : this.vwr.gdata.getFont3DFSS (f.fontFace, f.fontStyle, f.fontSize * this.imageFontScaling));
 haveFont = true;

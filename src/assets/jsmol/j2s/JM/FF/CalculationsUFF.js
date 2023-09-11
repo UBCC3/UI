@@ -9,15 +9,15 @@ this.vdwCalc = null;
 Clazz.instantialize (this, arguments);
 }, JM.FF, "CalculationsUFF", JM.FF.Calculations);
 Clazz.makeConstructor (c$, 
-function (ff, ffParams, minAtoms, minBonds, minAngles, minTorsions, minPositions, constraints) {
-Clazz.superConstructor (this, JM.FF.CalculationsUFF, [ff, minAtoms, minBonds, minAngles, minTorsions, minPositions, constraints]);
+function (ff, ffParams, minAtoms, minBonds, minAngles, minTorsions, constraints) {
+Clazz.superConstructor (this, JM.FF.CalculationsUFF, [ff, minAtoms, minBonds, minAngles, minTorsions, constraints]);
 this.ffParams = ffParams;
 this.bondCalc =  new JM.FF.UFFDistanceCalc ().set (this);
 this.angleCalc =  new JM.FF.UFFAngleCalc ().set (this);
 this.torsionCalc =  new JM.FF.UFFTorsionCalc ().set (this);
 this.oopCalc =  new JM.FF.UFFOOPCalc ().set (this);
 this.vdwCalc =  new JM.FF.UFFVDWCalc ().set (this);
-}, "JM.FF.ForceField,java.util.Map,~A,~A,~A,~A,~A,JU.Lst");
+}, "JM.FF.ForceField,java.util.Map,~A,~A,~A,~A,JU.Lst");
 Clazz.overrideMethod (c$, "getUnits", 
 function () {
 return "kJ";

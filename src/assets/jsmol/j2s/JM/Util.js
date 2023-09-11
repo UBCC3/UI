@@ -30,7 +30,7 @@ function (a, b, c) {
 var ab2 = JM.Util.distance2 (a, b);
 var bc2 = JM.Util.distance2 (b, c);
 var ac2 = JM.Util.distance2 (a, c);
-return (JM.Util.isNearZero2 (ab2, 1e-3) || JM.Util.isNearZero2 (bc2, 1e-3) ? 0 : Math.acos ((ab2 + bc2 - ac2) / 2 / Math.sqrt (ab2 * bc2)));
+return ((JM.Util.isNearZero2 (ab2, 1e-3) || JM.Util.isNearZero2 (bc2, 1e-3) ? 0 : Math.acos (Math.min (Math.max ((ab2 + bc2 - ac2) / 2 / Math.sqrt (ab2 * bc2), -1), 1))));
 }, "~A,~A,~A");
 c$.isApprox = Clazz.defineMethod (c$, "isApprox", 
 function (a, b, precision) {

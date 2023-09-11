@@ -755,7 +755,7 @@ Clazz.defineMethod (c$, "getCapSlabObject",
 try {
 if (s.indexOf ("array") == 0) {
 var pts = JU.PT.split (s.substring (6, s.length - 1), ",");
-return JU.TempArray.getSlabObjectType (1678381065,  Clazz.newArray (-1, [JU.Escape.uP (pts[0]), JU.Escape.uP (pts[1]), JU.Escape.uP (pts[2]), JU.Escape.uP (pts[3])]), isCap, null);
+return JU.TempArray.getSlabObjectType (1812599299,  Clazz.newArray (-1, [JU.Escape.uP (pts[0]), JU.Escape.uP (pts[1]), JU.Escape.uP (pts[2]), JU.Escape.uP (pts[3])]), isCap, null);
 }var plane = JU.Escape.uP (s);
 if (Clazz.instanceOf (plane, JU.P4)) return JU.TempArray.getSlabObjectType (134217750, plane, isCap, null);
 } catch (e) {

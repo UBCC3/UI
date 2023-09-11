@@ -81,9 +81,19 @@ sb.append ("\n").appendI (i + 1).append ("\t").append (uc.getSpaceGroupXyz (i, f
 }
 }var atoms = this.vwr.ms.at;
 var elements = "";
-var sbLength = sb.length ();
+var haveOccupancy = false;
+var occ = (this.haveUnitCell ? this.vwr.ms.occupancies : null);
+if (occ != null) {
+for (var i = bsOut.nextSetBit (0); i >= 0; i = bsOut.nextSetBit (i + 1)) {
+if (occ[i] != 1) {
+haveOccupancy = true;
+break;
+}}
+}var sbLength = sb.length ();
 sb.append ("\n\nloop_\n_atom_site_label\n_atom_site_type_symbol\n_atom_site_fract_x\n_atom_site_fract_y\n_atom_site_fract_z");
-if (!this.haveUnitCell) sb.append ("\n_atom_site_Cartn_x\n_atom_site_Cartn_y\n_atom_site_Cartn_z");
+if (haveOccupancy) {
+sb.append ("\n_atom_site_occupancy");
+} else if (!this.haveUnitCell) sb.append ("\n_atom_site_Cartn_x\n_atom_site_Cartn_y\n_atom_site_Cartn_z");
 sb.append ("\n");
 var jmol_atom =  new JU.SB ();
 jmol_atom.append ("\n\nloop_\n_jmol_atom_index\n_jmol_atom_name\n_jmol_atom_site_label\n");
@@ -103,7 +113,8 @@ var key = sym + "\n";
 if (elements.indexOf (key) < 0) elements += key;
 var label = sym + ++elemNums[elemno];
 sb.append (JU.PT.formatS (label, 5, 0, true, false)).append (" ").append (JU.PT.formatS (sym, 3, 0, true, false)).append (this.clean (p.x)).append (this.clean (p.y)).append (this.clean (p.z));
-if (!this.haveUnitCell) sb.append (this.clean (a.x)).append (this.clean (a.y)).append (this.clean (a.z));
+if (haveOccupancy) sb.append (" ").append (this.clean (occ[i] / 100));
+ else if (!this.haveUnitCell) sb.append (this.clean (a.x)).append (this.clean (a.y)).append (this.clean (a.z));
 sb.append ("\n");
 jmol_atom.append (JU.PT.formatS ("" + a.getIndex (), 3, 0, false, false)).append (" ");
 this.writeChecked (jmol_atom, name);

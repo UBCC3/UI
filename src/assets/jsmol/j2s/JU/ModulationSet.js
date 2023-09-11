@@ -22,7 +22,6 @@ this.modCalc = null;
 this.mxyz = null;
 this.htUij = null;
 this.vOcc = NaN;
-this.occValue = NaN;
 this.qtOffset = null;
 this.isQ = false;
 this.enabled = false;
@@ -294,7 +293,7 @@ this.v0 = JU.V3.newV (this.vib);
 });
 Clazz.overrideMethod (c$, "isNonzero", 
 function () {
-return this.x != 0 || this.y != 0 || this.z != 0 || this.mxyz != null && (this.mxyz.x != 0 || this.mxyz.y != 0 || this.mxyz.z != 0);
+return this.x != 0 || this.y != 0 || this.z != 0 || this.mxyz != null && (this.mxyz.x != 0 || this.mxyz.y != 0 || this.mxyz.z != 0) || this.occAbsolute;
 });
 Clazz.defineMethod (c$, "setOccupancy", 
 function (pt, foccupancy, siteMult) {
@@ -327,6 +326,6 @@ occ = o_site * (this.occParams[1] + this.vOcc);
 } else {
 occ = this.occParams[0] * (this.occParams[1] + this.vOcc);
 }if (checkCutoff) {
-}return this.occValue = occ;
+}return occ;
 }, "~B");
 });

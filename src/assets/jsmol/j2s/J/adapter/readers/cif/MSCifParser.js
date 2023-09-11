@@ -51,7 +51,7 @@ switch (tok = this.fieldProperty (cr, i)) {
 case 0:
 pt[0] = pt[1] = pt[2] = 0;
 type_id = "F_";
-fid = "id" + this.field;
+fid = this.field;
 sep = "";
 break;
 case 1:
@@ -83,7 +83,9 @@ case 44:
 case 45:
 case 46:
 atomLabel = axis = "*";
-sep = "_";
+sep = "_id";
+type_id = J.adapter.readers.cif.MSCifParser.modulationFields[tok].substring (11, 12).toUpperCase ();
+break;
 case 14:
 case 26:
 case 51:
@@ -91,7 +93,7 @@ case 36:
 type_id = J.adapter.readers.cif.MSCifParser.modulationFields[tok].substring (11, 12).toUpperCase ();
 break;
 }
-type_id += sep + "id" + this.field;
+type_id += sep + this.field;
 break;
 case 47:
 type_id = "J_O";
@@ -100,7 +102,7 @@ axis = "0";
 atomLabel = this.field;
 break;
 case 31:
-type_id = "O_id0";
+type_id = "O_0";
 axis = "0";
 atomLabel = this.field;
 break;

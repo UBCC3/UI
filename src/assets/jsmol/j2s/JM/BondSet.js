@@ -9,10 +9,14 @@ function () {
 Clazz.superConstructor (this, JM.BondSet, []);
 });
 c$.newBS = Clazz.defineMethod (c$, "newBS", 
-function (bs, atoms) {
+function (bs) {
 var b =  new JM.BondSet ();
 JU.BSUtil.copy2 (bs, b);
-b.associatedAtoms = atoms;
 return b;
-}, "JU.BS,~A");
+}, "JU.BS");
+Clazz.defineMethod (c$, "getAssociatedAtoms", 
+function (ms) {
+if (this.associatedAtoms == null) this.associatedAtoms = ms.getAtomIndices (ms.getAtoms (1677721602, this));
+return this.associatedAtoms;
+}, "JM.ModelSet");
 });

@@ -161,7 +161,7 @@ function (colix, endcaps, screenDiameter, screenA, screenB, ptA, ptB, radius) {
 if (ptA != null) {
 this.drawCylinder (ptA, ptB, colix, colix, endcaps, Math.round (radius * 2000), -1);
 return;
-}var mad = Math.round (this.vwr.tm.unscaleToScreen ((screenA.z + screenB.z) / 2, screenDiameter) * 1000);
+}var mad = (screenDiameter < 0 ? -screenDiameter * 10 : Math.round (this.vwr.tm.unscaleToScreen ((screenA.z + screenB.z) / 2, screenDiameter)) * 1000);
 this.fillCylinderScreenMad (colix, endcaps, mad, screenA, screenB);
 }, "~N,~N,~N,JU.P3,JU.P3,JU.P3,JU.P3,~N");
 Clazz.overrideMethod (c$, "fillEllipsoid", 

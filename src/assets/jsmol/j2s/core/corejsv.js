@@ -64,9 +64,9 @@
 ){
 var $t$;
 //var c$;
-Jmol.___JmolDate="$Date: 2023-06-08 19:11:59 +0530 (Thu, 08 Jun 2023) $"
+Jmol.___JmolDate="$Date: 2023-09-04 15:55:31 -0500 (Mon, 04 Sep 2023) $"
 Jmol.___fullJmolProperties="src/org/jmol/viewer/Jmol.properties"
-Jmol.___JmolVersion="16.1.13" // (legacy) also 16.1.14 (swingJS)
+Jmol.___JmolVersion="16.1.37" // (legacy) also 16.1.38 (swingJS)
 // JSmolJavaExt.js
  
 
@@ -76,6 +76,7 @@ Jmol.___JmolVersion="16.1.13" // (legacy) also 16.1.14 (swingJS)
 // (local scope) Clazz_xxx, allowing them to be further compressed using
 // Google Closure Compiler in that same ANT task.
 
+// BH 2023.07.08 NaN.0 fix
 // BH 10/16/2017 6:51:20 AM fixing range error for MSIE in prepareCallback setting arguments.length < 0
 // BH 10/13/2017 7:03:28 AM fix for String.initialize(bytes) applying bytes as arguments
 // BH 9/18/2017 10:15:18 PM adding Integer.compare()
@@ -624,7 +625,7 @@ return new Byte(n);
 
 Clazz._floatToString = function(f) {
  var s = ""+f
- if (s.indexOf(".") < 0 && s.indexOf("e") < 0)
+ if (s.indexOf(".") < 0 && s.indexOf("e") < 0 && s != "NaN")
  	 s += ".0";
  return s;
 }

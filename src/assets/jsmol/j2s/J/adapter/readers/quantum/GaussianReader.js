@@ -75,6 +75,10 @@ return true;
 this.energyUnits = "";
 this.calculationType = this.line.substring (this.line.indexOf (":") + 1).trim ();
 return true;
+} else if (this.line.startsWith (" Basis read from chk")) {
+this.energyUnits = "";
+this.calculationType = this.line.substring (this.line.lastIndexOf ("\"") + 1).trim ();
+return true;
 }if (this.line.startsWith (" AO basis set")) {
 this.readBasis ();
 return true;

@@ -33,7 +33,7 @@ return true;
 });
 Clazz.defineMethod (c$, "fixLabel", 
 function (atom, label) {
-if (label == null) return null;
+if (label == null || atom == null) return null;
 return (this.ms.isJmolDataFrameForModel (atom.mi) && label.equals ("%U") ? "%W" : label);
 }, "JM.Atom,~S");
 });

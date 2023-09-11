@@ -15,10 +15,10 @@ this.minAtoms = null;
 this.minBonds = null;
 this.minAngles = null;
 this.minTorsions = null;
-this.minPositions = null;
-this.bsFixed = null;
+this.bsMinFixed = null;
 this.trustRadius = 0.3;
 this.minimizer = null;
+this.nth = 10;
 Clazz.instantialize (this, arguments);
 }, JM.FF, "ForceField");
 Clazz.defineMethod (c$, "setModelFields", 
@@ -27,13 +27,13 @@ this.minAtoms = this.minimizer.minAtoms;
 this.minBonds = this.minimizer.minBonds;
 this.minAngles = this.minimizer.minAngles;
 this.minTorsions = this.minimizer.minTorsions;
-this.bsFixed = this.minimizer.bsMinFixed;
+this.bsMinFixed = this.minimizer.bsMinFixed;
 this.minAtomCount = this.minAtoms.length;
 this.minBondCount = this.minBonds.length;
 });
 Clazz.defineMethod (c$, "setConstraints", 
 function (m) {
-this.bsFixed = m.bsMinFixed;
+this.bsMinFixed = m.bsMinFixed;
 this.calc.setConstraints (m.constraints);
 this.coordSaved = null;
 }, "JM.Minimizer");
@@ -53,7 +53,7 @@ this.calc.getConstraintList ();
 if (this.calc.loggingEnabled) this.calc.appendLogData (this.calc.getAtomList ("S T E E P E S T   D E S C E N T"));
 this.dE = 0;
 this.calc.setPreliminary (stepMax > 0);
-this.e0 = this.energyFull (false, false);
+this.recalculateEnergy ();
 s = JU.PT.sprintf (" Initial " + this.name + " E = %10.3f " + this.minimizer.units + "/mol criterion = %8.6f max steps = " + stepMax, "ff",  Clazz.newArray (-1, [Float.$valueOf (this.toUserUnits (this.e0)), Float.$valueOf (this.toUserUnits (criterion))]));
 this.minimizer.report (s, false);
 this.calc.appendLogData (s);
@@ -64,21 +64,21 @@ for (var i = 0; i < this.minAtomCount; i++) this.minAtoms[i].force[0] = this.min
 
 });
 Clazz.defineMethod (c$, "steepestDescentTakeNSteps", 
-function (n) {
+function (n, doUpdateAtoms) {
 if (this.stepMax == 0) return false;
 var isPreliminary = true;
 for (var iStep = 1; iStep <= n; iStep++) {
 this.currentStep++;
 this.calc.setSilent (true);
-for (var i = 0; i < this.minAtomCount; i++) if (this.bsFixed == null || !this.bsFixed.get (i)) this.setForcesUsingNumericalDerivative (this.minAtoms[i], 1);
+for (var i = 0; i < this.minAtomCount; i++) if (this.bsMinFixed == null || !this.bsMinFixed.get (i)) this.setForcesUsingNumericalDerivative (this.minAtoms[i], 1);
 
-this.linearSearch ();
+this.linearSearch (doUpdateAtoms);
 this.calc.setSilent (false);
 if (this.calc.loggingEnabled) this.calc.appendLogData (this.calc.getAtomList ("S T E P    " + this.currentStep));
 var e1 = this.energyFull (false, false);
 this.dE = e1 - this.e0;
 var done = JM.Util.isNear3 (e1, this.e0, this.criterion);
-if (done || this.currentStep % 10 == 0 || this.stepMax <= this.currentStep) {
+if (done || this.currentStep % this.nth == 0 || this.stepMax <= this.currentStep) {
 var s = JU.PT.sprintf (this.name + " Step %-4d E = %10.6f    dE = %8.6f ", "Fi",  Clazz.newArray (-1, [ Clazz.newFloatArray (-1, [this.toUserUnits (e1), this.toUserUnits (this.dE)]), Integer.$valueOf (this.currentStep)]));
 this.minimizer.report (s, false);
 this.calc.appendLogData (s);
@@ -96,7 +96,7 @@ this.calc.setPreliminary (isPreliminary = false);
 this.e0 = this.energyFull (false, false);
 }}
 return true;
-}, "~N");
+}, "~N,~B");
 Clazz.defineMethod (c$, "getEnergies", 
  function (terms, gradients) {
 if ((terms & 1) != 0) return this.energyFull (gradients, true);
@@ -162,19 +162,22 @@ function (gradients) {
 return this.calc.energyES (gradients);
 }, "~B");
 Clazz.defineMethod (c$, "linearSearch", 
- function () {
+ function (doUpdateAtoms) {
 var step = 0.75 * this.trustRadius;
 var trustRadius2 = this.trustRadius * this.trustRadius;
 var e1 = this.energyFull (false, true);
-for (var iStep = 0; iStep < 10; iStep++) {
+var nSteps = 10;
+var isDone = false;
+for (var iStep = 0; iStep < nSteps && !isDone; iStep++) {
 this.saveCoordinates ();
 for (var i = 0; i < this.minAtomCount; ++i) {
-if (this.bsFixed == null || !this.bsFixed.get (i)) {
+if (this.bsMinFixed == null || !this.bsMinFixed.get (i)) {
 var force = this.minAtoms[i].force;
 var coord = this.minAtoms[i].coord;
 var f2 = (force[0] * force[0] + force[1] * force[1] + force[2] * force[2]);
-if (f2 > trustRadius2 / step / step) {
-f2 = this.trustRadius / Math.sqrt (f2) / step;
+var f = trustRadius2 / step / step / f2;
+if (1 > f) {
+f2 = Math.sqrt (f);
 force[0] *= f2;
 force[1] *= f2;
 force[2] *= f2;
@@ -186,8 +189,10 @@ if (tempStep > this.trustRadius) coord[j] += this.trustRadius;
  else coord[j] += tempStep;
 }}
 }}
-var e2 = this.energyFull (false, true);
-if (JM.Util.isNear3 (e2, e1, 1.0e-3)) break;
+if (doUpdateAtoms) {
+this.minimizer.updateAtomXYZ (false);
+}var e2 = this.energyFull (false, true);
+isDone = JM.Util.isNear3 (e2, e1, 1.0e-3);
 if (e2 > e1) {
 step *= 0.1;
 this.restoreCoordinates ();
@@ -196,7 +201,7 @@ e1 = e2;
 step *= 2.15;
 if (step > 1.0) step = 1.0;
 }}
-});
+}, "~B");
 Clazz.defineMethod (c$, "saveCoordinates", 
  function () {
 if (this.coordSaved == null) this.coordSaved =  Clazz.newDoubleArray (this.minAtomCount, 3, 0);
@@ -263,6 +268,14 @@ Clazz.defineMethod (c$, "getBufferedReader",
 function (resourceName) {
 return JV.FileManager.getBufferedReaderForResource (this.minimizer.vwr, this, "JM/FF/", "data/" + resourceName);
 }, "~S");
+Clazz.defineMethod (c$, "recalculateEnergy", 
+function () {
+this.e0 = this.energyFull (false, false);
+});
+Clazz.defineMethod (c$, "setNth", 
+function (n) {
+this.nth = n;
+}, "~N");
 Clazz.defineStatics (c$,
 "ENERGY", (1),
 "EBOND", (2),

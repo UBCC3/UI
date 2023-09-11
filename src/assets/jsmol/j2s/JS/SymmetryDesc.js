@@ -920,24 +920,33 @@ return a;
 return sb.toString ();
 }, "J.api.SymmetryInterface,~N,~N,JU.P3,JU.P3,JU.P3,~S,~S,~N,~N,~N,JU.BS");
 Clazz.defineMethod (c$, "getSymopInfo", 
-function (iAtom, xyz, op, translation, pt, pt2, id, type, scaleFactor, nth, options) {
+function (iAtom, xyz, op, translation, pt, pt2, id, type, scaleFactor, nth, options, opList) {
 if (type == 0) type = JS.SymmetryDesc.getType (id);
 var ret = (type == 1140850689 ?  new JU.BS () : "");
 if (iAtom < 0) return ret;
 var iModel = this.modelSet.at[iAtom].mi;
 var uc = this.modelSet.am[iModel].biosymmetry;
 if (uc == null && (uc = this.modelSet.getUnitCell (iModel)) == null) return ret;
-if (type != 135176 || op != 2147483647) {
+if (type != 135176 || op != 2147483647 && opList == null) {
 return this.getSymmetryInfo (uc, iModel, iAtom, uc, xyz, op, translation, pt, pt2, id, type, scaleFactor, nth, options);
 }var s = "";
 var ops = uc.getSymmetryOperations ();
 if (ops != null) {
 if (id == null) id = "sg";
 var n = ops.length;
+if (pt != null && pt2 == null) {
+if (opList == null) opList = uc.getInvariantSymops (pt, null);
+n = opList.length;
+for (var i = 0; i < n; i++) {
+if (nth > 0 && nth != i + 1) continue;
+op = opList[i];
+s += this.getSymmetryInfo (uc, iModel, iAtom, uc, xyz, op, translation, pt, pt2, id + op, 135176, scaleFactor, nth, options);
+}
+} else {
 for (op = 1; op <= n; op++) s += this.getSymmetryInfo (uc, iModel, iAtom, uc, xyz, op, translation, pt, pt2, id + op, 135176, scaleFactor, nth, options);
 
-}return s;
-}, "~N,~S,~N,JU.P3,JU.P3,JU.P3,~S,~N,~N,~N,~N");
+}}return s;
+}, "~N,~S,~N,JU.P3,JU.P3,JU.P3,~S,~N,~N,~N,~N,~A");
 Clazz.defineMethod (c$, "getSpaceGroupInfo", 
 function (sym, modelIndex, sgName, symOp, pt1, pt2, drawID, scaleFactor, nth, isFull, isForModel, options, cellInfo, bsInfo) {
 if (bsInfo == null) {

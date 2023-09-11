@@ -58,15 +58,39 @@ return (orReturnName && ("" + val).length == 0 ? $var : val);
 Clazz.defineMethod (c$, "getContextVariableAsVariable", 
 function ($var, isLocal) {
 if ($var.equals ("expressionBegin")) return null;
-if ($var.equalsIgnoreCase ("_caller")) {
+if ($var.charAt (0) == '_') {
+var isCallers = $var.equalsIgnoreCase ("_callers");
+if (isCallers || $var.equalsIgnoreCase ("_caller")) {
+var sc = this.thisContext;
+var h0 =  new java.util.Hashtable ();
+var h = null;
+var h1;
+while (sc != null) {
+if (sc.isFunction) {
+if (h == null) {
+h = h0;
+} else {
+h1 =  new java.util.Hashtable ();
+h.put ("_caller", JS.SV.newV (6, h1));
+h = h1;
+}h.putAll (sc.vars);
+h.put ("_name", JS.SV.newS (sc.functionName));
+if (!isCallers) break;
+}sc = sc.parentContext;
+}
+return JS.SV.newV (6, h0);
+}if ($var.equalsIgnoreCase ("_name")) {
 var sc = this.thisContext;
 while (sc != null) {
-if (sc.isFunction) return JS.SV.newV (6, sc.vars);
-sc = sc.parentContext;
+if (sc.isFunction) {
+return JS.SV.newS (JS.SV.sValue (sc.statement[0]));
+}sc = sc.parentContext;
 }
-return JS.SV.newV (6,  new java.util.Hashtable ());
-}$var = $var.toLowerCase ();
-return (this.contextVariables != null && this.contextVariables.containsKey ($var) ? this.contextVariables.get ($var) : isLocal || this.thisContext == null ? null : this.thisContext.getVariable ($var));
+return JS.SV.newS ("");
+}}$var = $var.toLowerCase ();
+var v = (this.contextVariables == null ? null : this.contextVariables.get ($var));
+if (v == null && !isLocal && this.thisContext != null) v = this.thisContext.getVariable ($var);
+return (v != null && v.tok == 1275068418 ? v.arrayToList (v) : v);
 }, "~S,~B");
 Clazz.defineMethod (c$, "paramAsStr", 
 function (i) {
@@ -847,9 +871,11 @@ case 7:
 var data =  new JU.Lst ();
 var pt;
 var pts = (t).getList ();
-for (var j = 0; j < pts.size (); j++) if ((pt = JS.SV.ptValue (pts.get (j))) != null) data.addLast (pt);
- else return null;
-
+for (var j = 0; j < pts.size (); j++) {
+var v = pts.get (j);
+if ((pt = (v.tok == 10 ? this.vwr.ms.getAtomSetCenter (JS.SV.getBitSet (v, false)) : JS.SV.ptValue (v))) == null) return null;
+data.addLast (pt);
+}
 return data;
 }
 if (i > 0) return this.vwr.ms.getAtomPointVector ((this).atomExpressionAt (i));
@@ -1093,6 +1119,24 @@ return null;
 pt = JU.Escape.uP (JS.SV.sValue (x));
 return (Clazz.instanceOf (pt, JU.P4) ? pt : null);
 }, "JS.T");
+Clazz.defineMethod (c$, "setScriptArguments", 
+function (params, isCallback) {
+if (this.contextVariables == null) this.contextVariables =  new java.util.Hashtable ();
+this.contextVariables.put ("_arguments", (params == null ? JS.SV.getVariableAI ( Clazz.newIntArray (-1, [])) : isCallback ? JS.SV.newV (1275068418, params) : JS.SV.getVariableList (params)));
+this.contextVariables.put ("_argcount", JS.SV.newI (params == null ? 0 : isCallback ? (params).length : (params).size ()));
+}, "~O,~B");
+Clazz.defineMethod (c$, "getCallbackParameter", 
+function (n) {
+var v = (this.contextVariables == null ? null : this.contextVariables.get ("_arguments"));
+if (v == null && (this.thisContext == null || (v = this.thisContext.getVariable ("_arguments")) == null)) return null;
+if (v.tok == 1275068418) {
+if (n == -2147483648) {
+return v.arrayToList (v);
+}var params = v.value;
+return (--n < 0 || n >= params.length ? null : (params[n] = JS.SV.getVariable (params[n])));
+}var list = v.getList ();
+return (n == -2147483648 ? v : --n < 0 || n >= list.size () ? JS.SV.newV (7,  new JU.Lst ()) : list.get (n));
+}, "~N");
 Clazz.defineStatics (c$,
 "MODE_P3", 3,
 "MODE_P4", 4,

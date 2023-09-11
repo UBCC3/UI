@@ -122,7 +122,10 @@ Clazz.defineMethod (c$, "addCommandLine",
  function (command) {
 if (command == null || command.length == 0) return;
 if (command.endsWith ("#--")) return;
-if (this.nextCommand >= this.maxSize) {
+if (this.nextCommand > 0 && command.equals (this.commandList.get (this.nextCommand - 1))) {
+this.cursorPos = this.nextCommand;
+return;
+}if (this.nextCommand >= this.maxSize) {
 this.commandList.removeItemAt (0);
 this.nextCommand = this.maxSize - 1;
 }this.commandList.add (this.nextCommand, command);

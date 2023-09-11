@@ -96,7 +96,7 @@ this.dfCoefMaps = null;
 if (this.haveNboOrbitals) {
 this.orbitals =  new JU.Lst ();
 this.alphaBeta = "";
-}this.haveNboOrbitals = true;
+}this.haveNboOrbitals = this.getNBOs;
 this.orbitalsRead = true;
 var mos = null;
 var data = null;

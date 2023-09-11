@@ -318,7 +318,7 @@ rpn.addOp (JS.T.tokenRightParen);
 case 1086326786:
 case 1086326785:
 case 1073742328:
-case 1678381065:
+case 1812599299:
 case 1086326788:
 case 1073742329:
 case 1111490587:
@@ -569,7 +569,7 @@ case 2097194:
 rpn.addXBs (JU.BSUtil.copy (this.vwr.slm.getHiddenSet ()));
 break;
 case 12293:
-rpn.addXBs (this.vwr.getMotionFixedAtoms ());
+rpn.addXBs (this.vwr.getMotionFixedAtoms (-1));
 break;
 case 2097192:
 rpn.addXBs (JU.BSUtil.copyInvert (this.vwr.slm.getHiddenSet (), ac));
@@ -686,7 +686,7 @@ case 2:
 rpn.addXNum (instruction);
 break;
 case 10:
-var bs1 = JU.BSUtil.copy (value);
+var bs1 = (Clazz.instanceOf (value, JM.BondSet) ? value : JU.BSUtil.copy (value));
 rpn.addXBs (bs1);
 break;
 case 8:
@@ -779,7 +779,9 @@ comparisonInt = JU.CU.getArgbFromString (val);
 }}tokValue = 2;
 isIntProperty = true;
 } else if (!isStringProperty) {
-if (tokWhat == 1639976963 || tokWhat == 1237320707 || tokWhat == 1086326789) isStringProperty = !(isIntProperty = (comparisonInt != 2147483647));
+if (tokWhat == 1094717448) {
+val = Integer.$valueOf (t.tok == 2 ? t.intValue : -1000 - (val + " ").codePointAt (0));
+} else if (tokWhat == 1639976963 || tokWhat == 1237320707 || tokWhat == 1086326789) isStringProperty = !(isIntProperty = (comparisonInt != 2147483647));
  else val = JS.SV.nValue (t);
 if (Clazz.instanceOf (val, Integer)) comparisonFloat = comparisonInt = (val).intValue ();
  else if (Clazz.instanceOf (val, Float) && isModel) comparisonInt = JM.ModelSet.modelFileNumberFromFloat ((val).floatValue ());
@@ -986,7 +988,7 @@ ia = atom.atomPropertyInt (tokWhat);
 break;
 case 1094713368:
 case 1094717448:
-return JU.BSUtil.copy (this.vwr.ms.getConformation (-1, ival - 1, false, null));
+return JU.BSUtil.copy (this.vwr.ms.getConformation (-1, ival, false, null));
 case 1296041985:
 propertyBitSet = atom.atomSymmetry;
 if (propertyBitSet == null) continue;
@@ -1148,7 +1150,7 @@ switch (tok) {
 case 1140850689:
 case 1677721602:
 if (this.chk) return bs;
-bsNew = (tok == 1140850689 ? (isAtoms ? bs : this.vwr.ms.getAtoms (1677721602, bs)) : (isAtoms ? JM.BondSet.newBS (this.vwr.getBondsForSelectedAtoms (bs), null) : bs));
+bsNew = (tok == 1140850689 ? (isAtoms ? bs : this.vwr.ms.getAtoms (1677721602, bs)) : (isAtoms ? JM.BondSet.newBS (this.vwr.getBondsForSelectedAtoms (bs)) : bs));
 var i;
 switch (minmaxtype) {
 case 32:
@@ -1170,6 +1172,7 @@ return bsNew;
 case 1086324745:
 switch (minmaxtype) {
 case 0:
+case 32:
 case 1073742327:
 return this.getCmdExt ().getBitsetIdent (bs, null, tokenValue, useAtomMap, index, isExplicitlyAll);
 }

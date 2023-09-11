@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JM");
-Clazz.load (["JM.AtomCollection"], "JM.BondCollection", ["JU.AU", "$.BS", "JM.Bond", "$.BondIteratorSelected", "$.BondSet", "$.HBond", "JU.BSUtil", "$.C", "$.Edge"], function () {
+Clazz.load (["JM.AtomCollection", "JU.V3"], "JM.BondCollection", ["JU.AU", "$.BS", "$.Measure", "JM.Bond", "$.BondIteratorSelected", "$.BondSet", "$.HBond", "JU.BSUtil", "$.C", "$.Edge"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bo = null;
 this.bondCount = 0;
@@ -12,9 +12,15 @@ this.bsAromaticSingle = null;
 this.bsAromaticDouble = null;
 this.bsAromatic = null;
 this.haveHiddenBonds = false;
+this.v1 = null;
+this.v2 = null;
 this.haveAtropicBonds = false;
 Clazz.instantialize (this, arguments);
 }, JM, "BondCollection", JM.AtomCollection);
+Clazz.prepareFields (c$, function () {
+this.v1 =  new JU.V3 ();
+this.v2 =  new JU.V3 ();
+});
 Clazz.defineMethod (c$, "setupBC", 
 function () {
 this.bsAromatic =  new JU.BS ();
@@ -260,8 +266,6 @@ if (!bond.is (515) || this.bsAromaticDouble.get (i) || this.bsAromaticSingle.get
 bsTest.set (i);
 if (bond.atom1.getElementNumber () == 8 || bond.atom2.getElementNumber () == 8) {
 if (!this.assignAromaticDouble (bond)) this.assignAromaticSingle (bond);
-} else {
-bsTest.set (i);
 }}
 for (var i = bsTest.nextSetBit (0); i >= 0; i = bsTest.nextSetBit (i + 1)) if (!this.assignAromaticDouble (bond = this.bo[i])) this.assignAromaticSingle (bond);
 
@@ -272,7 +276,7 @@ if (this.bsAromaticDouble.get (i)) {
 if (!bond.is (514)) {
 this.bsAromatic.set (i);
 bsModels.set (bond.atom1.mi);
-bond.setOrder (514);
+bond.setOrder (this.isLinear (bond, this.v1, this.v2) ? 3 : 514);
 }} else if (this.bsAromaticSingle.get (i) || bond.isAromatic ()) {
 if (!bond.is (513)) {
 this.bsAromatic.set (i);
@@ -285,6 +289,24 @@ this.assignAromaticNandO (bsBonds);
 this.bsAromaticSingle = null;
 this.bsAromaticDouble = null;
 }, "~B,JU.BS");
+Clazz.defineMethod (c$, "isLinear", 
+ function (b, v1, v2) {
+if (b.order == 3) return true;
+if (b.atom1.getCovalentBondCount () != 2 || b.atom2.getCovalentBondCount () != 2) return false;
+var edges = b.atom1.getEdges ();
+for (var i = edges.length; -i >= 0; ) {
+if (edges[i] !== b && edges[i].isCovalent ()) {
+if (JU.Measure.computeAngle (edges[i].getOtherNode (b.atom1), b.atom1, b.atom2, v1, v2, true) < 175) return false;
+break;
+}}
+edges = b.atom2.getEdges ();
+for (var i = edges.length; -i >= 0; ) {
+if (edges[i] !== b && edges[i].isCovalent ()) {
+if (JU.Measure.computeAngle (edges[i].getOtherNode (b.atom2), b.atom2, b.atom1, v1, v2, true) < 175) return false;
+break;
+}}
+return true;
+}, "JM.Bond,JU.V3,JU.V3");
 Clazz.defineMethod (c$, "assignAromaticDouble", 
  function (bond) {
 var bondIndex = bond.index;
@@ -363,16 +385,16 @@ break;
 default:
 return true;
 }
-var nAtoms = atom.getValence ();
+var valence = atom.getValenceAromatic (false);
 switch (n) {
 case 6:
-return (nAtoms == 4);
+return (valence == 4);
 case 7:
-return (atom.group.getNitrogenAtom () === atom || nAtoms == 3 && atom.getFormalCharge () < 1);
+return (atom.group.getNitrogenAtom () === atom || valence == 3 && atom.getFormalCharge () < 1);
 case 8:
-return (atom.group.getCarbonylOxygenAtom () !== atom && nAtoms == 2 && atom.getFormalCharge () < 1);
+return (atom.group.getCarbonylOxygenAtom () !== atom && valence == 2 && atom.getFormalCharge () < 1);
 case 16:
-return (atom.group.groupID == 5 || nAtoms == 2 && atom.getFormalCharge () < 1);
+return (atom.group.groupID == 5 || valence == 2 && atom.getFormalCharge () < 1);
 }
 return false;
 }, "JM.Atom");
@@ -420,9 +442,12 @@ return this.getAtomBitsMDa (tokType, specInfo, bs);
 case 1677721602:
 var bsBonds = specInfo;
 for (var i = bsBonds.nextSetBit (0); i >= 0; i = bsBonds.nextSetBit (i + 1)) {
+if (i < this.bondCount) {
 bs.set (this.bo[i].atom1.i);
 bs.set (this.bo[i].atom2.i);
-}
+} else {
+bsBonds.clear (i);
+}}
 return bs;
 case 1073742331:
 for (var i = this.bondCount; --i >= 0; ) if (this.bo[i].isAromatic ()) {

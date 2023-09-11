@@ -108,10 +108,20 @@ return this.monomers[polymerIndex].getWingAtom ();
 Clazz.defineMethod (c$, "setConformation", 
 function (bsSelected) {
 var atoms = this.model.ms.at;
-for (var i = this.monomerCount; --i >= 0; ) this.monomers[i].updateOffsetsForAlternativeLocations (atoms, bsSelected);
+var updated = false;
+for (var i = this.monomerCount; --i >= 0; ) if (this.monomers[i].updateOffsetsForAlternativeLocations (atoms, bsSelected)) updated = true;
 
+if (updated) {
 this.recalculateLeadMidpointsAndWingVectors ();
-}, "JU.BS");
+for (var i = 9; i < 16; i++) {
+var s = this.model.ms.vwr.shm.shapes[i];
+if (s == null) continue;
+for (var b = s.bioShapes.length; --b >= 0; ) {
+var bi = s.bioShapes[b];
+if (bi.bioPolymer === this) bi.falsifyMesh ();
+}
+}
+}}, "JU.BS");
 Clazz.defineMethod (c$, "recalculateLeadMidpointsAndWingVectors", 
 function () {
 this.invalidLead = this.invalidControl = true;

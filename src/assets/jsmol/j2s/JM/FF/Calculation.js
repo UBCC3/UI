@@ -48,3 +48,7 @@ case 0:
 break;
 }
 }, "~A");
+Clazz.defineMethod (c$, "isLoggable", 
+function (n) {
+return this.calcs.ff.minimizer.isLoggable (this.iData, n);
+}, "~N");

@@ -383,6 +383,7 @@ return;
 }, "~N");
 Clazz.defineMethod (c$, "setAllConformation", 
 function (bsAtoms) {
+this.vwr.ms.recalculatePositionDependentQuantities (bsAtoms, null);
 var bsModels = this.ms.getModelBS (bsAtoms, false);
 for (var i = bsModels.nextSetBit (0); i >= 0; i = bsModels.nextSetBit (i + 1)) if (this.ms.am[i].isBioModel) {
 var m = this.ms.am[i];

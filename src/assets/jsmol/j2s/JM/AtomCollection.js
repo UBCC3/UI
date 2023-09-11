@@ -671,7 +671,7 @@ if (Float.isNaN (radius) || radius == this.at[atomIndex].getBondingRadius ()) re
 if (this.bondingRadii == null) {
 this.bondingRadii =  Clazz.newFloatArray (this.at.length, 0);
 } else if (this.bondingRadii.length < this.at.length) {
-this.bondingRadii = JU.AU.ensureLength (this.bondingRadii, this.at.length);
+this.bondingRadii = JU.AU.ensureLengthA (this.bondingRadii, this.at.length);
 }this.bondingRadii[atomIndex] = radius;
 this.taintAtom (atomIndex, 6);
 }, "~N,~N");

@@ -110,7 +110,7 @@ var dist = JU.Measure.distanceToPlane (plane, pt);
 retNorm.set (plane.x, plane.y, plane.z);
 retNorm.normalize ();
 if (dist > 0) retNorm.scale (-1);
-retPtProj.scaleAdd2 (-dist, retNorm, pt);
+retPtProj.scaleAdd2 (Math.abs (dist), retNorm, pt);
 return dist;
 }, "JU.T3,JU.P4,JU.T3,JU.V3");
 c$.getNormalFromCenter = Clazz.defineMethod (c$, "getNormalFromCenter", 

@@ -207,7 +207,7 @@ switch (tok) {
 case 134217763:
 switch (tok = this.getToken (i + (this.tokAt (i + 1) == 1073741864 ? 2 : 1)).tok) {
 case 1814695966:
-case 1678381065:
+case 1812599299:
 tokIntersectBox = tok;
 isIntersect = true;
 continue;
@@ -228,7 +228,7 @@ if (iOn == i - 1) iOn++;
 switch (this.tokAt (i + 1)) {
 case 134217750:
 case 1073741998:
-case 1678381065:
+case 1812599299:
 continue;
 default:
 this.invArg ();
@@ -236,12 +236,12 @@ this.invArg ();
 break;
 case 1073741994:
 case 1814695966:
-case 1678381065:
+case 1812599299:
 lattice = null;
 var uc = null;
 var bs = null;
 switch (tok) {
-case 1678381065:
+case 1812599299:
 switch (this.tokAt (i + 1)) {
 case 1073741864:
 switch (this.tokAt (i + 2)) {
@@ -333,7 +333,7 @@ iArray = i + 1;
 break;
 }if (!this.chk && tok != 1073741998 && pts == null) {
 uc = this.vwr.getCurrentUnitCell ();
-tokIntersectBox = (uc == null ? 1678381065 : 1814695966);
+tokIntersectBox = (uc == null ? 1812599299 : 1814695966);
 pts = this.getBoxPoints (tokIntersectBox, uc, null, intScale / 100);
 isIntersect = true;
 }}plane = null;
@@ -452,7 +452,7 @@ havePoints = true;
 break;
 case 1677721602:
 case 1140850689:
-if (connections == null || iConnect > (eval.theTok == 1228931587 ? 2 : 3)) {
+if (connections == null || iConnect > (eval.theTok == 1228931586 ? 2 : 3)) {
 iConnect = 0;
 connections =  Clazz.newIntArray (-1, [-1, -1, -1, -1]);
 }connections[iConnect++] = this.atomExpressionAt (++i).nextSetBit (0);
@@ -550,7 +550,9 @@ var target = null;
 var bsAtoms = null;
 var options = 0;
 var trans = null;
-if (tok == 1296041985) {
+var opList = null;
+var isSymop = (tok == 1296041985);
+if (isSymop) {
 iSym = 0;
 switch (this.tokAt (++i)) {
 case 4:
@@ -562,13 +564,20 @@ break;
 case 2:
 default:
 if (!eval.isCenterParameter (i)) {
+if (eval.isArrayParameter (i)) {
+var params = eval.floatParameterSet (i, 1, 2147483647);
+opList =  Clazz.newIntArray (params.length, 0);
+for (var j = opList.length; --j >= 0; ) opList[j] = Clazz.floatToInt (params[j]);
+
+i = eval.iToken + 1;
+} else {
 iSym = this.intParameter (i++);
 if (eval.isArrayParameter (i)) {
 trans = JU.P3.newA (eval.floatParameterSet (i, 3, 3));
-i = ++eval.iToken;
-}}var ret =  Clazz.newArray (-1, [null, this.vwr.getFrameAtoms ()]);
+i = eval.iToken + 1;
+}}}var ret =  Clazz.newArray (-1, [null, this.vwr.getFrameAtoms ()]);
 if (eval.isCenterParameter (i)) center = eval.centerParameter (i, ret);
-if (eval.isCenterParameter (eval.iToken + 1)) target = eval.centerParameter (++eval.iToken, ret);
+if (opList == null && eval.isCenterParameter (eval.iToken + 1)) target = eval.centerParameter (++eval.iToken, ret);
 if (this.chk) return;
 i = eval.iToken;
 }
@@ -576,7 +585,7 @@ i = eval.iToken;
 center = this.centerParameter (++i);
 bsAtoms = (eval.isAtomExpression (i) ? this.atomExpressionAt (i) : null);
 i = eval.iToken;
-}var nth = (target != null && this.tokAt (i + 1) == 2 ? eval.getToken (++i).intValue : -1);
+}var nth = ((!isSymop || target != null) && this.tokAt (i + 1) == 2 ? eval.getToken (++i).intValue : -1);
 if (this.tokAt (i + 1) == 1814695966) {
 target =  new JU.P3 ();
 options = 1073742066;
@@ -598,11 +607,11 @@ if (bsAtoms != null) {
 s = null;
 var iatom = bsAtoms.nextSetBit (0);
 if (options != 0) {
-var o = this.vwr.getSymmetryInfo (iatom, xyz, iSym, trans, center, target, 134217751, null, intScale / 100, nth, options);
+var o = this.vwr.getSymmetryInfo (iatom, xyz, iSym, trans, center, target, 134217751, null, intScale / 100, nth, options, opList);
 if (Clazz.instanceOf (o, JU.P3)) target = o;
  else s = "";
 }if (thisId == null) thisId = "sym";
-if (s == null) s = this.vwr.getSymmetryInfo (iatom, xyz, iSym, trans, center, target, 135176, thisId, intScale / 100, nth, options);
+if (s == null) s = this.vwr.getSymmetryInfo (iatom, xyz, iSym, trans, center, target, 135176, thisId, intScale / 100, nth, options, null);
 }eval.runBufferedSafely (s.length > 0 ? s : "draw ID \"" + thisId + "_*\" delete", eval.outputBuffer);
 }return;
 case 4115:
@@ -1304,7 +1313,7 @@ propertyValue = this.centerParameter (++i);
 sbCommand.append (" ").append (JU.Escape.eP (propertyValue));
 i = eval.iToken;
 break;
-case 1678381065:
+case 1812599299:
 if (eval.fullCommand.indexOf ("# BBOX=") >= 0) {
 var bbox = JU.PT.split (JU.PT.getQuotedAttribute (eval.fullCommand, "# BBOX"), ",");
 pts =  Clazz.newArray (-1, [JU.Escape.uP (bbox[0]), JU.Escape.uP (bbox[1])]);
@@ -3025,9 +3034,9 @@ this.invArg ();
 }data =  Clazz.newArray (-1, [Float.$valueOf (d), pts, bs]);
 } else {
 data = eval.getPointArray (i, 4, false);
-tok = 1678381065;
+tok = 1812599299;
 }break;
-case 1678381065:
+case 1812599299:
 eval.iToken = i + 1;
 data = JU.BoxInfo.toOABC (this.vwr.ms.getBBoxVertices (), null);
 break;
@@ -3261,7 +3270,7 @@ Clazz.defineMethod (c$, "getBoxPoints",
 switch (type) {
 case 1814695966:
 return (uc == null ? null : uc.getCanonicalCopy (scale, true));
-case 1678381065:
+case 1812599299:
 var box;
 if (bsAtoms == null) {
 box = this.vwr.ms.getBoxInfo ();

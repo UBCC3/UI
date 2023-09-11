@@ -73,7 +73,7 @@ return  Clazz.newArray (-1, [this.fullPathName, this.fileName, this.nameAsGiven]
 Clazz.defineMethod (c$, "getFullPathName", 
 function (orPrevious) {
 var f = (this.fullPathName != null ? this.fullPathName : this.nameAsGiven);
-return (!orPrevious || !f.equals ("zapped") ? f : this.lastFullPathName != null ? this.lastFullPathName : this.lastNameAsGiven);
+return (!orPrevious || !f.equals ("zapped") && !f.equals ("string") ? f : this.lastFullPathName != null ? this.lastFullPathName : this.lastNameAsGiven);
 }, "~B");
 Clazz.defineMethod (c$, "getFileType", 
 function () {
@@ -556,6 +556,7 @@ names[0] = names[2] = name;
 names[1] = JV.FileManager.stripPath (names[0]);
 return names;
 }name = this.vwr.resolveDatabaseFormat (name);
+if (name == null) return  Clazz.newArray (-1, [null]);
 if (name.indexOf (":") < 0 && name.indexOf ("/") != 0) name = JV.FileManager.addDirectory (this.vwr.getDefaultDirectory (), name);
 if (this.appletDocumentBaseURL == null) {
 if (JU.OC.urlTypeIndex (name) >= 0 || this.vwr.haveAccess (JV.Viewer.ACCESS.NONE) || this.vwr.haveAccess (JV.Viewer.ACCESS.READSPT) && !name.endsWith (".spt") && !name.endsWith ("/")) {

@@ -148,42 +148,6 @@ for (var j = a.length; --j >= 0; ) a[j] = (search.target.nodes[a[j]]).mapIndex;
 }
 return array;
 }, "~S,~S,~N");
-Clazz_overrideMethod (c$, "hasStructure", 
-function (pattern, smilesSet, flags) {
-var ret =  Clazz_newIntArray (smilesSet.length, 0);
-if ((flags & 1) != 1) {
-flags = flags | 2;
-}this.clearExceptions ();
-pattern = JS.SmilesParser.cleanPattern (pattern);
-try {
-var search = JS.SmilesParser.newSearch (pattern, true, false);
-for (var i = 0; i < smilesSet.length; i++) {
-var smiles = JS.SmilesParser.cleanPattern (smilesSet[i]);
-var searchTarget = JS.SmilesParser.newSearch (smiles, false, true);
-searchTarget.setFlags (searchTarget.flags | JS.SmilesParser.getFlags (pattern));
-try {
-this.clearExceptions ();
-ret[i] = (this.matchPattern (search, null, 0, null, null, false, flags | 8, 5, searchTarget) === Boolean.TRUE ? 1 : 0);
-} catch (e) {
-if (Clazz_exceptionOf (e, Exception)) {
-ret[i] = -1;
-e.printStackTrace ();
-} else {
-throw e;
-}
-}
-}
-} catch (e) {
-if (Clazz_exceptionOf (e, Exception)) {
-if (JU.Logger.debugging) e.printStackTrace ();
-if (JS.InvalidSmilesException.getLastError () == null) this.clearExceptions ();
-throw  new JS.InvalidSmilesException (JS.InvalidSmilesException.getLastError ());
-} else {
-throw e;
-}
-}
-return ret;
-}, "~S,~A,~N");
 Clazz_overrideMethod (c$, "getAtoms", 
 function (target) {
 this.clearExceptions ();
@@ -342,8 +306,8 @@ ac = searchTarget.target.nodes.length;
 if (isSmarts) {
 var a1 = searchTarget.elementCounts;
 var a2 = search.elementCounts;
-var n = searchTarget.elementNumberMax;
-if (n == search.elementNumberMax) {
+var n = search.elementNumberMax;
+if (n <= searchTarget.elementNumberMax) {
 for (var i = 1; i <= n; i++) {
 if (a1[i] < a2[i]) {
 this.okMF = false;
@@ -496,6 +460,42 @@ ss.target.setAtoms (atoms, atomCount, bsSelected);
 ss.targetSet = true;
 return ss;
 }, "~A,~N,JU.BS");
+Clazz_overrideMethod (c$, "hasStructure", 
+function (pattern, smilesSet, flags) {
+var ret =  Clazz_newIntArray (smilesSet.length, 0);
+if ((flags & 1) != 1) {
+flags = flags | 2;
+}this.clearExceptions ();
+pattern = JS.SmilesParser.cleanPattern (pattern);
+try {
+var search = JS.SmilesParser.newSearch (pattern, true, false);
+for (var i = 0; i < smilesSet.length; i++) {
+var smiles = JS.SmilesParser.cleanPattern (smilesSet[i]);
+var searchTarget = JS.SmilesParser.newSearch (smiles, false, true);
+searchTarget.setFlags (searchTarget.flags | JS.SmilesParser.getFlags (pattern));
+try {
+this.clearExceptions ();
+ret[i] = (this.matchPattern (search, null, 0, null, null, false, flags | 8, 5, searchTarget) === Boolean.TRUE ? 1 : 0);
+} catch (e) {
+if (Clazz_exceptionOf (e, Exception)) {
+ret[i] = -1;
+e.printStackTrace ();
+} else {
+throw e;
+}
+}
+}
+} catch (e) {
+if (Clazz_exceptionOf (e, Exception)) {
+if (JU.Logger.debugging) e.printStackTrace ();
+if (JS.InvalidSmilesException.getLastError () == null) this.clearExceptions ();
+throw  new JS.InvalidSmilesException (JS.InvalidSmilesException.getLastError ());
+} else {
+throw e;
+}
+}
+return ret;
+}, "~S,~A,~N");
 Clazz_defineStatics (c$,
 "MODE_BITSET", 0x01,
 "MODE_ARRAY", 0x02,
@@ -637,6 +637,7 @@ if (strFlags.indexOf ("NOAROMATIC") >= 0 || strFlags.indexOf ("NONAROMATIC") >= 
 if (strFlags.indexOf ("AROMATICDOUBLE") >= 0) flags |= 512;
 if (strFlags.indexOf ("AROMATICDEFINED") >= 0) flags |= 128;
 if (strFlags.indexOf ("MMFF94") >= 0) flags |= 768;
+if (strFlags.indexOf ("ALLCOMPONENTS") >= 0) flags |= 32768;
 if (strFlags.indexOf ("TOPOLOGY") >= 0) flags |= 16384;
 if (strFlags.indexOf ("NOATOMCLASS") >= 0) flags |= 2048;
 if (strFlags.indexOf ("NOSTEREO") >= 0) {
@@ -1614,6 +1615,7 @@ return b;
 }, "~N");
 Clazz_defineMethod (c$, "setAtoms", 
 function (a, b, c) {
+this.$hasRingData = false;
 this.nodes = a;
 this.ac = b;
 this.selectedAtomCount = (c == null ? b : c.cardinality ());
@@ -1737,6 +1739,7 @@ this.iHypervalent = 0;
 this.is2D = false;
 this.haveSmilesAtoms = false;
 this.noBranches = false;
+this.allComponents = false;
 this.ptAtom = 0;
 this.ptSp2Atom0 = 0;
 this.atemp = null;
@@ -1792,6 +1795,7 @@ this.noStereo = ((flags & 32) == 32);
 this.isPolyhedral = ((flags & 65536) == 65536);
 this.is2D = ((flags & 134217728) == 134217728);
 this.noBranches = false;
+this.allComponents = ((flags & 32768) == 32768);
 return this.getSmilesComponent (atoms[ipt], bsSelected, true, false, false);
 }, "JS.SmilesMatcher,~A,~N,JU.BS,~S,~N");
 Clazz_defineMethod (c$, "getBioSmiles", 
@@ -1910,6 +1914,9 @@ sb.append (JU.Elements.elementNameFromNumber (atom.getElementNumber ()));
 }, "JU.SB,JU.Node,~S,~B");
 Clazz_defineMethod (c$, "getSmilesComponent", 
  function (atom, bs, allowBioResidues, allowConnectionsToOutsideWorld, forceBrackets) {
+var ret = "";
+while (true) {
+if (atom == null) atom = this.atoms[bs.nextSetBit (0)];
 atom = this.checkFirstAtom (atom);
 this.bsSelected = JU.JmolMolecule.getBranchBitSet (this.atoms, atom.getIndex (), JU.BSUtil.copy (bs), null, -1, true, allowBioResidues);
 bs.andNot (this.bsSelected);
@@ -1973,7 +1980,13 @@ s = s0;
 throw e;
 }
 }
-}return s;
+}ret += s;
+var ipt = bs.nextSetBit (0);
+if (ipt < 0 || !this.allComponents) break;
+ret += ".";
+atom = null;
+}
+return ret;
 }, "JU.Node,JU.BS,~B,~B,~B");
 Clazz_defineMethod (c$, "checkFirstAtom", 
  function (atom) {

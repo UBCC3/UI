@@ -64,7 +64,7 @@ return diameter;
 Clazz.defineMethod (c$, "renderLine", 
 function (p0, p1, diameter, drawTicks) {
 if (diameter < 0) this.g3d.drawDashedLineBits (8, 4, p0, p1);
- else this.g3d.fillCylinderBits (this.endcap, diameter, p0, p1);
+ else this.g3d.fillCylinderBits (this.endcap, (this.exportType == 1 ? -diameter : diameter), p0, p1);
 if (!drawTicks || this.tickInfo == null) return;
 this.checkTickTemps ();
 this.tickAs.setT (p0);

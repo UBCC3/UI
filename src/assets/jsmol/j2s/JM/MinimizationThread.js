@@ -39,7 +39,7 @@ this.lastRepaintTime = this.currentTime = System.currentTimeMillis ();
 mode = (this.minimizer.stepMinimization () ? 0 : -2);
 break;
 case -2:
-this.minimizer.endMinimization ();
+this.minimizer.endMinimization (true);
 this.vwr.startHoverWatcher (true);
 return;
 }

@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JM.FF");
-Clazz.load (["JM.FF.Calculation"], "JM.FF.UFFOOPCalc", null, function () {
+Clazz.load (["JM.FF.Calculation"], "JM.FF.UFFOOPCalc", ["java.lang.Boolean"], function () {
 c$ = Clazz.declareType (JM.FF, "UFFOOPCalc", JM.FF.Calculation);
 Clazz.overrideMethod (c$, "setData", 
 function (calc, ib, elemNo, dd) {
@@ -14,7 +14,7 @@ var a2 = 0.0;
 var koop = 25.1208;
 switch (elemNo) {
 case 6:
-if (this.b.sType === "C_2" && this.b.hCount > 1 || this.b.sType === "C_2+" || this.a.sType === "O_2" || this.c.sType === "O_2" || this.d.sType === "O_2") {
+if (this.b.sType === "C_2" && this.b.getHCount () > 1 || this.b.sType === "C_2+" || this.a.sType === "O_2" || this.c.sType === "O_2" || this.d.sType === "O_2") {
 koop += 184.2192;
 break;
 }break;
@@ -44,9 +44,11 @@ a1 = -2.0 * cosPhi;
 a2 = 1.0;
 }
 koop /= 3.0;
-calc.addLast ( Clazz.newArray (-1, [ Clazz.newIntArray (-1, [this.ia, ib, this.ic, this.id]),  Clazz.newDoubleArray (-1, [koop, a0, a1, a2, koop * 10])]));
-calc.addLast ( Clazz.newArray (-1, [ Clazz.newIntArray (-1, [this.ic, ib, this.id, this.ia]),  Clazz.newDoubleArray (-1, [koop, a0, a1, a2, koop * 10])]));
-calc.addLast ( Clazz.newArray (-1, [ Clazz.newIntArray (-1, [this.id, ib, this.ia, this.ic]),  Clazz.newDoubleArray (-1, [koop, a0, a1, a2, koop * 10])]));
+this.iData =  Clazz.newIntArray (-1, [this.ia, ib, this.ic, this.id]);
+var loggable = this.isLoggable (4);
+calc.addLast ( Clazz.newArray (-1, [this.iData,  Clazz.newDoubleArray (-1, [koop, a0, a1, a2, koop * 10]), loggable]));
+calc.addLast ( Clazz.newArray (-1, [ Clazz.newIntArray (-1, [this.ic, ib, this.id, this.ia]),  Clazz.newDoubleArray (-1, [koop, a0, a1, a2, koop * 10]), loggable]));
+calc.addLast ( Clazz.newArray (-1, [ Clazz.newIntArray (-1, [this.id, ib, this.ia, this.ic]),  Clazz.newDoubleArray (-1, [koop, a0, a1, a2, koop * 10]), loggable]));
 }, "JU.Lst,~N,~N,~N");
 Clazz.overrideMethod (c$, "compute", 
 function (dataIn) {
@@ -61,7 +63,7 @@ this.energy = koop * (a0 + a1 * cosTheta + a2 * cosTheta * cosTheta);
 if (this.calcs.gradients) {
 this.dE = koop * (a1 * Math.sin (this.theta) + a2 * 2.0 * Math.sin (this.theta) * cosTheta);
 this.calcs.addForces (this, 4);
-}if (this.calcs.logging) this.calcs.appendLogData (this.calcs.getDebugLine (4, this));
+}if (this.calcs.logging && dataIn[2] === Boolean.TRUE) this.calcs.appendLogData (this.calcs.getDebugLine (4, this));
 return this.energy;
 }, "~A");
 });

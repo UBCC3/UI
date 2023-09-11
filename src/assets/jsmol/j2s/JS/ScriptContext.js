@@ -66,8 +66,9 @@ sc = sc.parentContext;
 Clazz.defineMethod (c$, "getVariable", 
 function ($var) {
 var context = this;
+var v;
 while (context != null && !context.isFunction) {
-if (context.vars != null && context.vars.containsKey ($var)) return context.vars.get ($var);
+if (context.vars != null && (v = context.vars.get ($var)) != null) return v;
 context = context.parentContext;
 }
 return null;

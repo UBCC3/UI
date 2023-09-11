@@ -353,7 +353,7 @@ Clazz.defineMethod (c$, "getDiameter",
  function () {
 var diam;
 if (this.mesh.diameter <= 0) {
-diam = (this.meshScale < 0 ? this.meshScale = this.vwr.getInt (553648150) : this.meshScale);
+diam = (this.meshScale < 0 ? this.meshScale = this.vwr.getInt (553648149) : this.meshScale);
 if (this.antialias) diam *= 2;
 } else {
 diam = Clazz.doubleToInt (this.vwr.getScreenDim () / 100);

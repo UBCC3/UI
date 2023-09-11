@@ -1,21 +1,21 @@
 Clazz.declarePackage ("JM");
 Clazz.load (["JU.BS", "$.Lst"], "JM.MinAtom", null, function () {
 c$ = Clazz.decorateAsClass (function () {
+this.atom = null;
 this.index = 0;
 this.sType = null;
-this.atom = null;
-this.ffAtomType = null;
-this.ffType = 0;
-this.vdwKey = null;
 this.coord = null;
 this.force = null;
 this.bonds = null;
 this.nBonds = 0;
-this.hCount = 0;
-this.partialCharge = 0;
-this.bsVdw = null;
-this.bs14 = null;
 this.bondedAtoms = null;
+this.bsVdw = null;
+this.hCount = -1;
+this.partialCharge = 0;
+this.ffAtomType = null;
+this.ffType = 0;
+this.vdwKey = null;
+this.bs14 = null;
 Clazz.instantialize (this, arguments);
 }, JM, "MinAtom");
 Clazz.prepareFields (c$, function () {
@@ -27,7 +27,7 @@ this.bs14 =  new JU.BS ();
 });
 Clazz.overrideMethod (c$, "toString", 
 function () {
-return "#" + this.index + " " + this.sType;
+return "#" + this.index + "@" + this.atom.i + " " + this.sType + " " + this.coord[0] + "," + this.coord[1] + "," + this.coord[2];
 });
 Clazz.makeConstructor (c$, 
 function (index, atom, coord, ac) {
@@ -36,7 +36,6 @@ this.atom = atom;
 this.coord = coord;
 this.bsVdw.setBits (index + 1, ac);
 this.bsVdw.clear (index);
-this.hCount = atom.getCovalentHydrogenCount ();
 }, "~N,JM.Atom,~A,~N");
 Clazz.defineMethod (c$, "set", 
 function () {
@@ -73,14 +72,9 @@ Clazz.defineMethod (c$, "getBondIndex",
 function (j) {
 return this.bonds.get (j).index;
 }, "~N");
-c$.isLinear = Clazz.defineMethod (c$, "isLinear", 
-function (minAtom) {
-switch (minAtom.ffType) {
-case 4:
-case 53:
-case 61:
-return true;
-}
-return false;
-}, "JM.MinAtom");
+Clazz.defineMethod (c$, "getHCount", 
+function () {
+if (this.hCount < 0) this.hCount = this.atom.getCovalentHydrogenCount ();
+return this.hCount;
+});
 });

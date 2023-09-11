@@ -107,10 +107,54 @@ cache.put (key, annotv);
 }, "~S,~O");
 Clazz.defineMethod (c$, "getConformation", 
 function (conformationIndex0, doSet, bsAtoms, bsRet) {
-if (conformationIndex0 >= 0) {
-var nAltLocs = this.altLocCount;
-if (nAltLocs > 0) {
+if (this.altLocCount == 0) {
+if (conformationIndex0 == 0) bsRet.or (bsAtoms);
+return true;
+}var isFirst = (conformationIndex0 <= 0);
 var atoms = this.ms.at;
+var isSpace = (conformationIndex0 == -32);
+var isNone = (conformationIndex0 == 0);
+var thisAltLoc = (isFirst && !isSpace ? String.fromCharCode (-conformationIndex0) : '\0');
+if (isFirst) {
+var lastAtom = -1;
+var lastName = null;
+var name;
+var lastChain = -2147483648;
+var chain;
+var lastIns = '\u0000';
+var ins;
+var lastRes = -2147483648;
+var res;
+var haveLoc = true;
+for (var i = bsAtoms.nextSetBit (0); i >= 0; i = bsAtoms.nextSetBit (i + 1)) {
+var atom = atoms[i];
+chain = atom.getChainID ();
+res = atom.getResno ();
+ins = atom.getInsertionCode ();
+name = atom.getAtomName ();
+if (res != lastRes || ins != lastIns || chain != lastChain || name !== lastName) {
+if (!haveLoc && lastAtom >= 0) {
+bsAtoms.set (lastAtom);
+}haveLoc = false;
+if (isNone) {
+lastAtom = i;
+thisAltLoc = atom.altloc;
+} else if (!isSpace) {
+lastAtom = i;
+}}if (atom.altloc == thisAltLoc) {
+haveLoc = true;
+} else {
+bsAtoms.clear (i);
+if (isNone) {
+bsAtoms.clear (lastAtom);
+}}lastChain = chain;
+lastRes = res;
+lastName = name;
+lastIns = ins;
+}
+if (!haveLoc) bsAtoms.set (lastAtom);
+} else {
+conformationIndex0--;
 var g = null;
 var ch = '\u0000';
 var conformationIndex = conformationIndex0;
@@ -130,7 +174,7 @@ conformationIndex--;
 bsFound.set (altloc.charCodeAt (0));
 }if (conformationIndex >= 0 || altloc != ch) bsAtoms.clear (i);
 }
-}}if (bsAtoms.nextSetBit (0) >= 0) {
+}if (bsAtoms.nextSetBit (0) >= 0) {
 bsRet.or (bsAtoms);
 if (doSet) for (var j = this.bioPolymerCount; --j >= 0; ) this.bioPolymers[j].setConformation (bsAtoms);
 

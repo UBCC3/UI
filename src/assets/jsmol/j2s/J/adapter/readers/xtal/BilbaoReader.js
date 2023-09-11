@@ -75,11 +75,11 @@ var ptPre = this.line.indexOf ("<pre>");
 if (ptPre >= 0) this.line = this.line.substring (ptPre + 5);
 var intTableNo = this.parseIntStr (this.line);
 if (intTableNo == 0) {
-this.setSpaceGroupName ("bilbao:" + this.line.substring (2));
+this.setSpaceGroupName (this.line.substring (2));
 } else {
 while (intTableNo < 0 && this.rdLine () != null) intTableNo = this.parseIntStr (this.line);
 
-this.setSpaceGroupName ("bilbao:" + intTableNo);
+this.setSpaceGroupName ("" + intTableNo);
 }var data =  Clazz.newFloatArray (6, 0);
 this.fillFloatArray (this.rdLine (), 0, data);
 for (var i = 0; i < 6; i++) this.setUnitCellItem (i, data[i]);
@@ -98,6 +98,22 @@ return;
 }this.line = null;
 this.readDisplacements (fAmp);
 }, "~S,~N");
+Clazz.defineMethod (c$, "setSpaceGroupName", 
+function (name) {
+if (!this.ignoreFileSpaceGroupName) {
+name = "bilbao:" + name;
+} else if (this.sgName.startsWith (":")) {
+var pt = name.indexOf (':');
+if (pt < 0) pt = name.length;
+name = name.substring (0, pt);
+var s = this.htParams.get ("loadScript");
+if (s != null) {
+pt = s.indexOf ("spacegroup \":");
+if (pt > 0) s.insert (pt + 12, name);
+}name += this.sgName;
+this.ignoreFileSpaceGroupName = false;
+}Clazz.superCall (this, J.adapter.readers.xtal.BilbaoReader, "setSpaceGroupName", [name]);
+}, "~S");
 Clazz.defineMethod (c$, "readDisplacements", 
  function (fAmp) {
 for (var i = 0; i < this.nAtoms; i++) {

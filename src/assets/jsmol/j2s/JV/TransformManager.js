@@ -1478,7 +1478,7 @@ break;
 case 96:
 pt1.add (this.vwr.ms.getAverageAtomPoint ());
 break;
-case 1678381065:
+case 1812599299:
 pt1.add (this.vwr.getBoundBoxCenter ());
 break;
 default:

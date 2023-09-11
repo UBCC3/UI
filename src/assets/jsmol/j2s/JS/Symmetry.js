@@ -404,9 +404,9 @@ return (JS.Symmetry.nullDesc == null ? (JS.Symmetry.nullDesc = (J.api.Interface.
 }return (this.desc == null ? (this.desc = (J.api.Interface.getInterface ("JS.SymmetryDesc", modelSet.vwr, "eval"))) : this.desc).set (modelSet);
 }, "JM.ModelSet");
 Clazz.overrideMethod (c$, "getSymmetryInfoAtom", 
-function (modelSet, iatom, xyz, op, translation, pt, pt2, id, type, scaleFactor, nth, options) {
-return this.getDesc (modelSet).getSymopInfo (iatom, xyz, op, translation, pt, pt2, id, type, scaleFactor, nth, options);
-}, "JM.ModelSet,~N,~S,~N,JU.P3,JU.P3,JU.P3,~S,~N,~N,~N,~N");
+function (modelSet, iatom, xyz, op, translation, pt, pt2, id, type, scaleFactor, nth, options, opList) {
+return this.getDesc (modelSet).getSymopInfo (iatom, xyz, op, translation, pt, pt2, id, type, scaleFactor, nth, options, opList);
+}, "JM.ModelSet,~N,~S,~N,JU.P3,JU.P3,JU.P3,~S,~N,~N,~N,~N,~A");
 Clazz.overrideMethod (c$, "getSpaceGroupInfo", 
 function (modelSet, sgName, modelIndex, isFull, cellParams) {
 var isForModel = (sgName == null);

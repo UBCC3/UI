@@ -238,7 +238,7 @@ this.exporter.fillCylinderScreenMad (this.colix, endcaps, diameter, this.ptA, th
 }, "~N,~N,JU.P3i,JU.P3i");
 Clazz.overrideMethod (c$, "fillCylinderBits", 
 function (endcaps, diameter, pointA, pointB) {
-if (diameter <= 0) return;
+if (diameter == 0) return;
 if (this.isCartesian) {
 this.exporter.fillCylinderScreen (this.colix, endcaps, diameter, pointA, pointB, null, null, 0);
 } else {

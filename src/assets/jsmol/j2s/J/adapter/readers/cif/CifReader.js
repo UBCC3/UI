@@ -38,6 +38,7 @@ this.htGroup1 = null;
 this.nAtoms0 = 0;
 this.titleAtomSet = 1;
 this.addAtomLabelNumbers = false;
+this.ignoreGeomBonds = false;
 this.htCellTypes = null;
 this.modelMap = null;
 this.haveGlobalDummy = false;
@@ -84,6 +85,7 @@ this.appendedData = this.htParams.get ("appendedData");
 var conf = this.getFilter ("CONF ");
 if (conf != null) this.configurationPtr = this.parseIntStr (conf);
 this.isMolecular = this.checkFilterKey ("MOLECUL") && !this.checkFilterKey ("BIOMOLECULE");
+this.ignoreGeomBonds = this.checkFilterKey ("IGNOREGEOMBOND");
 this.isPrimitive = this.checkFilterKey ("PRIMITIVE");
 this.readIdeal = !this.checkFilterKey ("NOIDEAL");
 this.filterAssembly = this.checkFilterKey ("$");
@@ -106,7 +108,7 @@ Clazz.defineMethod (c$, "readCifData",
 this.cifParser = this.getCifDataParser ();
 this.line = "";
 while (this.continueWith (this.key = this.cifParser.peekToken ())) {
-if (this.cifParser.getFileHeader ().startsWith ("# primitive CIF file created by Jmol")) this.addAtomLabelNumbers = true;
+if (!this.addAtomLabelNumbers && this.cifParser.getFileHeader ().startsWith ("# primitive CIF file created by Jmol")) this.addAtomLabelNumbers = true;
 if (!this.readAllData ()) break;
 }
 if (this.appendedData != null) {
@@ -509,7 +511,7 @@ this.asc.setCurrentModelInfo ("structuralFormula", this.thisStructuralFormula);
 this.asc.setCurrentModelInfo ("formula", this.thisFormula);
 return;
 }if (this.key.startsWith ("_space_group_symop") || this.key.startsWith ("_symmetry_equiv_pos") || this.key.startsWith ("_symmetry_ssg_equiv")) {
-if (this.ignoreFileSymmetryOperators) {
+if (this.ignoreFileSymmetryOperators || this.modDim > 0 && this.key.indexOf ("ssg") < 0) {
 JU.Logger.warn ("ignoring file-based symmetry operators");
 this.skipLoop (false);
 } else {
@@ -521,7 +523,7 @@ return;
 }if (this.key.startsWith ("_atom_type")) {
 this.processAtomTypeLoopBlock ();
 return;
-}if ((this.isMolecular || !this.doApplySymmetry) && this.key.startsWith ("_geom_bond")) {
+}if ((this.isMolecular || !this.doApplySymmetry && !this.ignoreGeomBonds) && this.key.startsWith ("_geom_bond")) {
 this.processGeomBondLoopBlock ();
 return;
 }if (this.processSubclassLoopBlock ()) return;
@@ -643,11 +645,14 @@ if ((atom = this.asc.getAtomFromName (this.field)) == null) continue;
 continue;
 }}} else {
 var f = -1;
-if ((f = this.fieldProperty (this.key2col[1])) != -1 || (f = this.fieldProperty (this.key2col[49])) != -1 || (f = this.fieldProperty (this.key2col[73])) != -1 || (f = this.fieldProperty (this.key2col[20])) != -1 || (f = this.fieldProperty (this.key2col[21])) != -1 || (f = this.fieldProperty (this.key2col[63])) != -1) {
-if (this.addAtomLabelNumbers) {
+var f0 = -1;
+if ((f0 = f = this.fieldProperty (this.key2col[1])) != -1 || (f = this.fieldProperty (this.key2col[49])) != -1 || (f = this.fieldProperty (this.key2col[73])) != -1 || (f = this.fieldProperty (this.key2col[20])) != -1 || (f = this.fieldProperty (this.key2col[21])) != -1 || (f = this.fieldProperty (this.key2col[63])) != -1) {
+atom = this.asc.getAtomFromName (this.field);
+if (f0 != -1 && (this.addAtomLabelNumbers || atom != null)) {
 this.field = this.field + (this.asc.ac + 1);
-}atom = this.asc.getAtomFromName (this.field);
-}if (atom == null) {
+System.err.println ("CifReader found duplicate atom_site_label! New label is " + this.field);
+atom = null;
+}}if (atom == null) {
 atom =  new J.adapter.smarter.Atom ();
 if (f != -1) {
 if (this.asc.iSet < 0) {
@@ -1012,23 +1017,8 @@ System.err.println ("ATOM_SITE atom for name " + (a != null ? name2 : b != null 
 continue;
 }this.asc.addNewBondWithOrder (a.index, b.index, order);
 }continue;
-}var dx = 0;
-var pt = sdist.indexOf ('(');
-if (pt >= 0) {
-var data = sdist.toCharArray ();
-var sdx = sdist.substring (pt + 1, sdist.length - 1);
-var n = sdx.length;
-for (var j = pt; --j >= 0; ) {
-if (data[j] == '.' && --j < 0) break;
-data[j] = (--n < 0 ? '0' : sdx.charAt (n));
-}
-dx = this.parseFloatStr (String.valueOf (data));
-if (Float.isNaN (dx)) {
-JU.Logger.info ("error reading uncertainty for " + this.line);
-dx = 0.015;
-}} else {
-dx = 0.015;
-}bondCount++;
+}var dx = this.getStandardDeviation (sdist);
+bondCount++;
 this.bondTypes.addLast ( Clazz.newArray (-1, [name1, name2, Float.$valueOf (distance), Float.$valueOf (dx), Integer.$valueOf (order)]));
 }
 if (bondCount > 0) {
@@ -1037,6 +1027,23 @@ if (!this.doApplySymmetry) {
 this.isMolecular = true;
 this.forceSymmetry (false);
 }}});
+Clazz.defineMethod (c$, "getStandardDeviation", 
+ function (sdist) {
+var pt = sdist.indexOf ('(');
+if (pt >= 0) {
+var data = sdist.toCharArray ();
+var sdx = sdist.substring (pt + 1, data.length - 1);
+var n = sdx.length;
+for (var j = pt; --j >= 0; ) {
+if (data[j] == '.' && --j < 0) break;
+data[j] = (--n < 0 ? '0' : data[pt + 1 + n]);
+}
+var dx = this.parseFloatStr (String.valueOf (data));
+if (!Float.isNaN (dx)) {
+return dx;
+}}JU.Logger.info ("CifReader error reading uncertainty for " + sdist + " (set to 0.015) on line " + this.line);
+return 0.015;
+}, "~S");
 Clazz.defineMethod (c$, "getAtomFromNameCheckCase", 
  function (name) {
 var a = this.asc.getAtomFromName (name);
@@ -1080,7 +1087,7 @@ while (this.createBonds (isFirst)) {
 isFirst = false;
 }
 if (this.isMolecular && this.iHaveFractionalCoordinates && !this.bsMolecule.isEmpty ()) {
-var bs = this.asc.getBSAtoms (0);
+var bs = this.asc.getBSAtoms (this.asc.bsAtoms == null ? this.firstAtom : 0);
 bs.clearBits (this.firstAtom, this.ac);
 bs.or (this.bsMolecule);
 bs.andNot (this.bsExclude);

@@ -179,7 +179,7 @@ case 29:
 msg = J.i18n.GT.$ ("Only one molecular orbital is available in this file");
 break;
 case 30:
-msg = J.i18n.GT.$ ("{0} require that only one model be displayed");
+msg = J.i18n.GT.$ ("{0} requires that only one model be displayed");
 break;
 case 55:
 msg = J.i18n.GT.$ ("{0} requires that only one model be loaded");
@@ -201,6 +201,9 @@ msg = J.i18n.GT.$ ("number must be ({0} or {1})");
 break;
 case 36:
 msg = J.i18n.GT.$ ("decimal number out of range ({0} - {1})");
+break;
+case 57:
+msg = J.i18n.GT.$ ("operation canceled");
 break;
 case 37:
 msg = J.i18n.GT.$ ("object name expected after '$'");
@@ -344,5 +347,6 @@ Clazz.defineStatics (c$,
 "ERROR_what", 53,
 "ERROR_writeWhat", 54,
 "ERROR_multipleModelsNotOK", 55,
-"ERROR_cannotSet", 56);
+"ERROR_cannotSet", 56,
+"ERROR_operationCanceled", 57);
 });

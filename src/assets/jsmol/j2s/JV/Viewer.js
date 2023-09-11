@@ -573,12 +573,7 @@ imageBuffer = this.getImage (false, false);
 }, "~O,~B");
 Clazz.defineMethod (c$, "evalStringWaitStatusQueued", 
 function (returnType, strScript, statusList, isQuiet, isQueued) {
-{
-if (strScript.indexOf("JSCONSOLE") == 0) {
-this.html5Applet._showInfo(strScript.indexOf("CLOSE")<0); if
-(strScript.indexOf("CLEAR") >= 0)
-this.html5Applet._clearConsole(); return null; }
-}return (this.getScriptManager () == null ? null : this.scm.evalStringWaitStatusQueued (returnType, strScript, statusList, isQuiet, isQueued));
+return (this.getScriptManager () == null ? null : this.scm.evalStringWaitStatusQueued (returnType, strScript, statusList, isQuiet, isQueued));
 }, "~S,~S,~S,~B,~B");
 Clazz.defineMethod (c$, "popupMenu", 
 function (x, y, type) {
@@ -755,9 +750,10 @@ var ff = this.getP ("_minimizationForceField");
 var minStatus = this.getP ("_minimizationStatus");
 var starting = "starting".equals (minStatus);
 var done = "done".equals (minStatus) || "failed".equals (minStatus);
-var bsAtoms = (starting || done ? this.minimizer.bsAtoms : null);
-var atomIndex = (starting || done ? bsAtoms.nextSetBit (0) : -1);
-var modelIndex = (atomIndex >= 0 ? this.getModelForAtomIndex (atomIndex).modelIndex : -1);
+var includeAtoms = (this.minimizer != null && (done || starting));
+var bsAtoms = (includeAtoms ? this.minimizer.bsAtoms : null);
+var atomIndex = (bsAtoms == null ? -1 : bsAtoms.nextSetBit (0));
+var modelIndex = (atomIndex >= 0 ? this.getModelIndexForAtom (atomIndex) : -1);
 if (starting && atomIndex >= 0) {
 this.sm.setStatusStructureModified (atomIndex, modelIndex, 3, "minimize:" + minStatus, bsAtoms.cardinality (), bsAtoms);
 }this.sm.notifyMinimizationStatus (minStatus, Clazz.instanceOf (step, String) ? Integer.$valueOf (0) : step, this.getP ("_minimizationEnergy"), (step.toString ().equals ("0") ? Float.$valueOf (0) : this.getP ("_minimizationEnergyDiff")), ff);
@@ -1101,7 +1097,7 @@ Clazz.defineMethod (c$, "setMovableBitSet",
  function (bsSelected, checkMolecule) {
 if (bsSelected == null) bsSelected = this.bsA ();
 bsSelected = JU.BSUtil.copy (bsSelected);
-JU.BSUtil.andNot (bsSelected, this.getMotionFixedAtoms ());
+JU.BSUtil.andNot (bsSelected, this.getMotionFixedAtoms (bsSelected.nextSetBit (0)));
 if (checkMolecule && !this.g.allowMoveAtoms) bsSelected = this.ms.getMoleculeBitSet (bsSelected);
 return this.movableBitSet = bsSelected;
 }, "JU.BS,~B");
@@ -1795,7 +1791,7 @@ var stereo = this.getAtomBitSet ("_C & connected(3) & !connected(double)");
 stereo.and (bsNew);
 if (stereo.nextSetBit (0) >= 0) {
 bsNew.or (this.addHydrogens (stereo, 41));
-}this.minimize (eval, 2147483647, 0, bsNew, null, 0, 185);
+}this.minimize (eval, 2147483647, 0, bsNew, null, null, 0, 185);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 } else {
@@ -2097,8 +2093,8 @@ var iAtom = this.am.getUnitCellAtomIndex ();
 return (iAtom >= 0 ? this.ms.getUnitCellForAtom (iAtom) : this.getUnitCell (this.am.cmi));
 });
 Clazz.defineMethod (c$, "getUnitCell", 
- function (m) {
-if (m >= 0) return this.ms.getUnitCell (m);
+ function (modelIndex) {
+if (modelIndex >= 0) return this.ms.getUnitCell (modelIndex);
 var models = this.getVisibleFramesBitSet ();
 var ucLast = null;
 for (var i = models.nextSetBit (0); i >= 0; i = models.nextSetBit (i + 1)) {
@@ -2165,6 +2161,10 @@ return this.ms.am[modelIndex].properties;
 Clazz.defineMethod (c$, "getModelForAtomIndex", 
 function (iatom) {
 return this.ms.am[this.ms.at[iatom].mi];
+}, "~N");
+Clazz.defineMethod (c$, "getModelIndexForAtom", 
+function (iatom) {
+return this.ms.at[iatom].mi;
 }, "~N");
 Clazz.overrideMethod (c$, "getModelSetAuxiliaryInfo", 
 function () {
@@ -2779,8 +2779,11 @@ return this.g.nihResolverFormat + name.substring (name.indexOf ("/structure") + 
 case '=':
 if (name.startsWith ("==")) {
 id = id.substring (1);
+if (id.equals ("?") && (id = this.getDBID ("chemical component from RCSB")) == null) return null;
 type = '#';
-} else if (id.indexOf ("/") > 0) {
+} else {
+if (id.equals ("?") && (id = this.getDBID ("PDB ID from RCSB")) == null) return null;
+if (id.indexOf ("/") > 0) {
 try {
 var pt = id.indexOf ("/");
 var database = id.substring (0, pt);
@@ -2794,8 +2797,7 @@ return name;
 throw e;
 }
 }
-} else {
-if (id.endsWith (".mmtf")) {
+}if (id.endsWith (".mmtf")) {
 id = id.substring (0, id.indexOf (".mmtf"));
 return JV.JC.resolveDataBase ("mmtf", id.toUpperCase (), null);
 }format = this.g.loadFormat;
@@ -2803,6 +2805,7 @@ return JV.JC.resolveDataBase ("mmtf", id.toUpperCase (), null);
 if (format == null) format = this.g.pdbLoadLigandFormat;
 return JV.JC.resolveDataBase (null, id, format);
 case '*':
+if (id.equals ("?") && (id = this.getDBID ("PDB ID from EBI")) == null) return null;
 var pt = name.lastIndexOf ("/");
 if (name.startsWith ("*dom/")) {
 id = name.substring (pt + 1);
@@ -2833,7 +2836,8 @@ id = id.substring (0, 4);
 }return JV.JC.resolveDataBase (pdbe, id, null);
 case ':':
 format = this.g.pubChemFormat;
-if (id.equals ("")) {
+if (id.equals ("?") && (id = this.getDBID ("structure from PubChem")) == null) return null;
+if (id === "") {
 try {
 id = "smiles:" + this.getOpenSmiles (this.bsA ());
 } catch (e) {
@@ -2866,6 +2870,7 @@ id = "name/" + JU.PT.escapeUrl (id);
 }}return JU.PT.formatStringS (format, "FILE", id);
 case '$':
 this.checkCIR (false);
+if (id.equals ("?") && (id = this.getDBID ("structure from NCI/CADD")) == null) return null;
 if (name.equals ("$")) {
 try {
 id = this.getOpenSmiles (this.bsA ());
@@ -2977,6 +2982,10 @@ id = id.$replace ("bcif", "cif");
 }
 return id;
 }, "~S,~S,~B");
+Clazz.defineMethod (c$, "getDBID", 
+ function (type) {
+return this.prompt ("load a " + type, "", null, false);
+}, "~S");
 Clazz.defineMethod (c$, "checkCIR", 
  function (forceCheck) {
 if (this.cirChecked && !forceCheck || this.g.resolverResolver == null) return;
@@ -3345,8 +3354,10 @@ case 553648145:
 return this.g.infoFontSize;
 case 553648147:
 return this.g.labelPointerWidth;
-case 553648150:
+case 553648149:
 return this.g.meshScale;
+case 553648150:
+return this.g.minimizationReportSteps;
 case 553648153:
 return this.g.minPixelSelRadius;
 case 553648154:
@@ -3386,6 +3397,8 @@ return (this.isModelKitOpen () || this.isModelkitPickingActive () ? 20 : this.g.
 Clazz.overrideMethod (c$, "getBoolean", 
 function (tok) {
 switch (tok) {
+case 603979970:
+return this.g.useMinimizationThread;
 case 603979891:
 return this.g.nboCharges;
 case 603979856:
@@ -3706,9 +3719,10 @@ case 545259558:
 this.setUnits (value, false);
 return;
 case 545259560:
+if (!this.g.forceField.equals (value)) {
 this.g.forceField = value = ("UFF".equalsIgnoreCase (value) ? "UFF" : "UFF2D".equalsIgnoreCase (value) ? "UFF2D" : "MMFF2D".equalsIgnoreCase (value) ? "MMFF2D" : "MMFF");
 this.minimizer = null;
-break;
+}break;
 case 545259571:
 this.g.nmrUrlFormat = value;
 break;
@@ -4056,6 +4070,9 @@ this.setIntPropertyTok (key, tok, value);
 Clazz.defineMethod (c$, "setIntPropertyTok", 
  function (key, tok, value) {
 switch (tok) {
+case 553648150:
+this.g.minimizationReportSteps = Math.min (Math.max (value, 1), 20);
+break;
 case 553648184:
 this.stm.setUndoMax (value);
 break;
@@ -4089,7 +4106,7 @@ break;
 case 553648158:
 this.g.platformSpeed = Math.min (Math.max (value, 0), 10);
 break;
-case 553648150:
+case 553648149:
 this.g.meshScale = value;
 break;
 case 553648153:
@@ -4127,7 +4144,7 @@ break;
 case 553648137:
 this.g.delayMaximumMs = value;
 break;
-case 553648149:
+case 553648148:
 JU.Logger.setLogLevel (value);
 JU.Logger.info ("logging level set to " + value);
 this.g.setI ("logLevel", value);
@@ -4208,8 +4225,8 @@ case 553648143:
 this.g.hermiteLevel = value;
 break;
 case 553648141:
+case 553648161:
 case 553648160:
-case 553648159:
 case 553648162:
 case 553648164:
 break;
@@ -5344,11 +5361,12 @@ this.stopMinimization ();
 if (x != -2147483648 && this.modelkit != null && this.modelkit.getProperty ("rotateBondIndex") != null) {
 this.modelkit.actionRotateBond (deltaX, deltaY, x, y, (modifiers & 16) != 0);
 } else {
+if (bsSelected == null) bsSelected = this.bsA ();
 var iatom = bsSelected.nextSetBit (0);
 bsSelected = this.setMovableBitSet (bsSelected, !asAtoms);
 if (bsSelected.isEmpty ()) {
 bsSelected.set (iatom);
-this.sm.setStatusStructureModified (iatom, this.getModelForAtomIndex (iatom).modelIndex, -3, "FAILED", 1, bsSelected);
+this.sm.setStatusStructureModified (iatom, this.getModelIndexForAtom (iatom), -3, "FAILED", 1, bsSelected);
 } else {
 if (isTranslation) {
 var ptCenter = this.ms.getAtomSetCenter (bsSelected);
@@ -5360,7 +5378,7 @@ if (deltaZ != -2147483648) this.ptScreenNew.set (this.ptScreen.x, this.ptScreen.
 this.tm.unTransformPoint (this.ptScreenNew, this.ptNew);
 var uc = this.getOperativeSymmetry ();
 if (uc != null) {
-this.getModelkit (false).cmdAssignMoveAtoms (bsSelected, iatom, this.ptNew, true);
+this.getModelkit (false).cmdAssignMoveAtoms (bsSelected, null, null, iatom, this.ptNew, null, true);
 }if (!Float.isNaN (this.ptNew.x)) {
 this.ptNew.sub (ptCenter);
 this.setAtomCoordsRelative (this.ptNew, bsSelected);
@@ -5379,6 +5397,7 @@ var i = b.atom2.i;
 bs = JU.BSUtil.newAndSetBit (i);
 bs.set (b.atom1.i);
 }this.highlight (bs);
+this.getModelkit (false);
 this.setModelkitPropertySafely ("screenXY",  Clazz.newIntArray (-1, [x, y]));
 this.setModelkitPropertySafely ("bondIndex", Integer.$valueOf (index));
 var text = this.setModelkitPropertySafely ("hoverLabel", Integer.$valueOf (-2 - index));
@@ -5399,6 +5418,7 @@ this.setShapeProperty (8, "highlight", bs);
 Clazz.defineMethod (c$, "refreshMeasures", 
 function (andStopMinimization) {
 this.setShapeProperty (6, "refresh", null);
+this.setStatusMeasuring ("refreshed", -3, "", 0);
 if (andStopMinimization) this.stopMinimization ();
 }, "~B");
 Clazz.defineMethod (c$, "functionXY", 
@@ -5939,7 +5959,7 @@ Clazz.defineMethod (c$, "checkMinimization",
 this.refreshMeasures (true);
 if (!this.g.monitorEnergy) return;
 try {
-this.minimize (null, 0, 0, this.getFrameAtoms (), null, 0, 1);
+this.minimize (null, 0, 0, this.getFrameAtoms (), null, null, 0, 1);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 } else {
@@ -5949,42 +5969,47 @@ throw e;
 this.echoMessage (this.getP ("_minimizationForceField") + " Energy = " + this.getP ("_minimizationEnergy"));
 });
 Clazz.defineMethod (c$, "minimize", 
-function (eval, steps, crit, bsSelected, bsFixed, rangeFixed, flags) {
-var addHydrogen = (flags & 16) != 0;
+function (eval, steps, crit, bsSelected, bsFixed, bsInFrame, rangeFixed, flags) {
+var isSelectionExplicit = (bsSelected != null);
+if (isSelectionExplicit) {
+flags |= 2;
+}var addHydrogen = (flags & 16) != 0;
+var isModelkitCmd = (flags & 256) != 0;
 var isSilent = (flags & 1) != 0;
 var isQuick = (flags & 8) != 0;
 var groupSelected = (flags & 64) != 0;
 var selectedOnly = groupSelected || (flags & 32) != 0;
-var isSelectionExplicit = (bsSelected != null);
 var isFixExplicit = (bsFixed != null);
-if (this.isModelKitOpen ()) this.modelkit.setProperty ("constraint", null);
-var ff = this.g.forceField;
-var bsInFrame = this.getFrameAtoms ();
+if (this.isModelKitOpen ()) this.setModelkitPropertySafely ("constraint", null);
+if (bsInFrame == null) bsInFrame = this.getFrameAtoms ();
 if (!isQuick && !addHydrogen && isSelectionExplicit && !isFixExplicit && !selectedOnly) {
 var bs = JU.BSUtil.copy (bsInFrame);
 bsFixed = JU.BSUtil.copy (bs);
 bsFixed.andNot (bsSelected);
 bsSelected = bs;
 isFixExplicit = true;
-}if (!isSelectionExplicit) bsSelected = this.getThisModelAtoms ();
- else if (!isQuick) bsSelected.and (bsInFrame);
-if (bsSelected.isEmpty ()) return;
-var bsBasis;
-if (isSelectionExplicit) {
-flags |= 2;
-bsBasis = null;
-} else {
-bsBasis = this.ms.am[this.ms.at[bsSelected.nextSetBit (0)].mi].bsAsymmetricUnit;
-}if (bsBasis != null) {
-bsSelected = this.getAtomBitSet ("cell=555");
-}if (!bsSelected.isEmpty ()) this.getModelForAtomIndex (bsSelected.nextSetBit (0)).auxiliaryInfo.put ("dimension", "3D");
+}if (!isSelectionExplicit) {
+bsSelected = this.getThisModelAtoms ();
+if (selectedOnly) bsSelected.and (this.bsA ());
+} else if (!isQuick) {
+bsSelected.and (bsInFrame);
+}if (bsSelected.isEmpty ()) return;
+var bsBasis = (isModelkitCmd || !selectedOnly ? JU.BSUtil.copy (this.ms.am[this.ms.at[bsSelected.nextSetBit (0)].mi].bsAsymmetricUnit) : null);
+if (isModelkitCmd && bsBasis == null) {
+this.scriptStatusMsg ("MODELKIT MINIMIZE is only applicable to crystal structures.", "minimization: not a crystal structure");
+return;
+}try {
+if (isModelkitCmd) {
+this.getModelkit (false).cmdMinimize (eval, bsBasis, steps, crit, rangeFixed, flags);
+return;
+}var ff = (bsBasis == null ? this.g.forceField : "UFF");
+this.getModelForAtomIndex (bsSelected.nextSetBit (0)).auxiliaryInfo.put ("dimension", "3D");
 if (isQuick) {
 bsInFrame = bsSelected;
-}if (rangeFixed <= 0) rangeFixed = 5.0;
-var bsMotionFixed = JU.BSUtil.copy (isFixExplicit ? bsFixed : this.slm.getMotionFixedAtoms ());
+}var bsMotionFixed = JU.BSUtil.copy (isFixExplicit ? bsFixed : this.slm.getMotionFixedAtoms ());
 var haveFixed = !bsMotionFixed.isEmpty ();
 if (haveFixed) bsSelected.andNot (bsMotionFixed);
-var bsNearby = (bsBasis != null ? this.getThisModelAtoms () : selectedOnly || !haveFixed ?  new JU.BS () : this.ms.getAtomsWithinRadius ((rangeFixed <= 0 ? 5.0 : rangeFixed), bsSelected, true, null, null));
+var bsNearby = (bsBasis != null && isModelkitCmd ? this.getThisModelAtoms () : selectedOnly || !haveFixed ?  new JU.BS () : this.ms.getAtomsWithinRadius ((rangeFixed <= 0 ? 5.0 : rangeFixed), bsSelected, true, null, null));
 bsNearby.andNot (bsSelected);
 if (haveFixed) {
 bsMotionFixed.and (bsNearby);
@@ -6014,11 +6039,9 @@ if (ff.equals ("MMFF") && n > this.g.minimizationMaxAtoms) {
 this.scriptStatusMsg ("Too many atoms for minimization (" + n + ">" + this.g.minimizationMaxAtoms + "); use 'set minimizationMaxAtoms' to increase this limit", "minimization: too many atoms");
 return;
 }if (groupSelected) {
-var bs = this.ms.getConnectingAtoms (bsSelected, bsMotionFixed);
-bsSelected.andNot (bs);
-bsMotionFixed.or (bs);
-}try {
-if (!isSilent) JU.Logger.info ("Minimizing " + bsSelected.cardinality () + " atoms");
+bsMotionFixed.or (this.ms.getConnectingAtoms (bsSelected, bsMotionFixed));
+bsSelected.andNot (bsMotionFixed);
+}if (!isSilent) JU.Logger.info ("Minimizing " + bsSelected.cardinality () + " atoms");
 this.getMinimizer (true).minimize (steps, crit, bsSelected, bsMotionFixed, bsBasis, flags, (isQuick ? "MMFF" : ff));
 if (isQuick) {
 this.g.forceField = "MMFF";
@@ -6041,7 +6064,7 @@ e.printStackTrace ();
 throw e$$;
 }
 }
-}, "J.api.JmolScriptEvaluator,~N,~N,JU.BS,JU.BS,~N,~N");
+}, "J.api.JmolScriptEvaluator,~N,~N,JU.BS,JU.BS,JU.BS,~N,~N");
 Clazz.defineMethod (c$, "setHydrogens", 
  function (bsAtoms) {
 var nTotal =  Clazz.newIntArray (1, 0);
@@ -6069,11 +6092,12 @@ function (bs) {
 this.slm.setMotionFixedAtoms (bs);
 }, "JU.BS");
 Clazz.defineMethod (c$, "getMotionFixedAtoms", 
-function () {
+function (iatom) {
 var bs = JU.BSUtil.copy (this.slm.getMotionFixedAtoms ());
-if (this.modelkit != null || this.getOperativeSymmetry () != null && this.getModelkit (false) != null) this.modelkit.addLockedAtoms (bs);
+if (iatom < 0) iatom = this.getModelUndeletedAtomsBitSet (this.getVisibleFramesBitSet ().nextSetBit (0)).nextSetBit (0);
+if (iatom >= 0 && (this.modelkit != null || this.getOperativeSymmetry () != null && this.getModelkit (false) != null)) this.modelkit.addLockedAtoms (iatom, bs);
 return bs;
-});
+}, "~N");
 Clazz.defineMethod (c$, "getAtomicPropertyState", 
 function (commands, type, bs, name, data) {
 this.getStateCreator ().getAtomicPropertyStateBuffer (commands, type, bs, name, data);
@@ -6632,9 +6656,12 @@ return this.getAnnotationParser (false).getAtomValidation (this, type, atom);
 Clazz.defineMethod (c$, "dragMinimizeAtom", 
 function (iAtom) {
 this.stopMinimization ();
-var bs = (this.getMotionFixedAtoms ().isEmpty () ? this.ms.getAtoms ((this.ms.isAtomPDB (iAtom) ? 1086324742 : 1094713360), JU.BSUtil.newAndSetBit (iAtom)) : JU.BSUtil.setAll (this.ms.ac));
+var flags = 0;
+if (this.getOperativeSymmetry () != null) {
+flags = 256;
+}var bs = (flags != 0 ? null : (this.getMotionFixedAtoms (iAtom).isEmpty () ? this.ms.getAtoms ((this.ms.isAtomPDB (iAtom) ? 1086324742 : 1094713360), JU.BSUtil.newAndSetBit (iAtom)) : JU.BSUtil.setAll (this.ms.ac)));
 try {
-this.minimize (null, 2147483647, 0, bs, null, 0, 0);
+this.minimize (this.eval, 2147483647, 0, bs, null, null, 0, flags);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 if (!this.async) return;
@@ -6775,9 +6802,9 @@ function (key, value) {
 return (this.modelkit == null ? null : this.modelkit.setProperty (key, value));
 }, "~S,~O");
 Clazz.defineMethod (c$, "getSymmetryInfo", 
-function (iatom, xyz, iOp, translation, pt1, pt2, type, desc, scaleFactor, nth, options) {
+function (iatom, xyz, iOp, translation, pt1, pt2, type, desc, scaleFactor, nth, options, opList) {
 try {
-return this.getSymTemp ().getSymmetryInfoAtom (this.ms, iatom, xyz, iOp, translation, pt1, pt2, desc, type, scaleFactor, nth, options);
+return this.getSymTemp ().getSymmetryInfoAtom (this.ms, iatom, xyz, iOp, translation, pt1, pt2, desc, type, scaleFactor, nth, options, opList);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 System.out.println ("Exception in Viewer.getSymmetryInfo: " + e);
@@ -6787,7 +6814,7 @@ return null;
 throw e;
 }
 }
-}, "~N,~S,~N,JU.P3,JU.P3,JU.P3,~N,~S,~N,~N,~N");
+}, "~N,~S,~N,JU.P3,JU.P3,JU.P3,~N,~S,~N,~N,~N,~A");
 Clazz.defineMethod (c$, "getMacro", 
 function (key) {
 if (this.macros == null || this.macros.isEmpty ()) {
@@ -7006,6 +7033,19 @@ Clazz.defineMethod (c$, "getFormulaForAtoms",
 function (bs, type, isEmpirical) {
 return JU.JmolMolecule.getMolecularFormulaAtoms (this.ms.at, bs, ("CELLFORMULA".equals (type) ? this.ms.getCellWeights (bs) : null), isEmpirical);
 }, "JU.BS,~S,~B");
+Clazz.defineMethod (c$, "evalCallback", 
+function (cmd, params, doWait) {
+if (this.getScriptManager () != null) this.scm.evalCallback (cmd, params, doWait);
+}, "~S,~A,~B");
+Clazz.defineMethod (c$, "checkConsoleScript", 
+function (strScript) {
+{
+if (strScript.indexOf("JSCONSOLE") == 0) {
+this.html5Applet._showInfo(strScript.indexOf("CLOSE")<0); if
+(strScript.indexOf("CLEAR") >= 0)
+this.html5Applet._clearConsole(); return true; }
+}return false;
+}, "~S");
 Clazz.pu$h(self.c$);
 c$ = Clazz.declareType (JV.Viewer, "ACCESS", Enum);
 Clazz.defineEnumConstant (c$, "NONE", 0, []);
@@ -7064,6 +7104,7 @@ Clazz.defineStatics (c$,
 "MIN_SELECT_ONLY", 32,
 "MIN_GROUP_SELECT", 64,
 "MIN_XX", 128,
+"MIN_MODELKIT", 256,
 "nProcessors", 1);
 {
 {

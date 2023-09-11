@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JU");
-Clazz.load (["JU.P3", "$.V3"], "JU.BoxInfo", ["JU.Point3fi"], function () {
+Clazz.load (["JU.P3", "$.V3"], "JU.BoxInfo", ["java.lang.Double", "java.util.HashMap", "JU.Point3fi"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.bbCorner0 = null;
 this.bbCorner1 = null;
@@ -181,6 +181,25 @@ Clazz.defineMethod (c$, "getMaxDim",
 function () {
 return this.bbVector.length () * 2;
 });
+Clazz.defineMethod (c$, "getInfo", 
+function (what) {
+var vol = Double.$valueOf (Math.abs (8 * this.bbVector.x * this.bbVector.y * this.bbVector.z));
+if ("volume".equals (what)) {
+return vol;
+}var c = JU.P3.newP (this.bbCenter);
+if ("center".equals (what)) {
+return c;
+}if (what == null || "info".equals (what)) {
+var m =  new java.util.HashMap ();
+m.put ("center", c);
+var v = JU.V3.newVsub (this.bbCorner1, this.bbCorner0);
+m.put ("dimensions", v);
+m.put ("girth", Double.$valueOf (v.x + v.y + v.z));
+m.put ("area", Double.$valueOf (2 * (v.x * v.y + v.x * v.z + v.z * v.y)));
+m.put ("volume", vol);
+return m;
+}return null;
+}, "~S");
 Clazz.overrideMethod (c$, "toString", 
 function () {
 return "" + this.bbCorner0 + this.bbCorner1;

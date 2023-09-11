@@ -637,7 +637,9 @@ return this.addXM3 (m);
 case 12:
 return this.addXM4 (JU.M4.newM4 (x2.value).invert ());
 case 10:
-return this.addXBs (JU.BSUtil.copyInvert (x2.value, (Clazz.instanceOf (x2.value, JM.BondSet) ? this.vwr.ms.bondCount : this.vwr.ms.ac)));
+var isBond = Clazz.instanceOf (x2.value, JM.BondSet);
+var bs = JU.BSUtil.copyInvert (x2.value, (isBond ? this.vwr.ms.bondCount : this.vwr.ms.ac));
+return this.addXBs (isBond ? JM.BondSet.newBS (bs) : bs);
 default:
 return this.addXBool (!x2.asBoolean ());
 }
@@ -705,7 +707,7 @@ return this.addXStr (JU.Escape.escapeColor (JU.CU.colorPtToFFRGB (x2.value)));
 default:
 }
 break;
-case 1678381065:
+case 1812599299:
 return (this.chk ? this.addXStr ("x") : this.getBoundBox (x2));
 }
 if (this.chk) return this.addXStr (JS.SV.sValue (x2));
@@ -742,7 +744,7 @@ return (this.addXBool (x < 0 ? false : bs.get (x)));
 case 10:
 bs = JU.BSUtil.copy (bs);
 bs.and (x2.value);
-return this.addXBs (bs);
+return this.addXBs (Clazz.instanceOf (x1.value, JM.BondSet) ? JM.BondSet.newBS (bs) : bs);
 }
 break;
 }
@@ -750,25 +752,29 @@ return this.addXBool (x1.asBoolean () && x2.asBoolean ());
 case 268435536:
 switch (x1.tok) {
 case 10:
-var bs = JU.BSUtil.copy (x1.value);
+var bs = null;
 switch (x2.tok) {
 case 10:
+bs = JU.BSUtil.copy (x1.value);
 bs.or (x2.value);
-return this.addXBs (bs);
+break;
 case 2:
+bs = JU.BSUtil.copy (x1.value);
 var x = x2.asInt ();
-if (x < 0) break;
+if (x >= 0) {
 bs.set (x);
-return this.addXBs (bs);
+}break;
 case 7:
+bs = JU.BSUtil.copy (x1.value);
 var sv = x2.value;
 for (var i = sv.size (); --i >= 0; ) {
 var b = sv.get (i).asInt ();
 if (b >= 0) bs.set (b);
 }
-return this.addXBs (bs);
-}
 break;
+}
+if (bs == null) break;
+return this.addXBs (Clazz.instanceOf (x1.value, JM.BondSet) ? JM.BondSet.newBS (bs) : bs);
 case 7:
 return this.addX (JS.SV.concatList (x1, x2, false));
 }
@@ -777,7 +783,7 @@ case 268435537:
 if (x1.tok == 10 && x2.tok == 10) {
 var bs = JU.BSUtil.copy (x1.value);
 bs.xor (x2.value);
-return this.addXBs (bs);
+return this.addXBs (Clazz.instanceOf (x1.value, JM.BondSet) ? JM.BondSet.newBS (bs) : bs);
 }var a = x1.asBoolean ();
 var b = x2.asBoolean ();
 return this.addXBool (a && !b || b && !a);
@@ -1135,7 +1141,7 @@ case 8:
 return x.value;
 case 10:
 var bs = x.value;
-if (bs.isEmpty ()) break;
+if (bs.isEmpty () || Clazz.instanceOf (bs, JM.BondSet)) break;
 if (bsRestrict != null) {
 bs = JU.BSUtil.copy (bs);
 bs.and (bsRestrict);
@@ -1204,7 +1210,7 @@ return JU.M4.newMV (matRotate, vTranslate == null ?  new JU.V3 () : JU.V3.newV (
 }, "JU.M3,JU.T3");
 Clazz.defineMethod (c$, "getBoundBox", 
  function (x2) {
-if (x2.tok != 10) return false;
+if (x2.tok != 10 || Clazz.instanceOf (x2.value, JM.BondSet)) return false;
 var b = this.vwr.ms.getBoxInfo (x2.value, 1);
 var pts = b.getBoundBoxPoints (true);
 var list =  new JU.Lst ();
@@ -1298,7 +1304,7 @@ if (!isAtoms && Clazz.instanceOf (x2.value, JM.BondSet)) return this.addX (x2);
 var bs = x2.value;
 if (isAtoms && bs.cardinality () == 1 && (op.intValue & 480) == 0) op.intValue |= 32;
 var val = this.eval.getBitsetProperty (bs, null, op.intValue, null, null, null, op.value, false, x2.index, true);
-return (isAtoms ? this.addXObj (val) : this.addX (JS.SV.newV (10, JM.BondSet.newBS (val, this.vwr.ms.getAtomIndices (bs)))));
+return (isAtoms ? this.addXObj (val) : this.addXBs (JM.BondSet.newBS (val)));
 }
 return false;
 }, "JS.T,JS.SV");

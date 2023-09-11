@@ -193,6 +193,7 @@ return (Clazz.instanceOf (structure, JM.ProteinStructure) ? (structure).type.get
 });
 Clazz.defineMethod (c$, "updateOffsetsForAlternativeLocations", 
 function (atoms, bsSelected) {
+var updated = false;
 for (var offsetIndex = this.offsets.length; --offsetIndex >= 0; ) {
 var offset = this.offsets[offsetIndex] & 0xFF;
 if (offset == 255) continue;
@@ -210,10 +211,12 @@ var atomID = atoms[iNew].atomID;
 if (atomID != thisID || atomID == 0 && !atoms[iNew].getAtomName ().equals (atom.getAtomName ())) continue;
 this.offsets[offsetIndex] = offsetNew;
 atoms[iNew].nBackbonesDisplayed = atom.nBackbonesDisplayed;
+updated = true;
 break;
 }
 }
 this.setLeadAtomIndex ();
+return updated;
 }, "~A,JU.BS");
 Clazz.defineMethod (c$, "getMonomerSequenceAtoms", 
 function (bsInclude, bsResult) {

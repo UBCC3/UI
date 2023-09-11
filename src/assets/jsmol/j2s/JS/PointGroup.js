@@ -30,6 +30,7 @@ this.atomMap = null;
 this.bsAtoms = null;
 this.haveVibration = false;
 this.localEnvOnly = false;
+this.$isLinear = false;
 this.maxAtoms = 250;
 this.maxElement = 0;
 this.eCounts = null;
@@ -99,7 +100,8 @@ this.points = atomVibs;
 }if (this.isEqual (pgLast)) return false;
 try {
 this.findInversionCenter ();
-if (this.isLinear (this.points)) {
+this.$isLinear = this.isLinear (this.points);
+if (this.$isLinear) {
 if (this.haveInversionCenter) {
 this.name = "D(infinity)h";
 } else {
@@ -535,6 +537,8 @@ pt.add2 (a1, a2);
 pt.scale (0.5);
 v1.sub2 (a1, this.center);
 v2.sub2 (a2, this.center);
+v1.normalize ();
+v2.normalize ();
 if (!this.isParallel (v1, v2)) {
 v3.cross (v1, v2);
 v3.normalize ();
@@ -604,7 +608,7 @@ var offset = 0.1;
 for (var i = 2; i < JS.PointGroup.maxAxis; i++) {
 if (i == 14) offset = 0.1;
 if (this.nAxes[i] == 0) continue;
-var label = this.axes[i][0].getLabel ();
+var label = (!this.$isLinear ? this.axes[i][0].getLabel () : "C_infinity");
 offset += 0.25;
 var scale = scaleFactor * this.radius + offset;
 var isProper = (i >= 14);
@@ -615,7 +619,7 @@ v.add2 (op.normalOrAxis, this.center);
 if (op.type == 2) scale = -scale;
 sb.append (drawID + "pgva").append (m).append (label).append ("_").appendI (j + 1).append (" width 0.05 scale ").appendF (scale).append (" ").append (JU.Escape.eP (v));
 v.scaleAdd2 (-2, op.normalOrAxis, v);
-var isPA = (this.principalAxis != null && op.index == this.principalAxis.index);
+var isPA = (!this.$isLinear && this.principalAxis != null && op.index == this.principalAxis.index);
 sb.append (JU.Escape.eP (v)).append ("\"").append (label).append (isPA ? "*" : "").append ("\" color ").append (isPA ? "red" : op.type == 2 ? "blue" : "orange").append (";\n");
 }
 }

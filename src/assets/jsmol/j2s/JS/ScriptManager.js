@@ -48,12 +48,12 @@ return;
 }this.startCommandWatcher (false);
 this.interruptQueueThreads ();
 }, "~B");
-Clazz.overrideMethod (c$, "addScript", 
-function (strScript, isQuiet) {
-return this.addScr ("String", strScript, "", isQuiet);
-}, "~S,~B");
+Clazz.defineMethod (c$, "addScript", 
+ function (strScript, params, isQuiet) {
+return this.addScr ("String", strScript, params, "", isQuiet);
+}, "~S,~A,~B");
 Clazz.defineMethod (c$, "addScr", 
- function (returnType, strScript, statusList, isQuiet) {
+ function (returnType, strScript, params, statusList, isQuiet) {
 {
 this.useCommandWatcherThread = false;
 }if (!this.vwr.g.useScriptQueue) {
@@ -62,7 +62,7 @@ this.vwr.haltScriptExecution ();
 }if (this.commandWatcherThread == null && this.useCommandWatcherThread) this.startCommandWatcher (true);
 if (this.commandWatcherThread != null && strScript.indexOf ("/*SPLIT*/") >= 0) {
 var scripts = JU.PT.split (strScript, "/*SPLIT*/");
-for (var i = 0; i < scripts.length; i++) this.addScr (returnType, scripts[i], statusList, isQuiet);
+for (var i = 0; i < scripts.length; i++) this.addScr (returnType, scripts[i], params, statusList, isQuiet);
 
 return "split into " + scripts.length + " sections for processing";
 }var useCommandThread = (this.commandWatcherThread != null && (strScript.indexOf ("javascript") < 0 || strScript.indexOf ("#javascript ") >= 0));
@@ -72,10 +72,11 @@ scriptItem.addLast (statusList);
 scriptItem.addLast (returnType);
 scriptItem.addLast (isQuiet ? Boolean.TRUE : Boolean.FALSE);
 scriptItem.addLast (Integer.$valueOf (useCommandThread ? -1 : 1));
+scriptItem.addLast (params);
 this.scriptQueue.addLast (scriptItem);
 this.startScriptQueue (false);
 return "pending";
-}, "~S,~S,~S,~B");
+}, "~S,~S,~A,~S,~B");
 Clazz.overrideMethod (c$, "clearQueue", 
 function () {
 this.scriptQueue.clear ();
@@ -177,13 +178,18 @@ return this.evalStringWaitStatusQueued ("String", "script " + JU.PT.esc (strFile
 }, "~S");
 Clazz.overrideMethod (c$, "evalFileArgs", 
 function (strFilename, args) {
-return this.addScript ("script " + JU.PT.esc (strFilename) + (args == null ? "" : "(" + args + ")"), false);
+return this.addScript ("script " + JU.PT.esc (strFilename) + (args == null ? "" : "(" + args + ")"), null, false);
 }, "~S,~S");
 Clazz.overrideMethod (c$, "evalStringWaitStatusQueued", 
 function (returnType, strScript, statusList, isQuiet, isQueued) {
+return this.evalStringWaitParamsStatusQueued (returnType, strScript, null, statusList, isQuiet, isQueued);
+}, "~S,~S,~S,~B,~B");
+Clazz.defineMethod (c$, "evalStringWaitParamsStatusQueued", 
+ function (returnType, strScript, params, statusList, isQuiet, isQueued) {
 if (strScript == null) return null;
 var str = this.checkScriptExecution (strScript, false);
 if (str != null) return str;
+if (this.vwr.checkConsoleScript (strScript)) return null;
 var outputBuffer = (statusList == null || statusList.equals ("output") ?  new JU.SB () : null);
 var oldStatusList = this.vwr.sm.statusList;
 this.vwr.getStatusChanged (statusList);
@@ -192,7 +198,7 @@ var historyDisabled = (strScript.indexOf (")") == 0);
 if (historyDisabled) strScript = strScript.substring (1);
 historyDisabled = historyDisabled || !isQueued;
 this.vwr.setErrorMessage (null, null);
-var eval = (isQueued ? this.eval : this.newScriptEvaluator ());
+var eval = (isQueued && params == null ? this.eval : this.newScriptEvaluator ());
 var isOK = eval.compileScriptString (strScript, isQuiet);
 var strErrorMessage = eval.getErrorMessage ();
 var strErrorMessageUntranslated = eval.getErrorMessageUntranslated ();
@@ -201,7 +207,7 @@ this.vwr.refresh (7, "script complete");
 if (isOK) {
 this.$isScriptQueued = isQueued;
 if (!isQuiet) this.vwr.setScriptStatus (null, strScript, -2 - (++this.scriptIndex), null);
-eval.evaluateCompiledScript (this.vwr.isSyntaxCheck, this.vwr.isSyntaxAndFileCheck, historyDisabled, this.vwr.listCommands, outputBuffer, isQueued);
+eval.evaluateCompiledScript (params, this.vwr.isSyntaxCheck, this.vwr.isSyntaxAndFileCheck, historyDisabled, this.vwr.listCommands, outputBuffer, isQueued);
 } else {
 this.vwr.scriptStatus (strErrorMessage);
 this.vwr.setScriptStatus ("Jmol script terminated", strErrorMessage, 1, strErrorMessageUntranslated);
@@ -217,7 +223,7 @@ if (outputBuffer != null) return (strErrorMessageUntranslated == null ? outputBu
 var info = this.vwr.getProperty (returnType, "jmolStatus", statusList);
 this.vwr.getStatusChanged (oldStatusList);
 return info;
-}, "~S,~S,~S,~B,~B");
+}, "~S,~S,~A,~S,~B,~B");
 Clazz.defineMethod (c$, "checkScriptExecution", 
  function (strScript, isInsert) {
 var str = strScript;
@@ -250,9 +256,13 @@ return true;
 }, "~S");
 Clazz.overrideMethod (c$, "evalStringQuietSync", 
 function (strScript, isQuiet, allowSyncScript) {
+return this.evalStringParamsQuietSync (strScript, null, isQuiet, allowSyncScript);
+}, "~S,~B,~B");
+Clazz.defineMethod (c$, "evalStringParamsQuietSync", 
+ function (strScript, params, isQuiet, allowSyncScript) {
 if (allowSyncScript && this.vwr.sm.syncingScripts && strScript.indexOf ("#NOSYNC;") < 0) this.vwr.syncScript (strScript + " #NOSYNC;", null, 0);
 if (this.eval.isPaused () && strScript.charAt (0) != '!') strScript = '!' + JU.PT.trim (strScript, "\n\r\t ");
-var isInsert = (strScript.length > 0 && strScript.charAt (0) == '!');
+var isInsert = (params == null && strScript.length > 0 && strScript.charAt (0) == '!');
 if (isInsert) strScript = strScript.substring (1);
 var msg = this.checkScriptExecution (strScript, isInsert);
 if (msg != null) return msg;
@@ -261,9 +271,9 @@ this.vwr.setInsertedCommand (strScript);
 if (strScript.indexOf ("moveto ") == 0) this.flushQueue ("moveto ");
 return "!" + strScript;
 }this.vwr.setInsertedCommand ("");
-if (isQuiet) strScript += "\u0001## EDITOR_IGNORE ##";
-return this.addScript (strScript, isQuiet && !this.vwr.getBoolean (603979879));
-}, "~S,~B,~B");
+if (isQuiet && params == null) strScript += "\u0001## EDITOR_IGNORE ##";
+return this.addScript (strScript, params, isQuiet && !this.vwr.getBoolean (603979879));
+}, "~S,~A,~B,~B");
 Clazz.overrideMethod (c$, "checkHalt", 
 function (str, isInsert) {
 if (str.equalsIgnoreCase ("pause") || str.equalsIgnoreCase ("pause\u0001##")) {
@@ -481,6 +491,22 @@ bsA = this.vwr.ms.am[modelIndex].bsAsymmetricUnit;
 if (bsA != null) bsA.or (bsB);
 }return bsB;
 }, "JU.BS,JU.Lst,~A,java.util.Map");
+Clazz.overrideMethod (c$, "evalCallback", 
+function (strScript, params, doWait) {
+if (doWait) {
+this.evalStringWaitParamsStatusQueued ("String", strScript, params, "", true, true);
+} else {
+this.evalStringParamsQuietSync (strScript, params, true, true);
+}}, "~S,~A,~B");
+Clazz.defineMethod (c$, "runScriptFromThread", 
+function (scriptItem) {
+var script = scriptItem.get (0);
+var statusList = scriptItem.get (1);
+var returnType = scriptItem.get (2);
+var isQuiet = (scriptItem.get (3)).booleanValue ();
+var params = scriptItem.get (5);
+this.evalStringWaitParamsStatusQueued (returnType, script, params, statusList, isQuiet, true);
+}, "JU.Lst");
 Clazz.defineStatics (c$,
 "prevCovalentVersion", 0);
 });

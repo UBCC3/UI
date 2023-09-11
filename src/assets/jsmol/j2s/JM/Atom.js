@@ -252,17 +252,21 @@ if (!this.isDeleted ()) this.valence = (nBonds < 0 ? 0 : nBonds <= 0x7F ? nBonds
 }, "~N");
 Clazz.overrideMethod (c$, "getValence", 
 function () {
+return (this.isDeleted () ? -1 : this.valence > 0 ? this.valence : this.getValenceAromatic (true));
+});
+Clazz.defineMethod (c$, "getValenceAromatic", 
+function (checkAromatic) {
 if (this.isDeleted ()) return -1;
 var n = this.valence;
 if (n == 0 && this.bonds != null) {
 var npartial = 0;
 for (var i = this.bonds.length; --i >= 0; ) {
 n += this.bonds[i].getValence ();
-if (this.bonds[i].is (515)) npartial++;
+if (checkAromatic && this.bonds[i].is (515)) npartial++;
 }
 if (n > 0 && n < 3 && npartial != 0) n++;
 }return n;
-});
+}, "~B");
 Clazz.overrideMethod (c$, "getCovalentBondCount", 
 function () {
 if (this.bonds == null) return 0;
@@ -751,7 +755,7 @@ case 1094713368:
 return Math.max (0, this.altloc.charCodeAt (0) - 32);
 case 1094713347:
 return this.i;
-case 1228931587:
+case 1228931586:
 return this.getCovalentBondCount ();
 case 1094713351:
 return this.group.chain.chainNo;

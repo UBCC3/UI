@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JM.FF");
-Clazz.load (["JM.FF.Calculation"], "JM.FF.UFFTorsionCalc", ["JM.Util"], function () {
+Clazz.load (["JM.FF.Calculation"], "JM.FF.UFFTorsionCalc", ["java.lang.Boolean", "JM.Util"], function () {
 c$ = Clazz.declareType (JM.FF, "UFFTorsionCalc", JM.FF.Calculation);
 Clazz.defineMethod (c$, "setData", 
 function (calc, t) {
@@ -79,7 +79,7 @@ break;
 V = 2.0934;
 }
 if (JM.Util.isNearZero (V)) return;
-calc.addLast ( Clazz.newArray (-1, [ Clazz.newIntArray (-1, [this.ia, this.ib, this.ic, this.id, n]),  Clazz.newDoubleArray (-1, [V, cosNPhi0])]));
+calc.addLast ( Clazz.newArray (-1, [this.iData =  Clazz.newIntArray (-1, [this.ia, this.ib, this.ic, this.id, n]),  Clazz.newDoubleArray (-1, [V, cosNPhi0]), this.isLoggable (4)]));
 }, "JU.Lst,~A");
 Clazz.overrideMethod (c$, "compute", 
 function (dataIn) {
@@ -92,7 +92,7 @@ this.energy = V * (1.0 - cosNPhi0 * Math.cos (this.theta * n));
 if (this.calcs.gradients) {
 this.dE = V * n * cosNPhi0 * Math.sin (n * this.theta);
 this.calcs.addForces (this, 4);
-}if (this.calcs.logging) this.calcs.appendLogData (this.calcs.getDebugLine (2, this));
+}if (this.calcs.logging && dataIn[2] === Boolean.TRUE) this.calcs.appendLogData (this.calcs.getDebugLine (2, this));
 return this.energy;
 }, "~A");
 });

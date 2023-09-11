@@ -1522,6 +1522,7 @@ return (Clazz_instanceOf (structure, JM.ProteinStructure) ? (structure).type.get
 });
 Clazz_defineMethod (c$, "updateOffsetsForAlternativeLocations", 
 function (atoms, bsSelected) {
+var updated = false;
 for (var offsetIndex = this.offsets.length; --offsetIndex >= 0; ) {
 var offset = this.offsets[offsetIndex] & 0xFF;
 if (offset == 255) continue;
@@ -1539,10 +1540,12 @@ var atomID = atoms[iNew].atomID;
 if (atomID != thisID || atomID == 0 && !atoms[iNew].getAtomName ().equals (atom.getAtomName ())) continue;
 this.offsets[offsetIndex] = offsetNew;
 atoms[iNew].nBackbonesDisplayed = atom.nBackbonesDisplayed;
+updated = true;
 break;
 }
 }
 this.setLeadAtomIndex ();
+return updated;
 }, "~A,JU.BS");
 Clazz_defineMethod (c$, "getMonomerSequenceAtoms", 
 function (bsInclude, bsResult) {
@@ -2207,10 +2210,20 @@ return this.monomers[polymerIndex].getWingAtom ();
 Clazz_defineMethod (c$, "setConformation", 
 function (bsSelected) {
 var atoms = this.model.ms.at;
-for (var i = this.monomerCount; --i >= 0; ) this.monomers[i].updateOffsetsForAlternativeLocations (atoms, bsSelected);
+var updated = false;
+for (var i = this.monomerCount; --i >= 0; ) if (this.monomers[i].updateOffsetsForAlternativeLocations (atoms, bsSelected)) updated = true;
 
+if (updated) {
 this.recalculateLeadMidpointsAndWingVectors ();
-}, "JU.BS");
+for (var i = 9; i < 16; i++) {
+var s = this.model.ms.vwr.shm.shapes[i];
+if (s == null) continue;
+for (var b = s.bioShapes.length; --b >= 0; ) {
+var bi = s.bioShapes[b];
+if (bi.bioPolymer === this) bi.falsifyMesh ();
+}
+}
+}}, "JU.BS");
 Clazz_defineMethod (c$, "recalculateLeadMidpointsAndWingVectors", 
 function () {
 this.invalidLead = this.invalidControl = true;
@@ -3484,6 +3497,7 @@ return;
 }, "~N");
 Clazz_defineMethod (c$, "setAllConformation", 
 function (bsAtoms) {
+this.vwr.ms.recalculatePositionDependentQuantities (bsAtoms, null);
 var bsModels = this.ms.getModelBS (bsAtoms, false);
 for (var i = bsModels.nextSetBit (0); i >= 0; i = bsModels.nextSetBit (i + 1)) if (this.ms.am[i].isBioModel) {
 var m = this.ms.am[i];
@@ -3868,10 +3882,54 @@ cache.put (key, annotv);
 }, "~S,~O");
 Clazz_defineMethod (c$, "getConformation", 
 function (conformationIndex0, doSet, bsAtoms, bsRet) {
-if (conformationIndex0 >= 0) {
-var nAltLocs = this.altLocCount;
-if (nAltLocs > 0) {
+if (this.altLocCount == 0) {
+if (conformationIndex0 == 0) bsRet.or (bsAtoms);
+return true;
+}var isFirst = (conformationIndex0 <= 0);
 var atoms = this.ms.at;
+var isSpace = (conformationIndex0 == -32);
+var isNone = (conformationIndex0 == 0);
+var thisAltLoc = (isFirst && !isSpace ? String.fromCharCode (-conformationIndex0) : '\0');
+if (isFirst) {
+var lastAtom = -1;
+var lastName = null;
+var name;
+var lastChain = -2147483648;
+var chain;
+var lastIns = '\u0000';
+var ins;
+var lastRes = -2147483648;
+var res;
+var haveLoc = true;
+for (var i = bsAtoms.nextSetBit (0); i >= 0; i = bsAtoms.nextSetBit (i + 1)) {
+var atom = atoms[i];
+chain = atom.getChainID ();
+res = atom.getResno ();
+ins = atom.getInsertionCode ();
+name = atom.getAtomName ();
+if (res != lastRes || ins != lastIns || chain != lastChain || name !== lastName) {
+if (!haveLoc && lastAtom >= 0) {
+bsAtoms.set (lastAtom);
+}haveLoc = false;
+if (isNone) {
+lastAtom = i;
+thisAltLoc = atom.altloc;
+} else if (!isSpace) {
+lastAtom = i;
+}}if (atom.altloc == thisAltLoc) {
+haveLoc = true;
+} else {
+bsAtoms.clear (i);
+if (isNone) {
+bsAtoms.clear (lastAtom);
+}}lastChain = chain;
+lastRes = res;
+lastName = name;
+lastIns = ins;
+}
+if (!haveLoc) bsAtoms.set (lastAtom);
+} else {
+conformationIndex0--;
 var g = null;
 var ch = '\u0000';
 var conformationIndex = conformationIndex0;
@@ -3891,7 +3949,7 @@ conformationIndex--;
 bsFound.set (altloc.charCodeAt (0));
 }if (conformationIndex >= 0 || altloc != ch) bsAtoms.clear (i);
 }
-}}if (bsAtoms.nextSetBit (0) >= 0) {
+}if (bsAtoms.nextSetBit (0) >= 0) {
 bsRet.or (bsAtoms);
 if (doSet) for (var j = this.bioPolymerCount; --j >= 0; ) this.bioPolymers[j].setConformation (bsAtoms);
 

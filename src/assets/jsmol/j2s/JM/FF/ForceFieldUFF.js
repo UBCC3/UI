@@ -30,7 +30,7 @@ this.setModelFields ();
 JU.Logger.info ("minimize: setting atom types...");
 if (this.ffParams == null || JM.FF.ForceFieldUFF.atomTypes == null && (JM.FF.ForceFieldUFF.atomTypes = this.getAtomTypes ()) == null) return false;
 this.setAtomTypes (bsElements, elemnoMax);
-this.calc =  new JM.FF.CalculationsUFF (this, this.ffParams, this.minAtoms, this.minBonds, this.minAngles, this.minTorsions, this.minPositions, this.minimizer.constraints);
+this.calc =  new JM.FF.CalculationsUFF (this, this.ffParams, this.minAtoms, this.minBonds, this.minAngles, this.minTorsions, this.minimizer.constraints);
 return this.calc.setupCalculations ();
 }, "JU.BS,~N");
 Clazz.defineMethod (c$, "setAtomTypes", 
@@ -95,7 +95,7 @@ var v = this.minimizer.vwr.evaluateExpression (search);
 if (!(Clazz.instanceOf (v, JU.BS))) return null;
 var bs = v;
 if (isAromatic && bs.nextSetBit (0) >= 0) {
-if (this.bsAromatic == null) this.bsAromatic = this.minimizer.vwr.evaluateExpression (JM.FF.ForceFieldUFF.tokenTypes[3]);
+if (this.bsAromatic == null) this.bsAromatic = (bsElements.get (6) ? this.minimizer.vwr.evaluateExpression (JM.FF.ForceFieldUFF.tokenTypes[3]) :  new JU.BS ());
 bs.and (this.bsAromatic);
 }if (JU.Logger.debugging && bs.nextSetBit (0) >= 0) JU.Logger.debug (smarts + " minimize atoms=" + bs);
 return bs;

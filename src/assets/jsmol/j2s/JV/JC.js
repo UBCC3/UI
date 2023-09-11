@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JV");
-Clazz.load (["java.util.Hashtable", "JU.SB", "$.V3", "JU.Elements"], "JV.JC", ["JU.PT", "JU.Logger"], function () {
+Clazz.load (["java.util.Hashtable", "JU.SB", "$.V3", "JU.Elements"], "JV.JC", ["JU.PT", "J.i18n.GT", "JU.Logger"], function () {
 c$ = Clazz.declareType (JV, "JC");
 c$.getNBOTypeFromName = Clazz.defineMethod (c$, "getNBOTypeFromName", 
 function (nboType) {
@@ -196,7 +196,7 @@ case 537022465:
 return 31;
 case 1611272194:
 return 34;
-case 1678381065:
+case 1812599299:
 return 32;
 case 1814695966:
 return 33;
@@ -291,6 +291,14 @@ c$.getBoolName = Clazz.defineMethod (c$, "getBoolName",
 function (g) {
 return JV.JC.globalBooleans[g];
 }, "~N");
+c$.getMenuScript = Clazz.defineMethod (c$, "getMenuScript", 
+function (type) {
+if (type === "openPDB") {
+return "var x__id__ = _modelTitle; if (x__id__.length != 4) { x__id__ = '1crn'};x__id__ = prompt('" + J.i18n.GT.$ ("Enter a four-digit PDB model ID or \"=\" and a three-digit ligand ID") + "',x__id__);if (!x__id__) { quit }; load @{'=' + x__id__}";
+}if (type === "openMOL") {
+return "var x__id__ = _smilesString; if (!x__id__) { x__id__ = 'tylenol'};x__id__ = prompt('" + J.i18n.GT.$ ("Enter the name or identifier (SMILES, InChI, CAS) of a compound. Preface with \":\" to load from PubChem; otherwise Jmol will use the NCI/NIH Resolver.") + "',x__id__);if (!x__id__) { quit }; load @{(x__id__[1]==':' ? x__id__ : '$' + x__id__)}";
+}return null;
+}, "~S");
 Clazz.defineStatics (c$,
 "NBO_TYPES", ";AO;;;;PNAO;;NAO;;;PNHO;;NHO;;;PNBO;;NBO;;;PNLMO;NLMO;;MO;;;;NO;;;;;;;;;;PRNBO;RNBO;;;;;;;;",
 "CIP_CHIRALITY_UNKNOWN", 0,
@@ -631,6 +639,7 @@ c$.IMAGE_OR_SCENE = c$.prototype.IMAGE_OR_SCENE = ";jpg;jpeg;jpg64;jpeg64;gif;gi
 "SMILES_GEN_EXPLICIT_H_ALL", 0x00001000,
 "SMILES_GEN_EXPLICIT_H2_ONLY", 0x00002000,
 "SMILES_GEN_TOPOLOGY", 0x00004000,
+"SMILES_GEN_ALL_COMPONENTS", 0x00008000,
 "SMILES_GEN_POLYHEDRAL", 0x00010000,
 "SMILES_GEN_ATOM_COMMENT", 0x00020000,
 "SMILES_GEN_NO_BRANCHES", 0x00040000,

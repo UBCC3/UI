@@ -356,7 +356,7 @@ var order = oab[0];
 if (needLP) {
 bondCounts[a1] += order;
 bondCounts[a2] += order;
-}this.vwr.ms.bondAtoms (this.vwr.ms.at[a1], this.vwr.ms.at[a2], order, mad, bsAtoms, 0, true, true);
+}this.vwr.ms.bondAtoms (this.vwr.ms.at[a1], this.vwr.ms.at[a2], order, mad, null, 0, true, true);
 }
 } else if (matrix != null) {
 for (var i = 0; i < atomCount - 1; i++) {

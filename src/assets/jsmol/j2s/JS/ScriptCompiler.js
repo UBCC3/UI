@@ -778,7 +778,6 @@ if (this.lookingAtLoadFormat (isDataBase)) {
 var strFormat = this.script.substring (this.ichToken, this.ichToken + this.cchToken);
 var token = JS.T.getTokenFromName (strFormat.toLowerCase ());
 switch (token == null ? 0 : token.tok) {
-case 36868:
 case 1073742015:
 case 1073742077:
 case 1073741839:
@@ -786,6 +785,7 @@ case 1610616855:
 case 4130:
 case 1073877011:
 if (this.nTokens != 1) return 4;
+case 36868:
 case 134221834:
 case 1228935687:
 case 134217764:
@@ -901,7 +901,7 @@ return 2;
 var isBondOrMatrix = (this.script.charAt (this.ichToken) == '[');
 var bs = this.lookingAtBitset ();
 if (bs != null) {
-this.addTokenToPrefix (JS.T.o (10, isBondOrMatrix ? JM.BondSet.newBS (bs, null) : bs));
+this.addTokenToPrefix (JS.T.o (10, isBondOrMatrix ? JM.BondSet.newBS (bs) : bs));
 return 2;
 }if (isBondOrMatrix) {
 var m = this.lookingAtMatrix ();

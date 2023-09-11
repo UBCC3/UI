@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JM.FF");
-Clazz.load (["JM.FF.ForceField"], "JM.FF.ForceFieldMMFF", ["java.lang.Double", "$.Float", "java.util.Hashtable", "JU.AU", "$.BS", "$.Lst", "$.PT", "JM.MinAtom", "$.MinObject", "JM.FF.AtomType", "$.CalculationsMMFF", "JU.BSUtil", "$.Elements", "$.Escape", "$.Logger", "JV.JmolAsyncException"], function () {
+Clazz.load (["JM.FF.ForceField"], "JM.FF.ForceFieldMMFF", ["java.lang.Double", "$.Float", "java.util.Hashtable", "JU.AU", "$.BS", "$.Lst", "$.PT", "JM.MinObject", "JM.FF.AtomType", "$.CalculationsMMFF", "JU.BSUtil", "$.Elements", "$.Escape", "$.Logger", "JV.JmolAsyncException"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.ffParams = null;
 this.rawAtomTypes = null;
@@ -43,7 +43,7 @@ var m = this.minimizer;
 if (!this.setArrays (m.atoms, m.bsAtoms, m.bonds, m.rawBondCount, false, false)) return false;
 this.setModelFields ();
 if (!this.fixTypes ()) return false;
-this.calc =  new JM.FF.CalculationsMMFF (this, this.ffParams, this.minAtoms, this.minBonds, this.minAngles, this.minTorsions, this.minPositions, this.minimizer.constraints);
+this.calc =  new JM.FF.CalculationsMMFF (this, this.ffParams, this.minAtoms, this.minBonds, this.minAngles, this.minTorsions, this.minimizer.constraints);
 this.calc.setLoggingEnabled (true);
 return this.calc.setupCalculations ();
 }, "JU.BS,~N");
@@ -786,7 +786,7 @@ theta0 = 120;
 var crd = atom.getCovalentBondCount ();
 switch (crd) {
 case 2:
-if (JM.MinAtom.isLinear (b)) theta0 = 180;
+if (this.isLinear (b)) theta0 = 180;
  else if (elemno == 8) theta0 = 105;
  else if (elemno > 10) theta0 = 95.0;
 break;
@@ -829,7 +829,7 @@ var ib = o.data[1];
 var ic = o.data[2];
 b = this.minAtoms[ib];
 c = this.minAtoms[ic];
-if (JM.MinAtom.isLinear (b) || JM.MinAtom.isLinear (c)) return null;
+if (this.isLinear (b) || this.isLinear (c)) return null;
 var bondBC = this.minBonds[o.data[5]];
 var elemnoB = b.atom.getElementNumber ();
 var elemnoC = c.atom.getElementNumber ();
@@ -911,6 +911,16 @@ default:
 return null;
 }
 }, "JM.MinObject,~A,~N");
+Clazz.defineMethod (c$, "isLinear", 
+function (a) {
+switch (a.ffType) {
+case 4:
+case 53:
+case 61:
+return true;
+}
+return false;
+}, "JM.MinAtom");
 Clazz.defineMethod (c$, "getR0", 
  function (b) {
 return (b.ddata == null ? (this.ffParams.get (b.key)) : b.ddata)[1];
