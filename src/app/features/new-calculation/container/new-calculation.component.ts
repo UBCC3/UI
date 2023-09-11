@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { trigger, state, style, transition, animate, AUTO_STYLE } from '@angular/animations';
+import { NavigationExtras, Router } from '@angular/router';
 
 const calculationType = [
     {
@@ -29,12 +30,18 @@ const calculationType = [
 export class NewCalculationComponent implements OnInit {
     form: FormGroup;
     moreSettings: boolean;
-    file: any;
+    file!: File | null;
     isEditStructure: boolean;
+    extensionError!: string;
 
     // NOTE: for testdata
     calculationType: any;
-    constructor(private formBuilder: FormBuilder) {
+
+    smallJsMolContainer = {
+        width: '500px',
+        height: '360px',
+    };
+    constructor(private formBuilder: FormBuilder, private router: Router) {
         this.moreSettings = false;
         this.isEditStructure = false;
         this.calculationType = calculationType;
@@ -61,12 +68,23 @@ export class NewCalculationComponent implements OnInit {
 
     handleFileUpload(event: Event): void {
         const fileInput = event.target as HTMLInputElement;
-        if (fileInput && fileInput.files && fileInput.files.length > 0) {
+        if (fileInput.files && fileInput.files.length > 0) {
+            // const selectedFile = fileInput.files[0];
             this.file = fileInput.files[0];
-            this.form.patchValue({ file: fileInput.files[0] });
-            console.log(this.file); // Access the selected file
-            // Perform further actions with the file (e.g., read its contents, validate, etc.)
-            // this.readFileContents(this.file);
+            const allowedExtensions = ['xyz', 'pdb', 'cif', 'mol'];
+            const fileExtension = this.file.name.split('.').pop()?.toLowerCase();
+
+            if (allowedExtensions.includes(fileExtension as string)) {
+                // The selected file has a valid extension
+                this.form.patchValue({ file: fileInput.files[0] });
+                this.extensionError = '';
+            } else {
+                // The selected file has an invalid extension
+                this.file = null; // Reset selectedFile to null
+                this.deleteFile(); // Reset file in form
+                this.extensionError = 'Invalid file extension. Allowed extensions: ' + allowedExtensions.join(', ');
+                console.error('Invalid file extension. Allowed extensions:', allowedExtensions.join(', '));
+            }
         }
     }
 
@@ -74,7 +92,18 @@ export class NewCalculationComponent implements OnInit {
         this.form.get('file')?.reset();
     }
 
-    test(): void {
+    editStructure(): void {
+        const navExtras: NavigationExtras = {
+            state: {
+                file: this.file,
+            },
+        };
+
+        this.router.navigate(['profile'], navExtras);
+    }
+
+    calculate(): void {
+        // TODO: call to backend to calculate
         console.log(this.form.value);
         console.log(this.form.valid);
         // console.log(this.form.get('file')?.value.name);

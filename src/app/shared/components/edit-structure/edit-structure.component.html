@@ -1,11 +1,14 @@
 <div class="flex justify-center items-center">
     <!-- NOTE: need to set width of applet so the info sidebar have room -->
-    <div id="jsmolApplet" #appletContainer></div>
-    <div class="flex items-center justify-center absolute bottom-11 z-9999 bg-white rounded-full h-16 px-2">
+    <div id="jsmolApplet" #appletContainer [ngStyle]="style"></div>
+    <div
+        class="flex items-center justify-center absolute bottom-11 z-9999 bg-white rounded-full h-16 px-2"
+        *ngIf="!isPreview"
+    >
         <div class="flex justify-between pr-2">
             <!-- NOTE: I think these have to be done using keyboard hotkeys shift+ drag / shift+cmd + drag etc -->
             <button class="btn btn-ghost rounded-full mx-2">
-                <img src="../../../../assets/hand.svg" alt="hand-icon" />
+                <img src="../../../../assets/hand.svg" alt="hand-icon" (click)="toggleDrag()" />
             </button>
             <button class="btn btn-ghost rounded-full mx-2">
                 <img src="../../../../assets/rotate.svg" alt="rotate-icon" />

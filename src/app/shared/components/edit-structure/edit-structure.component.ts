@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, NgZone, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, NgZone, OnInit, Renderer2, ViewChild } from '@angular/core';
 
 declare var Jmol: any;
 
@@ -10,7 +10,7 @@ const info = {
     use: 'HTML5',
     j2sPath: '../../../../assets/jsmol/j2s',
     serverURL: '../../../../assets/jsmol/php/jsmol.php',
-    src: '../../../../assets/1aho.pdb',
+    // src: '../../../../assets/1aho.pdb',
 };
 
 @Component({
@@ -20,16 +20,25 @@ const info = {
 })
 export class EditStructureComponent implements OnInit, AfterViewInit {
     // TODO: add props for file and can edit
+    @Input()
+    file!: File;
+    @Input() style!: { [key: string]: string };
+    @Input()
+    isPreview!: boolean;
+    @Input()
+    canEdit!: boolean;
 
     @ViewChild('appletContainer', { static: false }) appletContainer!: ElementRef;
     private appletElement!: HTMLDivElement;
     private appletObject: any;
     appletHtml!: string;
-    private file: any;
+    // private file: any;
     zoomValue: string;
 
     constructor(private renderer: Renderer2) {
         this.zoomValue = '100%';
+        this.canEdit = true;
+        this.isPreview = false;
     }
 
     ngOnInit(): void {}
@@ -41,8 +50,14 @@ export class EditStructureComponent implements OnInit, AfterViewInit {
             .then((appletHtml) => {
                 this.appletElement.innerHTML = appletHtml;
 
-                if (this.file) this.loadFile();
-                const appletContainer = document.getElementById('jsmolApplet');
+                if (this.file) {
+                    console.log('has file...', this.file);
+                    console.log('loading file');
+                    setTimeout(() => {
+                        this.loadFile();
+                        this.setRightClickMenuAccess();
+                    }, 100);
+                }
 
                 // NOTE: need a delay before setting jmol params or else it won't render
                 // setTimeout(() => {
@@ -89,26 +104,48 @@ export class EditStructureComponent implements OnInit, AfterViewInit {
         }
     }
 
-    loadFile() {
-        // Perform actions to load the uploaded file into JSmol
-        // You can access the file reference and pass it to JSmol methods as needed
-        // Example: this.jmolApplet.script('load FILE "path/to/file.xyz"');
-        const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    // loadFile() {
+    //     // Perform actions to load the uploaded file into JSmol
+    //     // You can access the file reference and pass it to JSmol methods as needed
+    //     // Example: this.jmolApplet.script('load FILE "path/to/file.xyz"');
+    //     const fileInput = document.getElementById('fileInput') as HTMLInputElement;
 
-        if (fileInput && fileInput.files && fileInput.files.length > 0) {
-            const file = fileInput.files[0];
+    //     if (fileInput && fileInput.files && fileInput.files.length > 0) {
+    //         const file = fileInput.files[0];
+    //         const reader = new FileReader();
+    //         reader.onload = (event) => {
+
+    //             const fileContents = event.target?.result as string;
+    //             console.log('file contents', fileContents + 'END');
+    //             // const fileContentsAppended = `load data "test" ${fileContents} end "test"`;
+    //             const fileContentsAppended = `load data "model" ${fileContents} end "model"`;
+    //             console.log('files appended', fileContentsAppended);
+    //             // Pass the file contents to JSmol for loading
+    //             Jmol.script(this.appletObject, fileContentsAppended);
+    //             // Jmol.script(this.appletObject, "load :caffeine");
+    //         };
+    //         reader.readAsText(file);
+    //     }
+    // }
+
+    loadFile() {
+        if (this.file) {
+            console.log('has file');
             const reader = new FileReader();
             reader.onload = (event) => {
+                console.log('reader onload', event);
                 const fileContents = event.target?.result as string;
-                console.log('file contents', fileContents + 'END');
-                // const fileContentsAppended = `load data "test" ${fileContents} end "test"`;
                 const fileContentsAppended = `load data "model" ${fileContents} end "model"`;
-                console.log('files appended', fileContentsAppended);
-                // Pass the file contents to JSmol for loading
                 Jmol.script(this.appletObject, fileContentsAppended);
             };
-            reader.readAsText(file);
+
+            reader.readAsText(this.file);
         }
+    }
+
+    setRightClickMenuAccess() {
+        if (!this.canEdit) Jmol.script(this.appletObject, 'set disablePopupMenu TRUE');
+        else Jmol.script(this.appletObject, 'set disablePopupMenu FALSE');
     }
 
     zoomIn(): void {
@@ -137,5 +174,19 @@ export class EditStructureComponent implements OnInit, AfterViewInit {
         console.log('zoomValue', this.zoomValue);
 
         Jmol.script(this.appletObject, `zoom ${this.zoomValue.slice(0, -1)}`);
+    }
+
+    toggleDrag(): void {
+        // Jmol.script(this.appletObject, 'set allowMoveAtoms TRUE');
+
+        // NOTE: this drags atoms that are connected,if structure has atoms that are by itself those don't get dragged
+        // Jmol.script(this.appletObject, 'set picking DRAGMOLECULE');
+        // NOTE: to drag an atom
+        // Jmol.script(this.appletObject, 'set picking DRAGATOM');
+
+        // NOTE: this is to move the whole structure works on chemapps example but not on angular app
+        Jmol.script(this.appletObject, 'set picking DRAGSELECTED;');
+
+        console.log(Jmol.script(this.appletObject, 'getProperty appletInfo'));
     }
 }
