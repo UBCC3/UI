@@ -87,7 +87,12 @@
                     </th>
                     <td>
                         <div class="flex items-center space-x-3">
-                            <div class="text-sm hover:cursor-pointer" (click)="openJob(job.id)">
+                            <div
+                                tabindex="0"
+                                class="text-sm hover:cursor-pointer"
+                                (click)="openJob(job.id)"
+                                (keydown.enter)="openJob(job.id)"
+                            >
                                 {{ job.job_name }}
                             </div>
                         </div>

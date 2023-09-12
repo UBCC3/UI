@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, ElementRef, Input, NgZone, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, Renderer2, ViewChild } from '@angular/core';
 
-declare var Jmol: any;
+declare const Jmol: any;
 
 // Set up JSmol applet configuration
 const info = {
@@ -17,7 +17,7 @@ const info = {
     templateUrl: './edit-structure.component.html',
     styleUrls: ['./edit-structure.component.scss'],
 })
-export class EditStructureComponent implements OnInit, AfterViewInit {
+export class EditStructureComponent implements AfterViewInit {
     // TODO: add props for file and can edit
     @Input()
     file!: File;
@@ -40,8 +40,6 @@ export class EditStructureComponent implements OnInit, AfterViewInit {
         this.isPreview = false;
         this.toggledDrag = false;
     }
-
-    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         this.appletElement = this.appletContainer.nativeElement;
@@ -92,16 +90,6 @@ export class EditStructureComponent implements OnInit, AfterViewInit {
             // add script to html
             this.renderer.appendChild(document.body, script);
         });
-    }
-
-    handleFileUpload(event: Event) {
-        const fileInput = event.target as HTMLInputElement;
-        if (fileInput && fileInput.files && fileInput.files.length > 0) {
-            this.file = fileInput.files[0];
-            console.log(this.file); // Access the selected file
-            // Perform further actions with the file (e.g., read its contents, validate, etc.)
-            // this.readFileContents(this.file);
-        }
     }
 
     loadFile() {

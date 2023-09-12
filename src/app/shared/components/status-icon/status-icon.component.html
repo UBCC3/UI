@@ -4,13 +4,8 @@
         [class.bg-success-50]="status === 'completed'"
         [class.bg-error-50]="status === 'failed'"
         [class.bg-blue-100]="status === 'running' || status === 'submitted'"
-        [class.bg-gray-100]="status === 'cancelled' || status === 'paused' || status === 'stopped'"
+        [class.bg-gray-100]="status === 'cancelled'"
     >
-        <!-- NOTE: -->
-        <!-- enum for job status 'SUBMITTED', 'RUNNING', 'FAILED', 'STOPPED', 'COMPLETED'  -->
-        <!-- running = in progress -->
-        <!-- stopped can either be paused or cancel  -->
-        <!-- update enum to pause and cancel? -->
         <img src="../../../../assets/check-icon.svg" alt="check icon" *ngIf="status === 'completed'" />
         <img src="../../../../assets/alert-circle.svg" alt="alert icon" *ngIf="status === 'failed'" />
         <img
@@ -18,7 +13,6 @@
             alt="refresh icon"
             *ngIf="status === 'running' || status === 'submitted'"
         />
-        <img src="../../../../assets/pause-circle.svg" class="w-3 h-3" alt="pause icon" *ngIf="status === 'paused'" />
         <img
             src="../../../../assets/cancel-icon.svg"
             class="w-3 h-3"
@@ -30,7 +24,7 @@
             [class.text-success-700]="status === 'completed'"
             [class.text-error-700]="status === 'failed'"
             [class.text-blue-500]="status === 'running' || status === 'submitted'"
-            [class.text-gray-700]="status === 'cancelled' || status === 'paused'"
+            [class.text-gray-700]="status === 'cancelled'"
         >
             {{ status === 'running' ? 'In Progress' : (status | titlecase) }}
         </p>

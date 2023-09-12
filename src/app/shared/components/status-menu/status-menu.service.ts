@@ -7,8 +7,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class StatusMenuService {
     private statusMenuEmit = new BehaviorSubject<any>(null);
 
-    constructor() {}
-
     emitStatusMenuEvent(data?: any): void {
         this.statusMenuEmit.next(data);
     }

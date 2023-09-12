@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Job } from '../../../../shared/models/jobs.model';
 
 @Component({
@@ -6,7 +6,7 @@ import { Job } from '../../../../shared/models/jobs.model';
     templateUrl: './in-progress-jobs-table.component.html',
     styleUrls: ['./in-progress-jobs-table.component.scss'],
 })
-export class InProgressJobsTableComponent implements OnInit {
+export class InProgressJobsTableComponent {
     @Input()
     inProgressJobs!: Job[];
 
@@ -18,8 +18,6 @@ export class InProgressJobsTableComponent implements OnInit {
     constructor() {
         this.selectedJobs = [];
     }
-
-    ngOnInit(): void {}
 
     toggleSelection(job: Job, event: Event): void {
         const target = event.target as HTMLInputElement;

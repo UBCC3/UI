@@ -42,7 +42,7 @@ const isCompleted = [
     {
         id: '98ecc611-f384-490c-9f8a-3f5084110341',
         created: new Date(),
-        userid: 'a.yang223@gmail.com',
+        userid: 'email@gmail.com',
         job_name: 'test job name',
         submitted: new Date(),
         started: '2023-08-01 19:58:27.094',
@@ -55,7 +55,7 @@ const isCompleted = [
     {
         id: '07010fe6-1591-44dc-b188-b04610320969',
         created: new Date(),
-        userid: 'a.yang223@gmail.com',
+        userid: 'email@gmail.com',
         job_name: 'test job name2',
         submitted: new Date(),
         started: '2023-08-01 19:58:27.094',
@@ -68,7 +68,7 @@ const isCompleted = [
     {
         id: '07010fe6-1591-44dc-b188-b04610320969',
         created: new Date(),
-        userid: 'a.yang223@gmail.com',
+        userid: 'email@gmail.com',
         job_name: 'test job name3',
         submitted: new Date(),
         started: '2023-08-01 19:58:27.094',
@@ -81,7 +81,7 @@ const isCompleted = [
     {
         id: '07010fe6-1591-44dc-b188-b04610320969',
         created: new Date(),
-        userid: 'a.yang223@gmail.com',
+        userid: 'email@gmail.com',
         job_name: 'test job name3',
         submitted: new Date(),
         started: '2023-07-01 19:58:27.094',
@@ -94,7 +94,7 @@ const isCompleted = [
     {
         id: '07010fe6-1591-44dc-b188-b04610320969',
         created: new Date(),
-        userid: 'a.yang223@gmail.com',
+        userid: 'email@gmail.com',
         job_name: 'test job name4',
         submitted: new Date(),
         started: '2023-07-01 19:58:27.094',
@@ -107,7 +107,7 @@ const isCompleted = [
     {
         id: '07010fe6-1591-44dc-b188-b04610320969',
         created: new Date(),
-        userid: 'a.yang223@gmail.com',
+        userid: 'email@gmail.com',
         job_name: 'test job name5',
         submitted: new Date(),
         started: '2023-07-01 19:58:27.094',
@@ -120,7 +120,7 @@ const isCompleted = [
     {
         id: '07010fe6-1591-44dc-b188-b04610320969',
         created: new Date(),
-        userid: 'a.yang223@gmail.com',
+        userid: 'email@gmail.com',
         job_name: 'test job name6',
         submitted: new Date(),
         started: '2023-07-01 19:58:27.094',
@@ -131,19 +131,6 @@ const isCompleted = [
         },
     },
 ];
-
-// CREATE TABLE JOBS (
-//     ID UUID PRIMARY KEY,
-//     CREATED TIMESTAMP DEFAULT NOW(),
-//     USERID VARCHAR(255) NOT NULL,
-//     JOB_NAME VARCHAR(255) NOT NULL,
-//     SUBMITTED TIMESTAMP DEFAULT NULL,
-//     STARTED TIMESTAMP DEFAULT NULL,
-//     FINISHED TIMESTAMP DEFAULT NULL,
-//     STATUS JOB_STATUS DEFAULT 'SUBMITTED',
-//     PARAMETERS JSONB DEFAULT NULL,
-//     FOREIGN KEY (USERID) REFERENCES USERS(EMAIL)
-// );
 
 @Component({
     selector: 'app-dashboard-container',
@@ -186,7 +173,6 @@ export class DashboardContainerComponent implements OnInit {
     }
 
     startACalculationClick(): void {
-        // console.log('start a calculation');
         this.router.navigate(['new-calculation']);
     }
 

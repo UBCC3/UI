@@ -61,7 +61,6 @@ export class NewCalculationComponent implements OnInit {
     }
 
     moreSettingsClick(): void {
-        // TODO: flag to show more
         this.moreSettings = !this.moreSettings;
         console.log(this.moreSettings);
     }
@@ -106,7 +105,5 @@ export class NewCalculationComponent implements OnInit {
         // TODO: call to backend to calculate
         console.log(this.form.value);
         console.log(this.form.valid);
-        // console.log(this.form.get('file')?.value.name);
-        // this.isEditStructure = true;
     }
 }

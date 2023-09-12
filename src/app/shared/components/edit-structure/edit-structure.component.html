@@ -8,20 +8,31 @@
         <div class="flex justify-between pr-2">
             <!-- NOTE: I think these have to be done using keyboard hotkeys shift+ drag / shift+cmd + drag etc -->
             <button class="btn btn-ghost rounded-full mx-2">
-                <img src="../../../../assets/hand.svg" alt="hand-icon" (click)="toggleDrag()" />
+                <img
+                    tabindex="0"
+                    src="../../../../assets/hand.svg"
+                    alt="hand-icon"
+                    (click)="toggleDrag()"
+                    (keydown.enter)="toggleDrag()"
+                />
             </button>
             <button class="btn btn-ghost rounded-full mx-2">
                 <img src="../../../../assets/rotate.svg" alt="rotate-icon" />
             </button>
         </div>
         <div class="flex justify-between border-l">
-            <button class="btn btn-ghost rounded-full mx-2" (click)="zoomOut()">
+            <button
+                tabindex="0"
+                class="btn btn-ghost rounded-full mx-2"
+                (click)="zoomOut()"
+                (keydown.enter)="zoomOut()"
+            >
                 <img src="../../../../assets/minus.svg" alt="zoom-out" />
             </button>
             <!-- no way to get zoom value from scroll zoom -->
             <!-- disable zoom makes button zooms not work too -->
             <input type="text" class="w-12" (keyup.enter)="handleZoomInput()" [(ngModel)]="zoomValue" />
-            <button class="btn btn-ghost rounded-full mx-2" (click)="zoomIn()">
+            <button tabindex="0" class="btn btn-ghost rounded-full mx-2" (click)="zoomIn()" (keydown.enter)="zoomIn()">
                 <img src="../../../../assets/plus.svg" alt="zoom-in" />
             </button>
         </div>

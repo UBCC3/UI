@@ -1,10 +1,4 @@
 <app-layout [isEditStructure]="isEditStructure" [name]="form.get('calculationName')?.value">
-    <!-- FORM -->
-    <!-- NOTE: dropdown menu of different types of calculations ex)Geometry Optimization, Natural Bond Orbitals -->
-    <!-- NOTE: input to load from file, db, or previous calculation -->
-    <!-- go into edit-structure comp after loading file? -->
-    <!-- TODO: make shared comp for jsmol stuff for edit structure -->
-    <!-- TODO: new route edit-structure -->
     <div class="flex flex-col w-full justify-center items-center p-6">
         <form class="flex flex-col w-3/4 justify-center bg-white p-6 rounded-md" [formGroup]="form">
             <div class="flex w-full justify-between items-center p-4">
@@ -109,7 +103,7 @@
                 </div>
             </div>
 
-            <!-- NOTE: dropdown menu of different types of calculations ex)Geometry Optimization, Natural Bond Orbitals -->
+            <!-- TODO: api call to fetch options -->
             <div class="flex w-full justify-between items-center p-4">
                 <div class="basis-1/3">
                     <p>Basis Set</p>
@@ -187,7 +181,6 @@
                             </select>
                         </div>
                     </div>
-                    <!-- NOTE: for testing -->
                 </div>
             </div>
 

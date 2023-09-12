@@ -25,33 +25,6 @@
         </li>
     </div>
 
-    <!-- NOTE: -->
-    <!-- paused not needed -->
-    <div class="flex flex-col" *ngIf="status === 'paused'">
-        <li>
-            <span
-                tabindex="0"
-                class="text-gray-700 text-xs"
-                (click)="onStatusMenuClick('refresh')"
-                (keydown.enter)="onStatusMenuClick('refresh')"
-                ><img src="../../../../assets/refresh-ccw-icon.svg" alt="pause" />
-                Resume
-            </span>
-        </li>
-        <li>
-            <span
-                tabindex="0"
-                class="text-gray-700 text-xs"
-                (click)="onStatusMenuClick('cancel')"
-                (keydown.enter)="onStatusMenuClick('cancel')"
-                ><img src="../../../../assets/cancel-icon.svg" alt="pause" />
-                Cancel
-            </span>
-        </li>
-    </div>
-
-    <!-- NOTE: -->
-    <!-- canclled does not exists in db enum -->
     <div class="flex flex-col" *ngIf="status === 'cancelled'">
         <li>
             <span
