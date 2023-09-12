@@ -10,7 +10,6 @@ const info = {
     use: 'HTML5',
     j2sPath: '../../../../assets/jsmol/j2s',
     serverURL: '../../../../assets/jsmol/php/jsmol.php',
-    // src: '../../../../assets/1aho.pdb',
 };
 
 @Component({
@@ -34,11 +33,12 @@ export class EditStructureComponent implements OnInit, AfterViewInit {
     appletHtml!: string;
     // private file: any;
     zoomValue: string;
-
+    toggledDrag: boolean;
     constructor(private renderer: Renderer2) {
         this.zoomValue = '100%';
         this.canEdit = true;
         this.isPreview = false;
+        this.toggledDrag = false;
     }
 
     ngOnInit(): void {}
@@ -151,16 +151,17 @@ export class EditStructureComponent implements OnInit, AfterViewInit {
     }
 
     toggleDrag(): void {
-        // Jmol.script(this.appletObject, 'set allowMoveAtoms TRUE');
+        if (!this.toggledDrag) {
+            this.toggledDrag = !this.toggledDrag;
+            Jmol.script(this.appletObject, 'set picking DRAGSELECTED;');
+        } else {
+            this.toggledDrag = !this.toggledDrag;
+            Jmol.script(this.appletObject, 'set picking ON');
+        }
+    }
 
-        // NOTE: this drags atoms that are connected,if structure has atoms that are by itself those don't get dragged
-        // Jmol.script(this.appletObject, 'set picking DRAGMOLECULE');
-        // NOTE: to drag an atom
-        // Jmol.script(this.appletObject, 'set picking DRAGATOM');
-
-        // NOTE: this is to move the whole structure works on chemapps example but not on angular app
-        Jmol.script(this.appletObject, 'set picking DRAGSELECTED;');
-
-        console.log(Jmol.script(this.appletObject, 'getProperty appletInfo'));
+    // to get zoom % value
+    getZoom(): void {
+        console.log(Jmol.scriptEcho(this.appletObject, 'show zoom'));
     }
 }
