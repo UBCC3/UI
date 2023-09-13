@@ -1,7 +1,10 @@
-import { DOCUMENT } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '@auth0/auth0-angular';
+import { AuthService, User } from '@auth0/auth0-angular';
+import { Store, select } from '@ngrx/store';
+import { loginFlowInitiated, logoutFlowInitiated, signupFlowInitiated } from '../../../store/actions/user.actions';
+import { selectUser } from '../../../store/selectors/user.selectors';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-nav-bar',
@@ -9,34 +12,20 @@ import { AuthService } from '@auth0/auth0-angular';
     styleUrls: ['./nav-bar.component.scss'],
 })
 export class NavBarComponent {
-    constructor(@Inject(DOCUMENT) public document: Document, public auth: AuthService, public router: Router) {}
-
+    user$!: Observable<User | undefined>;
+    constructor(public auth: AuthService, public store: Store, public router: Router) {
+        this.user$ = this.store.pipe(select(selectUser));
+    }
     handleLogin() {
-        this.auth.loginWithRedirect({
-            appState: {
-                target: '/dashboard',
-            },
-        });
+        this.store.dispatch(loginFlowInitiated());
     }
 
     handleLogout() {
-        this.auth.logout({
-            logoutParams: {
-                returnTo: this.document.location.origin,
-            },
-        });
+        this.store.dispatch(logoutFlowInitiated());
     }
 
     handleSignUp(): void {
-        this.auth.loginWithRedirect({
-            appState: {
-                target: '/dashboard',
-            },
-            authorizationParams: {
-                prompt: 'login',
-                screen_hint: 'signup',
-            },
-        });
+        this.store.dispatch(signupFlowInitiated());
     }
 
     onLogoClick(): void {

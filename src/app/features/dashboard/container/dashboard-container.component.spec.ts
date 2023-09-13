@@ -5,6 +5,8 @@ import { DashboardContainerComponent } from './dashboard-container.component';
 import { AuthService } from '@auth0/auth0-angular';
 import { SharedModule } from '../../../shared/shared.module';
 import { BehaviorSubject, of } from 'rxjs';
+import { StoreModule } from '@ngrx/store';
+import { reducers } from '../../../store';
 
 describe('DashboardContainerComponent', () => {
     let component: DashboardContainerComponent;
@@ -17,7 +19,7 @@ describe('DashboardContainerComponent', () => {
         };
         TestBed.configureTestingModule({
             declarations: [DashboardContainerComponent],
-            imports: [HttpClientTestingModule, SharedModule],
+            imports: [HttpClientTestingModule, SharedModule, StoreModule.forRoot(reducers)],
             providers: [AuthService, { provide: AuthService, useValue: authMock }],
         }).compileComponents();
         fixture = TestBed.createComponent(DashboardContainerComponent);

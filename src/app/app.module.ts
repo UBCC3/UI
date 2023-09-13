@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -9,6 +9,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from './shared/shared.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { environment } from '../environments/environments';
+import { StoreModule } from '@ngrx/store';
+import { reducers } from './store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
+import { UserEffects } from './store/effects/user.effects';
 
 @NgModule({
     declarations: [AppComponent],
@@ -24,6 +29,9 @@ import { environment } from '../environments/environments';
             },
         }),
         BrowserAnimationsModule,
+        StoreModule.forRoot(reducers),
+        StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
+        EffectsModule.forRoot([UserEffects]),
     ],
     providers: [
         {
