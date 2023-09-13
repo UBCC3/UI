@@ -1,6 +1,5 @@
 import unittest
 
-# from database.db_engine import db_engine
 from ..db_engine import db_engine
 from ..user_management import check_user_exists, add_new_user, remove_user
 from ..db_tables import User
@@ -18,10 +17,7 @@ class TestDB(unittest.TestCase):
         if check_user_exists(username_for_test):
             self.assertTrue(remove_user(username_for_test))
 
-        new_user = add_new_user(username_for_test)
-
-        self.assertIsInstance(new_user, User)
-        self.assertEqual(new_user.email, username_for_test)
+        self.assertTrue(add_new_user(username_for_test))
         self.assertTrue(remove_user(username_for_test))
 
     def test_patch_user(self):

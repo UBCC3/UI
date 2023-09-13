@@ -1,7 +1,8 @@
 import os
 import jwt
-from configparser import ConfigParser
 from dotenv import load_dotenv
+from fastapi import Depends, status, HTTPException
+from fastapi.security import HTTPBearer
 
 
 def set_up():
@@ -16,6 +17,15 @@ def set_up():
     }
 
     return config
+
+
+token_auth_schema = HTTPBearer()
+
+
+def token_auth(token: str = Depends(token_auth_schema)):
+    result = VerifyToken(token.credentials).verify()
+    if result.get("status"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result)
 
 
 class VerifyToken:
