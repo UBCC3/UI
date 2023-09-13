@@ -65,7 +65,7 @@ CREATE TABLE AVAILABLE_CALCULATIONS(
     ID SERIAL PRIMARY KEY,
     NAME VARCHAR(255) NOT NULL,
 );
-CREATE TABLE AVAILABLE_THEORY(
+CREATE TABLE AVAILABLE_METHOD(
     ID SERIAL PRIMARY KEY,
     NAME VARCHAR(255) NOT NULL,
 );
@@ -74,10 +74,17 @@ CREATE TABLE AVAILABLE_BASIS_SET(
     NAME VARCHAR(255) NOT NULL,
 );
 INSERT INTO AVAILABLE_CALCULATIONS (name)
-VALUES(
-        'Geometry Optimization',
-        'Natural Bond Orbitals',
-        'Molecular Energy',
-        'Vibrational Frequencies',
-        'Molecular Orbitals'
-    );
+VALUES 'Single Point Calculation',
+    ('Geometry Optimization'),
+    ('Vibrational Frequencies');
+INSERT INTO AVAILABLE_METHOD (name)
+VALUES ('Hartree-Fock'),
+    ('Moller-Plesset (MP2)'),
+    ('Density Functional Theory (DFT)');
+INSERT INTO AVAILABLE_BASIS_SET (name)
+VALUES ('Minimal: STO-3G'),
+    ('Basic: 3-21G'),
+    ('Routine: 6-31G(d)'),
+    ('Accurate: 6-311+G(2d,p)'),
+    ('cc-pVDZ'),
+    ('cc-pVTZ');
