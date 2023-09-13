@@ -1,0 +1,22 @@
+::ng-deep .ngx-pagination .current {
+    color: #1d2939 !important;
+    background: #f2f4f7 !important;
+    border-radius: 100%;
+}
+
+::ng-deep .ngx-pagination a:hover {
+    color: #1d2939 !important;
+    background: #98a2b3 !important;
+    border-radius: 100%;
+}
+
+::ng-deep .ngx-pagination .pagination-previous :hover {
+    border-radius: 2rem;
+}
+::ng-deep .ngx-pagination .pagination-next :hover {
+    border-radius: 2rem;
+}
+
+.selected-structure {
+    @apply bg-primary-50 hover:bg-primary-50 border-primary-600;
+}

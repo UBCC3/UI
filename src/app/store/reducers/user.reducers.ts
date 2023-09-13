@@ -13,7 +13,6 @@ const initialState: UserState = {
 const reducer = createReducer<UserState>(
     initialState,
     on(setUser, (state, { user }) => {
-        console.log('set user', user);
         return {
             ...state,
             user,

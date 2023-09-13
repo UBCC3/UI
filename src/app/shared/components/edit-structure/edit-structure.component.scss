@@ -1,0 +1,10 @@
+#jsmolApplet {
+    // width: 100vw;
+    // height: calc(100vh - 66.5px);
+    border-color: transparent;
+    border-width: 1px;
+}
+
+::ng-deep #jsmolApplet_appletinfotablediv {
+    margin-top: -16px;
+}

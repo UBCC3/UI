@@ -1,0 +1,40 @@
+<div class="flex justify-center items-center">
+    <!-- NOTE: need to set width of applet so the info sidebar have room -->
+    <div id="jsmolApplet" #appletContainer [ngStyle]="style"></div>
+    <div
+        class="flex items-center justify-center absolute bottom-11 z-9999 bg-white rounded-full h-16 px-2"
+        *ngIf="!isPreview"
+    >
+        <div class="flex justify-between pr-2">
+            <!-- NOTE: I think these have to be done using keyboard hotkeys shift+ drag / shift+cmd + drag etc -->
+            <button class="btn btn-ghost rounded-full mx-2">
+                <img
+                    tabindex="0"
+                    src="../../../../assets/hand.svg"
+                    alt="hand-icon"
+                    (click)="toggleDrag()"
+                    (keydown.enter)="toggleDrag()"
+                />
+            </button>
+            <button class="btn btn-ghost rounded-full mx-2">
+                <img src="../../../../assets/rotate.svg" alt="rotate-icon" />
+            </button>
+        </div>
+        <div class="flex justify-between border-l">
+            <button
+                tabindex="0"
+                class="btn btn-ghost rounded-full mx-2"
+                (click)="zoomOut()"
+                (keydown.enter)="zoomOut()"
+            >
+                <img src="../../../../assets/minus.svg" alt="zoom-out" />
+            </button>
+            <!-- no way to get zoom value from scroll zoom -->
+            <!-- disable zoom makes button zooms not work too -->
+            <input type="text" class="w-12" (keyup.enter)="handleZoomInput()" [(ngModel)]="zoomValue" />
+            <button tabindex="0" class="btn btn-ghost rounded-full mx-2" (click)="zoomIn()" (keydown.enter)="zoomIn()">
+                <img src="../../../../assets/plus.svg" alt="zoom-in" />
+            </button>
+        </div>
+    </div>
+</div>

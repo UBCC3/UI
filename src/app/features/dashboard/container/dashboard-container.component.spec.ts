@@ -7,6 +7,7 @@ import { SharedModule } from '../../../shared/shared.module';
 import { BehaviorSubject, of } from 'rxjs';
 import { StoreModule } from '@ngrx/store';
 import { reducers } from '../../../store';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 describe('DashboardContainerComponent', () => {
     let component: DashboardContainerComponent;
@@ -19,7 +20,7 @@ describe('DashboardContainerComponent', () => {
         };
         TestBed.configureTestingModule({
             declarations: [DashboardContainerComponent],
-            imports: [HttpClientTestingModule, SharedModule, StoreModule.forRoot(reducers)],
+            imports: [HttpClientTestingModule, SharedModule, StoreModule.forRoot(reducers), NgxPaginationModule],
             providers: [AuthService, { provide: AuthService, useValue: authMock }],
         }).compileComponents();
         fixture = TestBed.createComponent(DashboardContainerComponent);
