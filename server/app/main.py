@@ -5,7 +5,7 @@ from fastapi.logger import logger
 from pydantic_settings import BaseSettings
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import users
+from .routers import users, calculations
 
 import psutil
 
@@ -49,6 +49,7 @@ if settings.USE_NGROK:
     init_webhooks(public_url)
 
 app.include_router(users.router)
+app.include_router(calculations.router)
 
 
 def get_ngrok_url():

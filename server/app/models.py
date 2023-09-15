@@ -14,3 +14,18 @@ class UserModel(BaseModel):
 class JwtErrorModel(BaseModel):
     status: str
     msg: str
+
+
+class AvailableCalculationsModel(BaseModel):
+    id: int
+    name: str
+
+
+class AvailableBasisSetsModel(BaseModel):
+    id: int
+    name: str
+
+
+class AvailableMethodsModel(BaseModel):
+    id: int
+    name: str
