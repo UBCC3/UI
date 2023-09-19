@@ -14,7 +14,7 @@ import { reducers } from './store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { UserEffects } from './store/effects/user.effects';
-import { LayoutComponent } from './shared/components/layout/layout.component';
+import { NewCalculationEffects } from './store/effects/new-calculation.effects';
 
 @NgModule({
     declarations: [AppComponent],
@@ -32,7 +32,7 @@ import { LayoutComponent } from './shared/components/layout/layout.component';
         BrowserAnimationsModule,
         StoreModule.forRoot(reducers),
         StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-        EffectsModule.forRoot([UserEffects]),
+        EffectsModule.forRoot([UserEffects, NewCalculationEffects]),
     ],
     providers: [
         {
