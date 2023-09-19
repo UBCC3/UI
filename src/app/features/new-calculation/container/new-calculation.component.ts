@@ -2,6 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { trigger, state, style, transition, animate, AUTO_STYLE } from '@angular/animations';
 import { NavigationExtras, Router } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
+import { AvailableCalculation } from '../../../shared/models/new-calculation.model';
+import { AppState } from '../../../store';
+import { Store, select } from '@ngrx/store';
+import {
+    selectAvailableCalculations,
+    selectAvailableCalculationsAreLoaded,
+    selectAvailableCalculationsAreLoading,
+} from '../../../store/selectors/new-calculation.selectors';
+import { loadAvailableCalculations } from '../../../store/actions/new-calculation.actions';
 
 const calculationType = [
     {
@@ -35,16 +45,21 @@ export class NewCalculationComponent implements OnInit {
     extensionError!: string;
 
     // NOTE: for testdata
-    calculationType: any;
+    calculationType!: AvailableCalculation[] | null;
+    availableCalculationsAreLoaded$!: Observable<boolean>;
+
+    dataIsLoaded$!: Observable<boolean>;
 
     smallJsMolContainer = {
         width: '500px',
         height: '360px',
     };
-    constructor(private formBuilder: FormBuilder, private router: Router) {
+
+    private subscriptions: Subscription;
+    constructor(private formBuilder: FormBuilder, private router: Router, private store: Store<AppState>) {
+        this.subscriptions = new Subscription();
         this.moreSettings = false;
         this.isEditStructure = false;
-        this.calculationType = calculationType;
         this.form = this.formBuilder.group({
             calculationName: new FormControl(null, [Validators.required.bind(this)]),
             calculationType: new FormControl(null, [Validators.required.bind(this)]),
@@ -57,7 +72,11 @@ export class NewCalculationComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log(this.moreSettings);
+        this.availableCalculationsAreLoaded$ = this.store.pipe(select(selectAvailableCalculationsAreLoaded));
+        this.store.select(selectAvailableCalculations).subscribe((data) => (this.calculationType = data));
+
+        // Dispatch the action to fetch data only if it's not available in the state
+        this.store.dispatch(loadAvailableCalculations());
     }
 
     moreSettingsClick(): void {
@@ -98,7 +117,7 @@ export class NewCalculationComponent implements OnInit {
             },
         };
 
-        this.router.navigate(['profile'], navExtras);
+        this.router.navigate(['edit-structure'], navExtras);
     }
 
     calculate(): void {
