@@ -1,13 +1,13 @@
 import { ActionReducerMap } from '@ngrx/store';
 import { UserState, userReducer } from './reducers/user.reducers';
-import { NewCalculationState, newCalculationReducer } from './reducers/new-calculation.reducers';
+import { CalculationManagementState, calculationManagementReducer } from './reducers/calculation-management.reducer';
 
 export interface AppState {
     user: UserState;
-    newCalculation: NewCalculationState;
+    calculationManagement: CalculationManagementState;
 }
 
 export const reducers: ActionReducerMap<AppState> = {
     user: userReducer,
-    newCalculation: newCalculationReducer,
+    calculationManagement: calculationManagementReducer,
 };

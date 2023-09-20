@@ -2,27 +2,27 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { trigger, state, style, transition, animate, AUTO_STYLE } from '@angular/animations';
 import { NavigationExtras, Router } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
-import { AvailableCalculation } from '../../../shared/models/new-calculation.model';
+import { Observable, Subscription, combineLatest, map } from 'rxjs';
+import {
+    AvailableBasisSet,
+    AvailableCalculation,
+    AvailableMethod,
+} from '../../../shared/models/calculation-management.model';
 import { AppState } from '../../../store';
 import { Store, select } from '@ngrx/store';
 import {
+    selectAvailableBasisSets,
+    selectAvailableBasisSetsAreLoaded,
     selectAvailableCalculations,
     selectAvailableCalculationsAreLoaded,
-    selectAvailableCalculationsAreLoading,
-} from '../../../store/selectors/new-calculation.selectors';
-import { loadAvailableCalculations } from '../../../store/actions/new-calculation.actions';
-
-const calculationType = [
-    {
-        id: 1,
-        name: 'Geometry Optimization',
-    },
-    {
-        id: 2,
-        name: 'Natural Bond Orbitals',
-    },
-];
+    selectAvailableMethods,
+    selectAvailableMethodsAreLoaded,
+} from '../../../store/selectors/calculation-management.selectors';
+import {
+    loadAvailableBasisSets,
+    loadAvailableCalculations,
+    loadAvailableMethods,
+} from '../../../store/actions/calculation-management.actions';
 
 @Component({
     selector: 'app-new-calculation',
@@ -44,9 +44,12 @@ export class NewCalculationComponent implements OnInit {
     isEditStructure: boolean;
     extensionError!: string;
 
-    // NOTE: for testdata
-    calculationType!: AvailableCalculation[] | null;
+    calculationTypes!: AvailableCalculation[] | null;
+    basisSets!: AvailableBasisSet[] | null;
+    methods!: AvailableMethod[] | null;
     availableCalculationsAreLoaded$!: Observable<boolean>;
+    availableBasisSetsAreLoaded$!: Observable<boolean>;
+    availableMethodsLoaded$!: Observable<boolean>;
 
     dataIsLoaded$!: Observable<boolean>;
 
@@ -72,11 +75,37 @@ export class NewCalculationComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.availableCalculationsAreLoaded$ = this.store.pipe(select(selectAvailableCalculationsAreLoaded));
-        this.store.select(selectAvailableCalculations).subscribe((data) => (this.calculationType = data));
+        this.dataIsLoaded$ = combineLatest([
+            this.store.pipe(select(selectAvailableCalculationsAreLoaded)),
+            this.store.pipe(select(selectAvailableBasisSetsAreLoaded)),
+            this.store.pipe(select(selectAvailableMethodsAreLoaded)),
+        ]).pipe(
+            map(([calculationsAreLoaded, basisSetsAreLoaded, methodsAreLoaded]) => {
+                return calculationsAreLoaded && basisSetsAreLoaded && methodsAreLoaded;
+            })
+        );
+
+        combineLatest([
+            this.store.select(selectAvailableCalculations),
+            this.store.select(selectAvailableBasisSets),
+            this.store.select(selectAvailableMethods),
+        ]).subscribe(([calculationTypes, basisSets, methods]) => {
+            this.calculationTypes = calculationTypes;
+            this.basisSets = basisSets;
+            this.methods = methods;
+        });
+
+        // this.store.select(selectAvailableCalculations).subscribe((data) => {
+        //     this.calculationType = data;
+        //     if (this.calculationType) {
+        //         this.form.patchValue({ calculationType: this.calculationType[0].name });
+        //     }
+        // });
 
         // Dispatch the action to fetch data only if it's not available in the state
         this.store.dispatch(loadAvailableCalculations());
+        this.store.dispatch(loadAvailableBasisSets());
+        this.store.dispatch(loadAvailableMethods());
     }
 
     moreSettingsClick(): void {
