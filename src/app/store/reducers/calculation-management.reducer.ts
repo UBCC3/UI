@@ -14,6 +14,8 @@ import {
     loadAvailableMethods,
     loadAvailableMethodsSuccess,
     loadAvailableMethodsFail,
+    setNewCalculationForm,
+    resetNewCalculationForm,
 } from '../actions/calculation-management.actions';
 
 export interface CalculationManagementState {
@@ -29,6 +31,7 @@ export interface CalculationManagementState {
     availableMethodsAreLoading: boolean;
     availableMethodsAreLoaded: boolean;
     availableMethodsError: string;
+    newCalculationForm: any;
 }
 
 const initialState: CalculationManagementState = {
@@ -44,6 +47,7 @@ const initialState: CalculationManagementState = {
     availableMethodsAreLoading: false,
     availableMethodsAreLoaded: false,
     availableMethodsError: '',
+    newCalculationForm: null,
 };
 
 const reducer = createReducer<CalculationManagementState>(
@@ -101,7 +105,20 @@ const reducer = createReducer<CalculationManagementState>(
         ...state,
         availableMethodsAreLoading: false,
         availableMethodsError: error,
-    }))
+    })),
+    // set form
+    on(setNewCalculationForm, (state, { newCalculationForm }) => {
+        return {
+            ...state,
+            newCalculationForm,
+        };
+    }),
+    on(resetNewCalculationForm, (state) => {
+        return {
+            ...state,
+            newCalculationForm: null,
+        };
+    })
 );
 
 export function calculationManagementReducer(

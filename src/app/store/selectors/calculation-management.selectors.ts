@@ -63,3 +63,8 @@ export const selectAvailableMethodsError = createSelector(
     selectCalculationManagementState,
     (state) => state?.availableMethodsError
 );
+
+export const selectNewCalculationForm = createSelector(
+    selectCalculationManagementState,
+    (state) => state?.newCalculationForm
+);

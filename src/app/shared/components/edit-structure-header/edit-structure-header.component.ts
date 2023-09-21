@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
@@ -14,11 +15,11 @@ export class EditStructureHeaderComponent {
 
     @Output()
     backEvent: EventEmitter<any>;
-    constructor() {
+    constructor(private location: Location) {
         this.backEvent = new EventEmitter();
     }
 
     onBackClick(): void {
-        console.log('back clicked');
+        this.location.back();
     }
 }

@@ -40,3 +40,10 @@ export const loadAvailableMethodsFail = createAction(
     '[CalculationManagement] load available methods failed',
     props<{ error: string }>()
 );
+
+export const setNewCalculationForm = createAction(
+    '[NewCalculation] setting new calculation form',
+    props<{ newCalculationForm: any }>() //NOTE: model for this
+);
+
+export const resetNewCalculationForm = createAction('[NewCalculation] reset new calculation form');

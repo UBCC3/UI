@@ -17,11 +17,14 @@ import {
     selectAvailableCalculationsAreLoaded,
     selectAvailableMethods,
     selectAvailableMethodsAreLoaded,
+    selectNewCalculationForm,
 } from '../../../store/selectors/calculation-management.selectors';
 import {
     loadAvailableBasisSets,
     loadAvailableCalculations,
     loadAvailableMethods,
+    resetNewCalculationForm,
+    setNewCalculationForm,
 } from '../../../store/actions/calculation-management.actions';
 
 @Component({
@@ -95,6 +98,13 @@ export class NewCalculationComponent implements OnInit {
             this.methods = methods;
         });
 
+        this.store.pipe(select(selectNewCalculationForm)).subscribe((res) => {
+            if (res) {
+                this.form.patchValue({ ...res });
+            }
+        });
+
+        // NOTE: set default value for drop down options
         // this.store.select(selectAvailableCalculations).subscribe((data) => {
         //     this.calculationType = data;
         //     if (this.calculationType) {
@@ -146,6 +156,7 @@ export class NewCalculationComponent implements OnInit {
             },
         };
 
+        this.store.dispatch(setNewCalculationForm({ newCalculationForm: this.form.value }));
         this.router.navigate(['edit-structure'], navExtras);
     }
 
@@ -153,5 +164,7 @@ export class NewCalculationComponent implements OnInit {
         // TODO: call to backend to calculate
         console.log(this.form.value);
         console.log(this.form.valid);
+
+        this.store.dispatch(resetNewCalculationForm());
     }
 }
