@@ -1,6 +1,9 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any, Dict
+from uuid import UUID
+
+from enum import Enum
 
 
 class UserModel(BaseModel):
@@ -29,3 +32,24 @@ class AvailableBasisSetsModel(BaseModel):
 class AvailableMethodsModel(BaseModel):
     id: int
     name: str
+
+
+class JobStatus(str, Enum):
+    SUBMITTED = "SUBMITTED"
+    RUNNING = "RUNNING"
+    FAILED = "FAILED"
+    # update to cancelled
+    STOPPED = "STOPPED"
+    COMPLETED = "COMPLETED"
+
+
+class JobModel(BaseModel):
+    id: UUID
+    created: datetime
+    userid: EmailStr
+    job_name: str
+    submitted: Optional[datetime] = None
+    started: Optional[datetime] = None
+    finished: Optional[datetime] = None
+    status: JobStatus
+    parameters: Optional[Dict[str, Any]] = None
