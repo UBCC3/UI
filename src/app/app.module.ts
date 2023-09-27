@@ -15,6 +15,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { UserEffects } from './store/effects/user.effects';
 import { CalculationManagementEffects } from './store/effects/calculation-management.effects';
+import { JobEffects } from './store/effects/job.effects';
 
 @NgModule({
     declarations: [AppComponent],
@@ -32,7 +33,7 @@ import { CalculationManagementEffects } from './store/effects/calculation-manage
         BrowserAnimationsModule,
         StoreModule.forRoot(reducers),
         StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-        EffectsModule.forRoot([UserEffects, CalculationManagementEffects]),
+        EffectsModule.forRoot([UserEffects, CalculationManagementEffects, JobEffects]),
     ],
     providers: [
         {

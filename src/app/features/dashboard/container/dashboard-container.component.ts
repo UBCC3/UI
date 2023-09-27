@@ -4,10 +4,21 @@ import { AuthService, User } from '@auth0/auth0-angular';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../store';
 import { selectUser } from '../../../store/selectors/user.selectors';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import moment from 'moment';
 import { Router } from '@angular/router';
 import { StatusMenuService } from '../../../shared/components/status-menu/status-menu.service';
+import { loadCompleteJobs, loadInProgressJobs } from '../../../store/actions/job.actions';
+import {
+    selectInProgressJobsId,
+    selectInProgressJobs,
+    selectInProgressJobsById,
+} from '../../../store/selectors/in-progress-job.selectors';
+import {
+    selectCompleteJobs,
+    selectCompleteJobsById,
+    selectCompleteJobsId,
+} from '../../../store/selectors/complete-job.selector';
 
 const inProgress = [
     {
@@ -167,8 +178,32 @@ export class DashboardContainerComponent implements OnInit {
         this.user$ = this.store.pipe(select(selectUser));
         this.auth.getAccessTokenSilently().subscribe((token) => console.log('token', token));
         this.getUserName();
+        // NOTE: subscriber to handle dropdown menu clicks
         this.statusMenuService.getStatusMenuEvent().subscribe((data: any) => {
             this.handleEmitterService(data);
+        });
+
+        this.store.dispatch(loadInProgressJobs());
+        this.store.dispatch(loadCompleteJobs());
+
+        combineLatest([
+            this.store.select(selectInProgressJobsId),
+            this.store.select(selectInProgressJobs),
+            this.store.select(selectInProgressJobsById),
+        ]).subscribe(([jobid, jobs, jobsbyid]) => {
+            console.log('jobid', jobid);
+            console.log('jobs', jobs);
+            console.log('jobsbyid', jobsbyid);
+        });
+
+        combineLatest([
+            this.store.select(selectCompleteJobsId),
+            this.store.select(selectCompleteJobs),
+            this.store.select(selectCompleteJobsById),
+        ]).subscribe(([jobid, jobs, jobsbyid]) => {
+            console.log('cjobid', jobid);
+            console.log('cjobs', jobs);
+            console.log('cjobsbyid', jobsbyid);
         });
     }
 
