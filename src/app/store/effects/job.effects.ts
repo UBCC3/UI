@@ -4,9 +4,9 @@ import { of } from 'rxjs';
 import { catchError, filter, map, mergeMap, switchMap, take, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import {
-    loadCompleteJobs,
-    loadCompleteJobsFail,
-    loadCompleteJobsSuccess,
+    loadCompletedJobs,
+    loadCompletedJobsFail,
+    loadCompletedJobsSuccess,
     loadInProgressJobs,
     loadInProgressJobsFail,
     loadInProgressJobsSuccess,
@@ -35,20 +35,20 @@ export class JobEffects {
         )
     );
 
-    loadCompleteJobs$ = createEffect(() =>
+    loadCompletedJobs$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(loadCompleteJobs),
+            ofType(loadCompletedJobs),
             withLatestFrom(this.store.select(selectUserEmail)),
             filter(([, email]) => !!email),
             mergeMap(([, email]) => {
                 if (email) {
-                    return this.dashboardService.getCompleteJobs(email).pipe(
-                        map((jobs) => loadCompleteJobsSuccess({ jobs })),
-                        catchError((error) => of(loadCompleteJobsFail({ error })))
+                    return this.dashboardService.getCompletedJobs(email).pipe(
+                        map((jobs) => loadCompletedJobsSuccess({ jobs })),
+                        catchError((error) => of(loadCompletedJobsFail({ error })))
                     );
                 } else {
                     const error = { error: 'Email is required.' };
-                    return of(loadCompleteJobsFail(error));
+                    return of(loadCompletedJobsFail(error));
                 }
             })
         )

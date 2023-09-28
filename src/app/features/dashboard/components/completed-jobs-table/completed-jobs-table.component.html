@@ -71,9 +71,7 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody
-                *ngFor="let job of completedJobs | paginate : { itemsPerPage: 5, currentPage: page }; let last = last"
-            >
+            <tbody *ngFor="let job of completedJobs; let last = last">
                 <tr class="py-4 {{ last ? 'border-b-0' : '' }}">
                     <th>
                         <label>
@@ -134,7 +132,7 @@
         </table>
         <div class="flex justify-center">
             <!-- TODO: change to serverside pagintation -->
-            <pagination-controls
+            <!-- <pagination-controls
                 (pageChange)="handlePageChange($event)"
                 previousLabel="Previous"
                 nextLabel="Next"
@@ -143,7 +141,7 @@
                 screenReaderPaginationLabel="Pagination"
                 screenReaderPageLabel="page"
                 screenReaderCurrentLabel="You're on page"
-            ></pagination-controls>
+            ></pagination-controls> -->
         </div>
     </div>
 </div>

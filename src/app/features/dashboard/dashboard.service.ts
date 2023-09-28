@@ -15,7 +15,7 @@ export class DashboardService {
         return this.http.get<Job[]>('http://localhost:8000/jobs/in-progress', { params });
     }
 
-    getCompleteJobs(email: string): Observable<Job[]> {
+    getCompletedJobs(email: string): Observable<Job[]> {
         const params = new HttpParams().set('email', email);
         return this.http.get<Job[]>('http://localhost:8000/jobs/completed', { params });
     }

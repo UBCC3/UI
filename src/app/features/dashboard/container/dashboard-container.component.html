@@ -21,8 +21,16 @@
         </div>
     </div>
     <div class="basis-2/3" *ngIf="true; else isEmpty">
-        <app-in-progress-jobs-table [inProgressJobs]="inProgress"></app-in-progress-jobs-table>
-        <app-completed-jobs-table [completedJobs]="isCompleted"></app-completed-jobs-table>
+        <ng-container *ngIf="dataIsLoaded$ | async; else loading">
+            <app-in-progress-jobs-table [inProgressJobs]="inProgressJobs"></app-in-progress-jobs-table>
+            <app-completed-jobs-table [completedJobs]="completedJobs"></app-completed-jobs-table>
+        </ng-container>
+
+        <ng-template #loading>
+            <div class="flex justify-center items-center h-full">
+                <app-splash></app-splash>
+            </div>
+        </ng-template>
     </div>
 </app-layout>
 

@@ -1,5 +1,5 @@
 <div appFocusRemover tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-white rounded-box w-52">
-    <div class="flex flex-col" *ngIf="status === 'running' || status === 'submitted'">
+    <div class="flex flex-col" *ngIf="status === 'RUNNING' || status === 'SUBMITTED'">
         <li>
             <span
                 tabindex="0"
@@ -12,7 +12,7 @@
         </li>
     </div>
 
-    <div class="flex flex-col" *ngIf="status === 'failed'">
+    <div class="flex flex-col" *ngIf="status === 'FAILED'">
         <li>
             <span
                 tabindex="0"
@@ -25,7 +25,7 @@
         </li>
     </div>
 
-    <div class="flex flex-col" *ngIf="status === 'cancelled'">
+    <div class="flex flex-col" *ngIf="status === 'CAMCELLED'">
         <li>
             <span
                 tabindex="0"
@@ -38,7 +38,7 @@
         </li>
     </div>
 
-    <div class="flex flex-col" *ngIf="status === 'completed'">
+    <div class="flex flex-col" *ngIf="status === 'COMPLETED'">
         <div class="flex flex-col py-1 my-1 border-b">
             <li>
                 <span

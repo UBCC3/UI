@@ -9,7 +9,7 @@ import moment from 'moment';
 })
 export class CompletedJobsTableComponent {
     @Input()
-    completedJobs!: Job[];
+    completedJobs!: Job[] | null;
 
     page = 1;
     pageSize = 5;
@@ -34,18 +34,20 @@ export class CompletedJobsTableComponent {
         const target = event.target as HTMLInputElement;
 
         if (target.checked) {
-            for (let i = 5 * (page - 1); i < 5 * (page - 1) + 5; i++) {
-                if (i <= this.completedJobs.length - 1) {
-                    this.selectedJobs.push(this.completedJobs[i]);
+            if (this.completedJobs)
+                for (let i = 5 * (page - 1); i < 5 * (page - 1) + 5; i++) {
+                    if (i <= this.completedJobs.length - 1) {
+                        this.selectedJobs.push(this.completedJobs[i]);
+                    }
                 }
-            }
         } else {
-            for (let i = 5 * (page - 1); i < 5 * (page - 1) + 5; i++) {
-                const index = this.selectedJobs?.indexOf(this.completedJobs[i]);
-                if (index !== -1) {
-                    this.selectedJobs.splice(index, 1);
+            if (this.completedJobs)
+                for (let i = 5 * (page - 1); i < 5 * (page - 1) + 5; i++) {
+                    const index = this.selectedJobs?.indexOf(this.completedJobs[i]);
+                    if (index !== -1) {
+                        this.selectedJobs.splice(index, 1);
+                    }
                 }
-            }
         }
     }
 
@@ -101,7 +103,7 @@ export class CompletedJobsTableComponent {
         this.page = event;
     }
 
-    get isSelected(): boolean {
+    get isSelected(): boolean | undefined {
         const itemIndex = 5 * (this.page - 1);
         const itemsInCurrentPage = this.completedJobs?.slice(itemIndex, itemIndex + 5);
         const isSelected = itemsInCurrentPage?.every((item: any) => this.selectedJobs?.includes(item));

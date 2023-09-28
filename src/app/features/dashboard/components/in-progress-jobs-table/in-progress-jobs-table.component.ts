@@ -8,7 +8,7 @@ import { Job } from '../../../../shared/models/jobs.model';
 })
 export class InProgressJobsTableComponent {
     @Input()
-    inProgressJobs!: Job[];
+    inProgressJobs!: Job[] | null;
 
     page = 1;
     pageSize = 5;

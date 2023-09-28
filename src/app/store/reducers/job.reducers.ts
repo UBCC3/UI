@@ -3,15 +3,17 @@ import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import { Job } from '../../shared/models/jobs.model';
 import { AppState } from '..';
 import {
-    loadCompleteJobsFail,
-    loadCompleteJobsSuccess,
+    loadCompletedJobs,
+    loadCompletedJobsFail,
+    loadCompletedJobsSuccess,
+    loadInProgressJobs,
     loadInProgressJobsFail,
     loadInProgressJobsSuccess,
 } from '../actions/job.actions';
 
 export interface JobState {
     inProgressJobs: InProgressJobsEntityState;
-    completeJobs: CompleteJobsEntityState;
+    completedJobs: CompletedJobsEntityState;
 }
 
 export interface InProgressJobsEntityState extends EntityState<Job> {
@@ -22,13 +24,13 @@ export interface InProgressJobsEntityState extends EntityState<Job> {
 
 export const inProgressJobsAdapter: EntityAdapter<Job> = createEntityAdapter<Job>();
 
-export interface CompleteJobsEntityState extends EntityState<Job> {
-    completeJobsAreLoading: boolean;
-    completeJobsAreLoaded: boolean;
+export interface CompletedJobsEntityState extends EntityState<Job> {
+    completedJobsAreLoading: boolean;
+    completedJobsAreLoaded: boolean;
     error: string | null;
 }
 
-export const completeJobsAdapter: EntityAdapter<Job> = createEntityAdapter<Job>();
+export const completedJobsAdapter: EntityAdapter<Job> = createEntityAdapter<Job>();
 
 export const initialInProgressJobsState: InProgressJobsEntityState = inProgressJobsAdapter.getInitialState({
     inProgressJobsAreLoading: false,
@@ -36,9 +38,9 @@ export const initialInProgressJobsState: InProgressJobsEntityState = inProgressJ
     error: null,
 });
 
-export const initialCompleteJobsState: CompleteJobsEntityState = completeJobsAdapter.getInitialState({
-    completeJobsAreLoading: false,
-    completeJobsAreLoaded: false,
+export const initialCompletedJobsState: CompletedJobsEntityState = completedJobsAdapter.getInitialState({
+    completedJobsAreLoading: false,
+    completedJobsAreLoaded: false,
     error: null,
 });
 
@@ -46,7 +48,19 @@ export const selectJobState = createFeatureSelector<AppState, JobState>('job');
 
 export const inProgressJobsReducer = createReducer<InProgressJobsEntityState>(
     initialInProgressJobsState,
-    on(loadInProgressJobsSuccess, (state, { jobs }) => inProgressJobsAdapter.addMany(jobs, state)),
+    on(loadInProgressJobs, (state) => {
+        return {
+            ...state,
+            inProgressJobsAreLoading: true,
+        };
+    }),
+    on(loadInProgressJobsSuccess, (state, { jobs }) =>
+        inProgressJobsAdapter.addMany(jobs, {
+            ...state,
+            inProgressJobsAreLoaded: true,
+            inProgressJobsAreLoading: false,
+        })
+    ),
     on(loadInProgressJobsFail, (state, { error }) => {
         return {
             ...state,
@@ -55,10 +69,18 @@ export const inProgressJobsReducer = createReducer<InProgressJobsEntityState>(
     })
 );
 
-export const completeJobsReducer = createReducer<CompleteJobsEntityState>(
-    initialCompleteJobsState,
-    on(loadCompleteJobsSuccess, (state, { jobs }) => completeJobsAdapter.addMany(jobs, state)),
-    on(loadCompleteJobsFail, (state, { error }) => {
+export const completedJobsReducer = createReducer<CompletedJobsEntityState>(
+    initialCompletedJobsState,
+    on(loadCompletedJobs, (state) => {
+        return {
+            ...state,
+            completedJobsAreLoading: true,
+        };
+    }),
+    on(loadCompletedJobsSuccess, (state, { jobs }) =>
+        completedJobsAdapter.addMany(jobs, { ...state, completedJobsAreLoaded: true, completedJobsAreLoading: false })
+    ),
+    on(loadCompletedJobsFail, (state, { error }) => {
         return {
             ...state,
             error,
@@ -68,7 +90,7 @@ export const completeJobsReducer = createReducer<CompleteJobsEntityState>(
 
 export const reducers = combineReducers({
     inProgressJobs: inProgressJobsReducer,
-    completeJobs: completeJobsReducer,
+    completedJobs: completedJobsReducer,
 });
 
 export function jobReducer(state: JobState | undefined, action: Action): JobState {
