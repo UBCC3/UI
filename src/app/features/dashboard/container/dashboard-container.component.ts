@@ -30,7 +30,7 @@ export class DashboardContainerComponent implements OnInit {
 
     userName!: string | undefined;
     inProgressJobs!: Job[] | null;
-    completedJobs!: Job[] | undefined;
+    completedJobs!: Job[] | null | undefined;
 
     user$!: Observable<User | undefined>;
 

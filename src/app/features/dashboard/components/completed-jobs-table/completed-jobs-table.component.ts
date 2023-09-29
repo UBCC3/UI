@@ -9,7 +9,7 @@ import moment from 'moment';
 })
 export class CompletedJobsTableComponent implements OnInit {
     @Input()
-    completedJobs!: Job[] | null;
+    completedJobs!: Job[] | null | undefined;
     @Input()
     completedJobsCount!: number | undefined;
     @Input()
