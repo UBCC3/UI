@@ -40,10 +40,13 @@ export class JobEffects {
             ofType(loadCompletedJobs),
             withLatestFrom(this.store.select(selectUserEmail)),
             filter(([, email]) => !!email),
-            mergeMap(([, email]) => {
+            mergeMap(([action, email]) => {
+                const { limit, offset } = action;
                 if (email) {
-                    return this.dashboardService.getCompletedJobs(email).pipe(
-                        map((jobs) => loadCompletedJobsSuccess({ jobs })),
+                    return this.dashboardService.getCompletedJobs(email, limit, offset).pipe(
+                        map((paginatedJobs) => {
+                            return loadCompletedJobsSuccess({ paginatedJobs });
+                        }),
                         catchError((error) => of(loadCompletedJobsFail({ error })))
                     );
                 } else {

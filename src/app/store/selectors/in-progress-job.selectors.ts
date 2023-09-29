@@ -1,5 +1,5 @@
-import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { JobState, completedJobsAdapter, inProgressJobsAdapter, selectJobState } from '../reducers/job.reducers';
+import { createSelector } from '@ngrx/store';
+import { JobState, inProgressJobsAdapter, selectJobState } from '../reducers/job.reducers';
 
 const { selectAll, selectEntities, selectIds } = inProgressJobsAdapter.getSelectors();
 

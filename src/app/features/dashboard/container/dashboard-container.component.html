@@ -23,7 +23,14 @@
     <div class="basis-2/3" *ngIf="true; else isEmpty">
         <ng-container *ngIf="dataIsLoaded$ | async; else loading">
             <app-in-progress-jobs-table [inProgressJobs]="inProgressJobs"></app-in-progress-jobs-table>
-            <app-completed-jobs-table [completedJobs]="completedJobs"></app-completed-jobs-table>
+            <app-completed-jobs-table
+                [completedJobs]="completedJobs"
+                [completedJobsCount]="jobsCount"
+                [offset]="offset"
+                [limit]="limit"
+                (previousEvent)="handlePreviousEvent($event)"
+                (nextEvent)="handleNextEvent($event)"
+            ></app-completed-jobs-table>
         </ng-container>
 
         <ng-template #loading>

@@ -1,6 +1,6 @@
 import { Action, combineReducers, createFeatureSelector, createReducer, on } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
-import { Job } from '../../shared/models/jobs.model';
+import { Job, PaginatedJob } from '../../shared/models/jobs.model';
 import { AppState } from '..';
 import {
     loadCompletedJobs,
@@ -24,13 +24,12 @@ export interface InProgressJobsEntityState extends EntityState<Job> {
 
 export const inProgressJobsAdapter: EntityAdapter<Job> = createEntityAdapter<Job>();
 
-export interface CompletedJobsEntityState extends EntityState<Job> {
+export interface CompletedJobsEntityState {
+    paginatedJobs: PaginatedJob | null;
     completedJobsAreLoading: boolean;
     completedJobsAreLoaded: boolean;
     error: string | null;
 }
-
-export const completedJobsAdapter: EntityAdapter<Job> = createEntityAdapter<Job>();
 
 export const initialInProgressJobsState: InProgressJobsEntityState = inProgressJobsAdapter.getInitialState({
     inProgressJobsAreLoading: false,
@@ -38,11 +37,12 @@ export const initialInProgressJobsState: InProgressJobsEntityState = inProgressJ
     error: null,
 });
 
-export const initialCompletedJobsState: CompletedJobsEntityState = completedJobsAdapter.getInitialState({
+export const initialCompletedJobsState: CompletedJobsEntityState = {
+    paginatedJobs: null,
     completedJobsAreLoading: false,
     completedJobsAreLoaded: false,
     error: null,
-});
+};
 
 export const selectJobState = createFeatureSelector<AppState, JobState>('job');
 
@@ -77,9 +77,14 @@ export const completedJobsReducer = createReducer<CompletedJobsEntityState>(
             completedJobsAreLoading: true,
         };
     }),
-    on(loadCompletedJobsSuccess, (state, { jobs }) =>
-        completedJobsAdapter.addMany(jobs, { ...state, completedJobsAreLoaded: true, completedJobsAreLoading: false })
-    ),
+    on(loadCompletedJobsSuccess, (state, { paginatedJobs }) => {
+        return {
+            ...state,
+            completedJobsAreLoaded: true,
+            completedJobsAreLoading: false,
+            paginatedJobs,
+        };
+    }),
     on(loadCompletedJobsFail, (state, { error }) => {
         return {
             ...state,

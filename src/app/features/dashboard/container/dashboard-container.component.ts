@@ -12,7 +12,11 @@ import {
     selectInProgressJobs,
     selectInProgressJobsAreLoaded,
 } from '../../../store/selectors/in-progress-job.selectors';
-import { selectCompletedJobs, selectCompletedJobsAreLoaded } from '../../../store/selectors/complete-job.selector';
+import {
+    selectCompletedJobs,
+    selectCompletedJobsAreLoaded,
+    selectCompletedJobsCount,
+} from '../../../store/selectors/complete-job.selector';
 import { Job } from '../../../shared/models/jobs.model';
 
 @Component({
@@ -26,13 +30,18 @@ export class DashboardContainerComponent implements OnInit {
 
     userName!: string | undefined;
     inProgressJobs!: Job[] | null;
-    completedJobs!: Job[] | null;
+    completedJobs!: Job[] | undefined;
 
     user$!: Observable<User | undefined>;
 
     dataIsLoaded$!: Observable<boolean>;
 
     show: string;
+
+    // Pagination
+    offset = 0;
+    limit = 5;
+    jobsCount!: number | undefined;
 
     constructor(
         public auth: AuthService,
@@ -54,7 +63,7 @@ export class DashboardContainerComponent implements OnInit {
         });
 
         this.store.dispatch(loadInProgressJobs());
-        this.store.dispatch(loadCompletedJobs());
+        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset }));
 
         this.dataIsLoaded$ = combineLatest([
             this.store.pipe(select(selectInProgressJobsAreLoaded)),
@@ -65,12 +74,15 @@ export class DashboardContainerComponent implements OnInit {
             })
         );
 
-        combineLatest([this.store.select(selectInProgressJobs), this.store.select(selectCompletedJobs)]).subscribe(
-            ([inProgressJobs, completedJobs]) => {
-                this.inProgressJobs = inProgressJobs;
-                this.completedJobs = completedJobs;
-            }
-        );
+        combineLatest([
+            this.store.select(selectInProgressJobs),
+            this.store.select(selectCompletedJobs),
+            this.store.select(selectCompletedJobsCount),
+        ]).subscribe(([inProgressJobs, completedJobs, completedJobsCount]) => {
+            this.inProgressJobs = inProgressJobs;
+            this.completedJobs = completedJobs;
+            this.jobsCount = completedJobsCount;
+        });
     }
 
     startACalculationClick(): void {
@@ -85,5 +97,17 @@ export class DashboardContainerComponent implements OnInit {
 
     handleEmitterService(data: any): void {
         console.log('event from status menu handled');
+    }
+
+    handlePreviousEvent(data: any): void {
+        console.log('prev event', data);
+        this.offset = Math.max(this.offset - this.limit, 0);
+        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset }));
+    }
+
+    handleNextEvent(data: any): void {
+        console.log('next event', data);
+        this.offset += this.limit;
+        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset }));
     }
 }

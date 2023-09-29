@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, List
 from uuid import UUID
 
 from enum import Enum
@@ -53,3 +53,10 @@ class JobModel(BaseModel):
     finished: Optional[datetime] = None
     status: JobStatus
     parameters: Optional[Dict[str, Any]] = None
+
+
+class PaginatedJobModel(BaseModel):
+    offset: int
+    limit: int
+    total_count: int
+    data: List[JobModel]

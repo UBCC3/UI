@@ -1,15 +1,14 @@
-import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { JobState, completedJobsAdapter, inProgressJobsAdapter, selectJobState } from '../reducers/job.reducers';
-
-const { selectAll, selectEntities, selectIds } = completedJobsAdapter.getSelectors();
+import { createSelector } from '@ngrx/store';
+import { JobState, selectJobState } from '../reducers/job.reducers';
 
 export const selectCompletedJobState = createSelector(selectJobState, (state: JobState) => state.completedJobs);
 
-export const selectCompletedJobs = createSelector(selectCompletedJobState, selectAll);
+export const selectCompletedJobs = createSelector(selectCompletedJobState, (state) => state?.paginatedJobs?.data);
 
-export const selectCompletedJobsById = createSelector(selectCompletedJobState, selectEntities);
-
-export const selectCompletedJobsId = createSelector(selectCompletedJobState, selectIds);
+export const selectCompletedJobsCount = createSelector(
+    selectCompletedJobState,
+    (state) => state?.paginatedJobs?.total_count
+);
 
 export const selectCompletedJobsAreLoaded = createSelector(
     selectCompletedJobState,

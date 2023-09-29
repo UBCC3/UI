@@ -4,12 +4,11 @@ from ..database.job_management import (
     get_all_jobs,
     get_all_running_jobs,
     get_all_completed_jobs,
+    get_paginated_completed_jobs,
+    get_completed_jobs_count,
 )
 
-from ..models import (
-    JobModel,
-    JwtErrorModel,
-)
+from ..models import JobModel, JwtErrorModel, PaginatedJobModel
 from ..util import VerifyToken, token_auth
 from typing import Union
 
@@ -34,7 +33,9 @@ async def get_jobs(response: Response, token: str = Depends(token_auth)):
 
 
 @router.get("/in-progress", response_model=Union[list[JobModel], JwtErrorModel])
-async def get_jobs(email: str, response: Response, token: str = Depends(token_auth)):
+async def get_in_progress_jobs(
+    email: str, response: Response, token: str = Depends(token_auth)
+):
     jobs = get_all_running_jobs(email)
 
     job_dicts = [job.__dict__ for job in jobs]
@@ -42,10 +43,34 @@ async def get_jobs(email: str, response: Response, token: str = Depends(token_au
     return job_dicts
 
 
-@router.get("/completed", response_model=Union[list[JobModel], JwtErrorModel])
-async def get_jobs(email: str, response: Response, token: str = Depends(token_auth)):
+@router.get("/all-completed", response_model=Union[list[JobModel], JwtErrorModel])
+async def get_complete_jobs(
+    email: str,
+    response: Response,
+    token: str = Depends(token_auth),
+):
     jobs = get_all_completed_jobs(email)
 
     job_dicts = [job.__dict__ for job in jobs]
 
     return job_dicts
+
+
+@router.get("/completed", response_model=Union[PaginatedJobModel, JwtErrorModel])
+async def get_paginated_complete_jobs(
+    email: str,
+    response: Response,
+    token: str = Depends(token_auth),
+    limit: int = 5,
+    offset: int = 0,
+):
+    total_count = get_completed_jobs_count(email)
+
+    data = get_paginated_completed_jobs(email, limit, offset)
+
+    return {
+        "offset": offset,
+        "limit": limit,
+        "total_count": total_count,
+        "data": data,
+    }

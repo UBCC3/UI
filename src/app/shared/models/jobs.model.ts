@@ -9,3 +9,10 @@ export interface Job {
     status: string;
     parameters?: any;
 }
+
+export interface PaginatedJob {
+    offset: number;
+    limit: number;
+    total_count: number;
+    data: Job[];
+}

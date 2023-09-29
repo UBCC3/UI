@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Job } from '../../../../shared/models/jobs.model';
 import moment from 'moment';
 
@@ -7,19 +7,38 @@ import moment from 'moment';
     templateUrl: './completed-jobs-table.component.html',
     styleUrls: ['./completed-jobs-table.component.scss'],
 })
-export class CompletedJobsTableComponent {
+export class CompletedJobsTableComponent implements OnInit {
     @Input()
     completedJobs!: Job[] | null;
+    @Input()
+    completedJobsCount!: number | undefined;
+    @Input()
+    offset!: number;
+    @Input()
+    limit!: number;
+    currentPage = 1;
+    totalPages = 1;
 
     page = 1;
     pageSize = 5;
 
     selectedJobs: Job[];
     show: string;
+    @Output()
+    previousEvent: EventEmitter<any>;
+    @Output()
+    nextEvent: EventEmitter<any>;
 
     constructor() {
         this.selectedJobs = [];
         this.show = 'All';
+        this.previousEvent = new EventEmitter();
+        this.nextEvent = new EventEmitter();
+    }
+
+    ngOnInit(): void {
+        this.getCurrentPage();
+        this.getTotalPages();
     }
 
     getTimeDifference(start: string | undefined, finished: string | undefined) {
@@ -97,16 +116,28 @@ export class CompletedJobsTableComponent {
         console.log('open job', jobId);
     }
 
-    handlePageChange(event: any): void {
-        // TODO: change to server side render
-        console.log('event', event);
-        this.page = event;
-    }
-
     get isSelected(): boolean | undefined {
-        const itemIndex = 5 * (this.page - 1);
+        const itemIndex = 5 * (this.currentPage - 1);
         const itemsInCurrentPage = this.completedJobs?.slice(itemIndex, itemIndex + 5);
         const isSelected = itemsInCurrentPage?.every((item: any) => this.selectedJobs?.includes(item));
         return isSelected;
+    }
+
+    onPreviousClick(): void {
+        this.previousEvent.emit('previous click');
+    }
+
+    onNextClick(): void {
+        this.nextEvent.emit('next click');
+    }
+
+    getCurrentPage(): number {
+        this.currentPage = this.offset == 0 ? 1 : this.offset / this.limit + 1;
+        return this.currentPage;
+    }
+
+    getTotalPages(): number {
+        this.totalPages = this.completedJobsCount ? Math.ceil(this.completedJobsCount / this.limit) : 1;
+        return this.totalPages;
     }
 }

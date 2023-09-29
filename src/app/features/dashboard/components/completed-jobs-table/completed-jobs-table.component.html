@@ -20,8 +20,9 @@
 
         <div class="dropdown dropdown-bottom dropdown-end flex items-center">
             <p class="text-gray-500">Show:</p>
-            <label appFocusRemover tabindex="0" class="btn btn-ghost normal-case h-auto min-h-max"
-                >{{ show }}
+            <label appFocusRemover tabindex="0" class="btn btn-ghost normal-case h-auto min-h-max">
+                <!-- TODO: dispatch action to filter based on what selected -->
+                {{ show }}
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path
                         d="M5 7.5L10 12.5L15 7.5"
@@ -51,7 +52,7 @@
             <thead>
                 <tr>
                     <th>
-                        <div class="flex items-center -mr-6">
+                        <!-- <div class="flex items-center -mr-6">
                             <label class="flex items-center">
                                 <input
                                     type="checkbox"
@@ -61,7 +62,8 @@
                                 />
                                 Job
                             </label>
-                        </div>
+                        </div> -->
+                        <div class="pl-6">Job</div>
                     </th>
                     <th>Name</th>
                     <th>Calculation</th>
@@ -102,6 +104,7 @@
                     </td>
                     <td>
                         <div>
+                            <!-- NOTE: what date to display start, finished? -->
                             {{ job.started | date : 'dd/MM/yyy' }}
                         </div>
                     </td>
@@ -130,18 +133,27 @@
                 </tr>
             </tbody>
         </table>
-        <div class="flex justify-center">
+        <div class="flex justify-between px-6 pb-4">
             <!-- TODO: change to serverside pagintation -->
-            <!-- <pagination-controls
-                (pageChange)="handlePageChange($event)"
-                previousLabel="Previous"
-                nextLabel="Next"
-                [autoHide]="true"
-                [responsive]="true"
-                screenReaderPaginationLabel="Pagination"
-                screenReaderPageLabel="page"
-                screenReaderCurrentLabel="You're on page"
-            ></pagination-controls> -->
+            <!-- TODO: add disable state for buttons -->
+            <!-- TODO: add numbers if count more than x -->
+            <button
+                class="btn btn-sm btn-outline border-gray-300"
+                [disabled]="currentPage === 1"
+                (click)="onPreviousClick()"
+            >
+                previous
+            </button>
+            <p>{{ getCurrentPage() }} of {{ getTotalPages() }}</p>
+            <!-- <p>{{ currentPage }} of {{ totalPages }}</p> -->
+
+            <button
+                class="btn btn-sm btn-outline border-gray-300"
+                [disabled]="currentPage === totalPages"
+                (click)="onNextClick()"
+            >
+                next
+            </button>
         </div>
     </div>
 </div>
