@@ -46,7 +46,7 @@
             </ul>
         </div>
     </div>
-    <div class="bg-white rounded-lg border border-grey-200">
+    <div class="bg-white rounded-lg border border-grey-200" *ngIf="!(dataIsLoading$ | async); else loading">
         <table class="table">
             <!-- head -->
             <thead>
@@ -139,21 +139,26 @@
             <!-- TODO: add numbers if count more than x -->
             <button
                 class="btn btn-sm btn-outline border-gray-300"
-                [disabled]="currentPage === 1"
+                [disabled]="isPreviousButtonIsDisabled()"
                 (click)="onPreviousClick()"
             >
                 previous
             </button>
-            <p>{{ getCurrentPage() }} of {{ getTotalPages() }}</p>
-            <!-- <p>{{ currentPage }} of {{ totalPages }}</p> -->
+            <!-- <p>{{ getCurrentPage() }} of {{ getTotalPages() }}</p> -->
+            <p>{{ currentPage }} of {{ getTotalPages() }}</p>
 
             <button
                 class="btn btn-sm btn-outline border-gray-300"
-                [disabled]="currentPage === totalPages"
+                [disabled]="isNextButtonIsDisabled()"
                 (click)="onNextClick()"
             >
                 next
             </button>
         </div>
     </div>
+    <ng-template #loading>
+        <div class="flex justify-center items-center h-full">
+            <app-splash></app-splash>
+        </div>
+    </ng-template>
 </div>

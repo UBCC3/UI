@@ -1,6 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Job } from '../../../../shared/models/jobs.model';
 import moment from 'moment';
+import { Observable } from 'rxjs';
+import { Store, select } from '@ngrx/store';
+import { AppState } from '../../../../store';
+import { selectCompletedJobsAreLoading } from '../../../../store/selectors/complete-job.selector';
 
 @Component({
     selector: 'app-completed-jobs-table',
@@ -29,7 +33,9 @@ export class CompletedJobsTableComponent implements OnInit {
     @Output()
     nextEvent: EventEmitter<any>;
 
-    constructor() {
+    dataIsLoading$!: Observable<boolean>;
+
+    constructor(public store: Store<AppState>) {
         this.selectedJobs = [];
         this.show = 'All';
         this.previousEvent = new EventEmitter();
@@ -37,8 +43,7 @@ export class CompletedJobsTableComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.getCurrentPage();
-        this.getTotalPages();
+        this.dataIsLoading$ = this.store.pipe(select(selectCompletedJobsAreLoading));
     }
 
     getTimeDifference(start: string | undefined, finished: string | undefined) {
@@ -124,16 +129,21 @@ export class CompletedJobsTableComponent implements OnInit {
     }
 
     onPreviousClick(): void {
+        --this.currentPage;
         this.previousEvent.emit('previous click');
+    }
+    isPreviousButtonIsDisabled(): boolean {
+        return this.currentPage === 1;
     }
 
     onNextClick(): void {
+        console.log('cur page', this.currentPage);
+        ++this.currentPage;
         this.nextEvent.emit('next click');
     }
 
-    getCurrentPage(): number {
-        this.currentPage = this.offset == 0 ? 1 : this.offset / this.limit + 1;
-        return this.currentPage;
+    isNextButtonIsDisabled(): boolean {
+        return this.currentPage == this.totalPages;
     }
 
     getTotalPages(): number {
