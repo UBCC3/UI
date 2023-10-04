@@ -6,6 +6,7 @@ import {
     AvailableCalculation,
     AvailableMethod,
 } from '../../shared/models/calculation-management.model';
+import { environment } from '../../../environments/environments';
 
 @Injectable({
     providedIn: 'root',
@@ -14,14 +15,16 @@ export class NewCalculationService {
     constructor(private http: HttpClient) {}
 
     getAvailableCalculations(): Observable<AvailableCalculation[]> {
-        return this.http.get<AvailableCalculation[]>('http://localhost:8000/calculations/get-available-calculations');
+        return this.http.get<AvailableCalculation[]>(
+            `${environment.api.serverUrl}/calculations/get-available-calculations`
+        );
     }
 
     getAvailableBasisSets(): Observable<AvailableBasisSet[]> {
-        return this.http.get<AvailableBasisSet[]>('http://localhost:8000/calculations/get-available-basis-sets');
+        return this.http.get<AvailableBasisSet[]>(`${environment.api.serverUrl}/calculations/get-available-basis-sets`);
     }
 
     getAvailableMethods(): Observable<AvailableMethod[]> {
-        return this.http.get<AvailableMethod[]>('http://localhost:8000/calculations/get-available-methods');
+        return this.http.get<AvailableMethod[]>(`${environment.api.serverUrl}/calculations/get-available-methods`);
     }
 }
