@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../../store';
 import { selectCompletedJobsAreLoading } from '../../../../store/selectors/complete-job.selector';
+import { DisplayEnum } from '../../../../shared/models/display.enum';
 
 @Component({
     selector: 'app-completed-jobs-table',
@@ -20,6 +21,9 @@ export class CompletedJobsTableComponent implements OnInit {
     offset!: number;
     @Input()
     limit!: number;
+    @Input()
+    display!: DisplayEnum;
+
     currentPage = 1;
     totalPages = 1;
 
@@ -27,7 +31,7 @@ export class CompletedJobsTableComponent implements OnInit {
     pageSize = 5;
 
     selectedJobs: Job[];
-    show: string;
+    // show: string;
     @Output()
     previousEvent: EventEmitter<any>;
     @Output()
@@ -37,7 +41,6 @@ export class CompletedJobsTableComponent implements OnInit {
 
     constructor(public store: Store<AppState>) {
         this.selectedJobs = [];
-        this.show = 'All';
         this.previousEvent = new EventEmitter();
         this.nextEvent = new EventEmitter();
     }
@@ -101,17 +104,17 @@ export class CompletedJobsTableComponent implements OnInit {
     onShowClick(index: number): void {
         switch (index) {
             case 0:
-                this.show = 'All';
+                this.display = DisplayEnum.All;
                 // TODO: send action
                 return;
             case 1:
-                this.show = 'Completed';
+                this.display = DisplayEnum.Completed;
                 return;
             case 2:
-                this.show = 'Failed';
+                this.display = DisplayEnum.Failed;
                 return;
             default:
-                this.show = 'All';
+                this.display = DisplayEnum.All;
                 return;
         }
     }

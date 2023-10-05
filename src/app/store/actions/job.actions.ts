@@ -1,9 +1,13 @@
 import { createAction, props } from '@ngrx/store';
 import { Job, PaginatedJob } from '../../shared/models/jobs.model';
+import { DisplayEnum } from '../../shared/models/display.enum';
 
 export const loadInProgressJobs = createAction('[Jobs] load inprogress jobs');
 
-export const loadCompletedJobs = createAction('[Jobs] load completed jobs', props<{ limit: number; offset: number }>());
+export const loadCompletedJobs = createAction(
+    '[Jobs] load completed jobs',
+    props<{ limit: number; offset: number; display: DisplayEnum }>()
+);
 
 export const loadInProgressJobsSuccess = createAction('[Jobs] load in progress jobs success', props<{ jobs: Job[] }>());
 

@@ -22,7 +22,7 @@
             <p class="text-gray-500">Show:</p>
             <label appFocusRemover tabindex="0" class="btn btn-ghost normal-case h-auto min-h-max">
                 <!-- TODO: dispatch action to filter based on what selected -->
-                {{ show }}
+                {{ display }}
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path
                         d="M5 7.5L10 12.5L15 7.5"
@@ -133,10 +133,7 @@
                 </tr>
             </tbody>
         </table>
-        <div class="flex justify-between px-6 pb-4">
-            <!-- TODO: change to serverside pagintation -->
-            <!-- TODO: add disable state for buttons -->
-            <!-- TODO: add numbers if count more than x -->
+        <div class="flex justify-between px-6 py-4">
             <button
                 class="btn btn-sm btn-outline border-gray-300"
                 [disabled]="isPreviousButtonIsDisabled()"

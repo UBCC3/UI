@@ -18,6 +18,7 @@ import {
     selectCompletedJobsCount,
 } from '../../../store/selectors/complete-job.selector';
 import { Job } from '../../../shared/models/jobs.model';
+import { DisplayEnum } from '../../../shared/models/display.enum';
 
 @Component({
     selector: 'app-dashboard-container',
@@ -31,12 +32,14 @@ export class DashboardContainerComponent implements OnInit {
     userName!: string | undefined;
     inProgressJobs!: Job[] | null;
     completedJobs!: Job[] | null | undefined;
+    inProgressJobsLength!: number;
+    completedJobsLength!: number;
 
     user$!: Observable<User | undefined>;
 
     dataIsLoaded$!: Observable<boolean>;
 
-    show: string;
+    display: DisplayEnum;
 
     // Pagination
     offset = 0;
@@ -50,7 +53,7 @@ export class DashboardContainerComponent implements OnInit {
         public router: Router,
         private statusMenuService: StatusMenuService
     ) {
-        this.show = 'All';
+        this.display = DisplayEnum.All;
     }
 
     ngOnInit() {
@@ -63,7 +66,7 @@ export class DashboardContainerComponent implements OnInit {
         });
 
         this.store.dispatch(loadInProgressJobs());
-        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset }));
+        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
 
         this.dataIsLoaded$ = combineLatest([
             this.store.pipe(select(selectInProgressJobsAreLoaded)),
@@ -82,6 +85,8 @@ export class DashboardContainerComponent implements OnInit {
             this.inProgressJobs = inProgressJobs;
             this.completedJobs = completedJobs;
             this.jobsCount = completedJobsCount;
+            this.completedJobsLength = completedJobs?.length as number;
+            this.inProgressJobsLength = inProgressJobs.length;
         });
     }
 
@@ -102,12 +107,12 @@ export class DashboardContainerComponent implements OnInit {
     handlePreviousEvent(data: any): void {
         console.log('prev event', data);
         this.offset = Math.max(this.offset - this.limit, 0);
-        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset }));
+        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
     }
 
     handleNextEvent(data: any): void {
         console.log('next event', data);
         this.offset += this.limit;
-        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset }));
+        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
     }
 }

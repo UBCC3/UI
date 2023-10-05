@@ -20,25 +20,25 @@
             </div>
         </div>
     </div>
-    <div class="basis-2/3" *ngIf="true; else isEmpty">
-        <ng-container *ngIf="dataIsLoaded$ | async; else loading">
+    <ng-container *ngIf="dataIsLoaded$ | async; else loading">
+        <div class="basis-2/3" *ngIf="completedJobsLength > 0 && inProgressJobsLength > 0; else isEmpty">
             <app-in-progress-jobs-table [inProgressJobs]="inProgressJobs"></app-in-progress-jobs-table>
             <app-completed-jobs-table
                 [completedJobs]="completedJobs"
                 [completedJobsCount]="jobsCount"
+                [display]="display"
                 [offset]="offset"
                 [limit]="limit"
                 (previousEvent)="handlePreviousEvent($event)"
                 (nextEvent)="handleNextEvent($event)"
             ></app-completed-jobs-table>
-        </ng-container>
-
-        <ng-template #loading>
-            <div class="flex justify-center items-center h-full">
-                <app-splash></app-splash>
-            </div>
-        </ng-template>
-    </div>
+        </div>
+    </ng-container>
+    <ng-template #loading>
+        <div class="flex justify-center items-center h-full">
+            <app-splash></app-splash>
+        </div>
+    </ng-template>
 </app-layout>
 
 <ng-template #isEmpty>
