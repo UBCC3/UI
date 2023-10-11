@@ -1,13 +1,18 @@
 from .db_engine import db_engine
 
-from .db_tables import Job
+from .db_tables import Job, Structure
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import asc, and_, or_, desc
+from typing import Optional, Any, Dict, List
 
 
 from typing import List
-from ..models import JobModel, JobStatus, PaginatedJobModel
+import uuid
+from ..models import JobModel, JobStatus, CreateJobDTO, UpdateJobDTO
+from fastapi import File, UploadFile
+
+from ..util import upload_to_s3
 
 
 def get_all_jobs() -> List[JobModel]:
@@ -68,3 +73,60 @@ def get_paginated_completed_jobs(email: str, limit: int, offset: int) -> List[Jo
         )
 
     return jobs
+
+
+def post_new_job(email: str, job: CreateJobDTO, file: UploadFile = File(None)) -> bool:
+    with Session(db_engine.engine) as session:
+        try:
+            # create new row in job table
+            job = Job(
+                id=uuid.uuid4(),
+                userid=email,
+                job_name=job.job_name,
+                parameters=job.parameters,
+            )
+
+            session.add(job)
+            session.commit()
+            # print("job source", job.parameters["source"])
+            # upload structure file to s3
+            upload_to_s3(file, job.id)
+
+            # create new row in structure table
+            structure = Structure(
+                id=uuid.uuid4(),
+                jobid=job.id,
+                userid=email,
+                name=job.job_name,
+                source=job.parameters["source"],
+            )
+
+            session.add(structure)
+            session.commit()
+
+            return True
+        except SQLAlchemyError as e:
+            session.rollback()
+            print(f"Error: {str(e)}")
+            return False
+
+
+def update_job(job_id: str, update_job_dto: UpdateJobDTO) -> bool:
+    with Session(db_engine.engine) as session:
+        try:
+            job = session.query(Job).filter_by(id=job_id).first()
+
+            if not job:
+                return False
+
+            job.started = update_job_dto.started
+            job.finished = update_job_dto.finished
+            job.status = update_job_dto.status
+
+            session.commit()
+
+            return True
+        except SQLAlchemyError as e:
+            session.rollback()
+            print(f"Error: {str(e)}")
+            return False

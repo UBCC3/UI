@@ -4,6 +4,7 @@ from typing import Optional, Any, Dict, List
 from uuid import UUID
 
 from enum import Enum
+from fastapi import Form
 
 
 class UserModel(BaseModel):
@@ -38,7 +39,7 @@ class JobStatus(str, Enum):
     SUBMITTED = "SUBMITTED"
     RUNNING = "RUNNING"
     FAILED = "FAILED"
-    # update to cancelled
+    # TODO: update to cancelled
     STOPPED = "STOPPED"
     COMPLETED = "COMPLETED"
 
@@ -51,7 +52,7 @@ class JobModel(BaseModel):
     submitted: Optional[datetime] = None
     started: Optional[datetime] = None
     finished: Optional[datetime] = None
-    status: JobStatus
+    status: Optional[JobStatus] = JobStatus.SUBMITTED
     parameters: Optional[Dict[str, Any]] = None
 
 
@@ -60,3 +61,29 @@ class PaginatedJobModel(BaseModel):
     limit: int
     total_count: int
     data: List[JobModel]
+
+
+class CreateJobDTO(BaseModel):
+    job_name: str
+    parameters: Optional[Dict[str, Any]] = None
+
+
+class UpdateJobDTO(BaseModel):
+    started: Optional[datetime] = None
+    finished: Optional[datetime] = None
+    status: Optional[JobStatus] = JobStatus.SUBMITTED
+    parameters: Optional[Dict[str, Any]] = None
+
+
+class StructureOrigin(str, Enum):
+    UPLOADED = "UPLOADED"
+    CALCULATED = "CALCULATED"
+
+
+class StructureModel(BaseModel):
+    id: UUID
+    source: StructureOrigin
+    name: str
+    jobid: UUID
+    created: datetime
+    userid: EmailStr

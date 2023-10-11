@@ -1,8 +1,12 @@
 import os
 import jwt
 from dotenv import load_dotenv
-from fastapi import Depends, status, HTTPException
+from fastapi import Depends, status, HTTPException, File
 from fastapi.security import HTTPBearer
+import boto3
+from botocore.exceptions import ClientError
+import logging
+from uuid import UUID
 
 
 def set_up():
@@ -103,3 +107,16 @@ class VerifyToken:
                 )
                 return result
         return result
+
+
+def upload_to_s3(file: File, jobid: UUID):
+    s3 = boto3.client("s3")
+    # TODO: update to actual bucketname
+    bucket_name = "alexy-devel"
+    try:
+        response = s3.upload_fileobj(
+            file.file, bucket_name, str(jobid) + "/" + file.filename
+        )
+    except ClientError as e:
+        logging.error(e)
+        return False
