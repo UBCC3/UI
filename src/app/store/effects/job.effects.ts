@@ -10,9 +10,13 @@ import {
     loadInProgressJobs,
     loadInProgressJobsFail,
     loadInProgressJobsSuccess,
+    postNewJob,
+    postNewJobFail,
+    postNewJobSuccess,
 } from '../actions/job.actions';
 import { selectUserEmail } from '../selectors/user.selectors';
 import { DashboardService } from '../../features/dashboard/dashboard.service';
+import { NewCalculationService } from '../../features/new-calculation/new-calculation.service';
 
 @Injectable()
 export class JobEffects {
@@ -23,7 +27,7 @@ export class JobEffects {
             filter(([, email]) => !!email),
             mergeMap(([, email]) => {
                 if (email) {
-                    return this.dashboardService.getInProgressJobs(email).pipe(
+                    return this.dashboardService.getInProgressJobs$(email).pipe(
                         map((jobs) => loadInProgressJobsSuccess({ jobs })),
                         catchError((error) => of(loadInProgressJobsFail({ error })))
                     );
@@ -43,7 +47,7 @@ export class JobEffects {
             mergeMap(([action, email]) => {
                 const { limit, offset } = action;
                 if (email) {
-                    return this.dashboardService.getCompletedJobs(email, limit, offset).pipe(
+                    return this.dashboardService.getCompletedJobs$(email, limit, offset).pipe(
                         map((paginatedJobs) => {
                             return loadCompletedJobsSuccess({ paginatedJobs });
                         }),
@@ -57,5 +61,23 @@ export class JobEffects {
         )
     );
 
-    constructor(private actions$: Actions, private store: Store, private dashboardService: DashboardService) {}
+    createNewJob$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(postNewJob),
+            mergeMap((action) =>
+                this.newCalculationService.submitNewCalculation$(action.jobDetail).pipe(
+                    map((job) => postNewJobSuccess({ job })),
+                    catchError((error) => of(postNewJobFail({ error })))
+                    // TODO: toast service to handle error
+                )
+            )
+        )
+    );
+
+    constructor(
+        private actions$: Actions,
+        private store: Store,
+        private dashboardService: DashboardService,
+        private newCalculationService: NewCalculationService
+    ) {}
 }

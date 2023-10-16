@@ -10,12 +10,12 @@ import { environment } from '../../../environments/environments';
 export class DashboardService {
     constructor(private http: HttpClient) {}
 
-    getInProgressJobs(email: string): Observable<Job[]> {
+    getInProgressJobs$(email: string): Observable<Job[]> {
         const params = new HttpParams().set('email', email);
         return this.http.get<Job[]>(`${environment.api.serverUrl}/jobs/in-progress`, { params });
     }
 
-    getCompletedJobs(email: string, limit: any, offset: any): Observable<PaginatedJob> {
+    getCompletedJobs$(email: string, limit: any, offset: any): Observable<PaginatedJob> {
         const params = new HttpParams()
             .set('email', email)
             .set('limit', limit.toString())

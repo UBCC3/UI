@@ -33,7 +33,7 @@ export class CalculationManagementEffects {
                     return of(loadAvailableCalculationsSuccess({ availableCalculations }));
                 } else {
                     // Data doesn't exist in the state, fetch it from the API
-                    return this.newCalculationService.getAvailableCalculations().pipe(
+                    return this.newCalculationService.getAvailableCalculations$().pipe(
                         map((availableCalculations) => loadAvailableCalculationsSuccess({ availableCalculations })),
                         catchError((error) => of(loadAvailableCalculationsFail({ error })))
                     );
@@ -52,7 +52,7 @@ export class CalculationManagementEffects {
                     return of(loadAvailableBasisSetsSuccess({ availableBasisSets }));
                 } else {
                     // Data doesn't exist in the state, fetch it from the API
-                    return this.newCalculationService.getAvailableBasisSets().pipe(
+                    return this.newCalculationService.getAvailableBasisSets$().pipe(
                         map((availableBasisSets) => loadAvailableBasisSetsSuccess({ availableBasisSets })),
                         catchError((error) => of(loadAvailableBasisSetsFail({ error })))
                     );
@@ -71,7 +71,7 @@ export class CalculationManagementEffects {
                     return of(loadAvailableMethodsSuccess({ availableMethods }));
                 } else {
                     // Data doesn't exist in the state, fetch it from the API
-                    return this.newCalculationService.getAvailableMethods().pipe(
+                    return this.newCalculationService.getAvailableMethods$().pipe(
                         map((availableMethods) => loadAvailableMethodsSuccess({ availableMethods })),
                         catchError((error) => of(loadAvailableMethodsFail({ error })))
                     );

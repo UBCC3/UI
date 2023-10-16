@@ -9,6 +9,8 @@ import {
     loadInProgressJobs,
     loadInProgressJobsFail,
     loadInProgressJobsSuccess,
+    postNewJobFail,
+    postNewJobSuccess,
 } from '../actions/job.actions';
 
 export interface JobState {
@@ -62,6 +64,20 @@ export const inProgressJobsReducer = createReducer<InProgressJobsEntityState>(
         })
     ),
     on(loadInProgressJobsFail, (state, { error }) => {
+        return {
+            ...state,
+            error,
+        };
+    }),
+    // add newly submitted jobs to inprogress state
+    on(postNewJobSuccess, (state, { job }) =>
+        inProgressJobsAdapter.upsertOne(job, {
+            ...state,
+            inProgressJobsAreLoaded: true,
+            inProgressJobsAreLoading: false,
+        })
+    ),
+    on(postNewJobFail, (state, { error }) => {
         return {
             ...state,
             error,

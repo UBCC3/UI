@@ -26,6 +26,10 @@ import {
     resetNewCalculationForm,
     setNewCalculationForm,
 } from '../../../store/actions/calculation-management.actions';
+import { SourceEnum } from '../../../shared/models/source.enum';
+import { selectUserEmail } from '../../../store/selectors/user.selectors';
+import { postNewJob } from '../../../store/actions/job.actions';
+import { NewJobDTO } from '../../../shared/models/jobs.model';
 
 @Component({
     selector: 'app-new-calculation',
@@ -50,6 +54,7 @@ export class NewCalculationComponent implements OnInit {
     calculationTypes!: AvailableCalculation[] | null;
     basisSets!: AvailableBasisSet[] | null;
     methods!: AvailableMethod[] | null;
+    email!: string | undefined;
     availableCalculationsAreLoaded$!: Observable<boolean>;
     availableBasisSetsAreLoaded$!: Observable<boolean>;
     availableMethodsLoaded$!: Observable<boolean>;
@@ -68,10 +73,11 @@ export class NewCalculationComponent implements OnInit {
         this.isEditStructure = false;
         this.form = this.formBuilder.group({
             calculationName: new FormControl(null, [Validators.required.bind(this)]),
-            calculationType: new FormControl(null, [Validators.required.bind(this)]),
+            calculation: new FormControl(null, [Validators.required.bind(this)]),
             theory: new FormControl(null, [Validators.required.bind(this)]),
             basisSet: new FormControl(null, [Validators.required.bind(this)]),
             file: new FormControl(null), //NOTE: is file required?
+            source: new FormControl(null),
             solventEffects: new FormControl(null),
             waveTheory: new FormControl(null),
         });
@@ -92,10 +98,12 @@ export class NewCalculationComponent implements OnInit {
             this.store.select(selectAvailableCalculations),
             this.store.select(selectAvailableBasisSets),
             this.store.select(selectAvailableMethods),
-        ]).subscribe(([calculationTypes, basisSets, methods]) => {
+            this.store.select(selectUserEmail),
+        ]).subscribe(([calculationTypes, basisSets, methods, email]) => {
             this.calculationTypes = calculationTypes;
             this.basisSets = basisSets;
             this.methods = methods;
+            this.email = email;
         });
 
         this.store.pipe(select(selectNewCalculationForm)).subscribe((res) => {
@@ -133,7 +141,7 @@ export class NewCalculationComponent implements OnInit {
 
             if (allowedExtensions.includes(fileExtension as string)) {
                 // The selected file has a valid extension
-                this.form.patchValue({ file: fileInput.files[0] });
+                this.form.patchValue({ file: fileInput.files[0], source: SourceEnum.UPLOADED });
                 this.extensionError = '';
             } else {
                 // The selected file has an invalid extension
@@ -161,10 +169,23 @@ export class NewCalculationComponent implements OnInit {
     }
 
     calculate(): void {
-        // TODO: call to backend to calculate
-        console.log(this.form.value);
-        console.log(this.form.valid);
+        const keysToDestructure = ['calculationName', 'file'];
+        const filteredKeys = Object.keys(this.form.value).filter((key) => !keysToDestructure.includes(key));
+        const filteredValues = filteredKeys.map((key) => this.form.value[key]);
 
+        const parameters: { [key: string]: string } = {};
+        filteredKeys.forEach((key, index) => {
+            parameters[key] = filteredValues[index];
+        });
+
+        const dto: NewJobDTO = {
+            email: this.email as string,
+            job_name: this.form.get('calculationName')?.value,
+            parameters,
+            file: this.form.get('file')?.value,
+        };
+
+        this.store.dispatch(postNewJob({ jobDetail: dto }));
         this.store.dispatch(resetNewCalculationForm());
     }
 }
