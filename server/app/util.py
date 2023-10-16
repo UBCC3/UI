@@ -120,3 +120,7 @@ def upload_to_s3(file: File, jobid: UUID):
     except ClientError as e:
         logging.error(e)
         return False
+
+
+def item_to_dict(item):
+    return {c.name: getattr(item, c.name) for c in item.__table__.columns}

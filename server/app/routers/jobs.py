@@ -93,7 +93,7 @@ async def get_paginated_complete_jobs(
     }
 
 
-@router.post("/", response_model=Union[bool, JwtErrorModel])
+@router.post("/", response_model=Union[JobModel, JwtErrorModel])
 async def create_new_job(
     email: str = Form(...),
     job_name: str = Form(...),

@@ -12,7 +12,7 @@ import uuid
 from ..models import JobModel, JobStatus, CreateJobDTO, UpdateJobDTO
 from fastapi import File, UploadFile
 
-from ..util import upload_to_s3
+from ..util import upload_to_s3, item_to_dict
 
 
 def get_all_jobs() -> List[JobModel]:
@@ -75,7 +75,9 @@ def get_paginated_completed_jobs(email: str, limit: int, offset: int) -> List[Jo
     return jobs
 
 
-def post_new_job(email: str, job: CreateJobDTO, file: UploadFile = File(None)) -> bool:
+def post_new_job(
+    email: str, job: CreateJobDTO, file: UploadFile = File(None)
+) -> JobModel:
     with Session(db_engine.engine) as session:
         try:
             # create new row in job table
@@ -88,7 +90,6 @@ def post_new_job(email: str, job: CreateJobDTO, file: UploadFile = File(None)) -
 
             session.add(job)
             session.commit()
-            # print("job source", job.parameters["source"])
             # upload structure file to s3
             upload_to_s3(file, job.id)
 
@@ -104,7 +105,9 @@ def post_new_job(email: str, job: CreateJobDTO, file: UploadFile = File(None)) -
             session.add(structure)
             session.commit()
 
-            return True
+            session.refresh(job)
+
+            return item_to_dict(job)
         except SQLAlchemyError as e:
             session.rollback()
             print(f"Error: {str(e)}")
