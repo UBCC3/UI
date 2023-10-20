@@ -22,6 +22,8 @@ export const loadCompletedJobsSuccess = createAction(
 
 export const loadCompletedJobsFail = createAction('[Jobs] load completed jobs failed', props<{ error: string }>());
 
+export const setNewJobIsSubmitting = createAction('[Jobs] setting new job is submitting');
+
 export const postNewJob = createAction('[Jobs] post new job', props<{ jobDetail: NewJobDTO }>());
 
 export const postNewJobSuccess = createAction('[Jobs] post new job success', props<{ job: Job }>());

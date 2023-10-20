@@ -216,8 +216,10 @@
                     <button
                         class="btn bg-primary-500 text-white"
                         [class.btn-disabled]="!form.valid"
+                        [disabled]="newJobIsSubmitting$ | async"
                         (click)="calculate()"
                     >
+                        <span class="loading loading-spinner" *ngIf="newJobIsSubmitting$ | async"></span>
                         Calculate
                     </button>
                 </div>

@@ -11,6 +11,7 @@ import {
     loadInProgressJobsSuccess,
     postNewJobFail,
     postNewJobSuccess,
+    setNewJobIsSubmitting,
 } from '../actions/job.actions';
 
 export interface JobState {
@@ -21,7 +22,10 @@ export interface JobState {
 export interface InProgressJobsEntityState extends EntityState<Job> {
     inProgressJobsAreLoading: boolean;
     inProgressJobsAreLoaded: boolean;
+    newJobIsSubmitting: boolean;
+    newJobIsSubmitted: boolean;
     error: string | null;
+    newJobSubmittingError: string | null;
 }
 
 export const inProgressJobsAdapter: EntityAdapter<Job> = createEntityAdapter<Job>();
@@ -36,7 +40,10 @@ export interface CompletedJobsEntityState {
 export const initialInProgressJobsState: InProgressJobsEntityState = inProgressJobsAdapter.getInitialState({
     inProgressJobsAreLoading: false,
     inProgressJobsAreLoaded: false,
+    newJobIsSubmitting: false,
+    newJobIsSubmitted: false,
     error: null,
+    newJobSubmittingError: null,
 });
 
 export const initialCompletedJobsState: CompletedJobsEntityState = {
@@ -75,12 +82,20 @@ export const inProgressJobsReducer = createReducer<InProgressJobsEntityState>(
             ...state,
             inProgressJobsAreLoaded: true,
             inProgressJobsAreLoading: false,
+            newJobIsSubmitted: true,
+            newJobIsSubmitting: false,
         })
     ),
+    on(setNewJobIsSubmitting, (state) => {
+        return {
+            ...state,
+            newJobIsSubmitting: true,
+        };
+    }),
     on(postNewJobFail, (state, { error }) => {
         return {
             ...state,
-            error,
+            newJobSubmittingError: error,
         };
     })
 );

@@ -20,3 +20,5 @@ export const selectInProgressJobsAreLoading = createSelector(
     selectInProgressJobState,
     (state) => state?.inProgressJobsAreLoading
 );
+
+export const selectNewJobIsSubmitting = createSelector(selectInProgressJobState, (state) => state?.newJobIsSubmitting);

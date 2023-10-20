@@ -28,8 +28,9 @@ import {
 } from '../../../store/actions/calculation-management.actions';
 import { SourceEnum } from '../../../shared/models/source.enum';
 import { selectUserEmail } from '../../../store/selectors/user.selectors';
-import { postNewJob } from '../../../store/actions/job.actions';
+import { postNewJob, setNewJobIsSubmitting } from '../../../store/actions/job.actions';
 import { NewJobDTO } from '../../../shared/models/jobs.model';
+import { selectNewJobIsSubmitting } from '../../../store/selectors/in-progress-job.selectors';
 
 @Component({
     selector: 'app-new-calculation',
@@ -60,6 +61,7 @@ export class NewCalculationComponent implements OnInit {
     availableMethodsLoaded$!: Observable<boolean>;
 
     dataIsLoaded$!: Observable<boolean>;
+    newJobIsSubmitting$!: Observable<boolean>;
 
     smallJsMolContainer = {
         width: '500px',
@@ -93,6 +95,8 @@ export class NewCalculationComponent implements OnInit {
                 return calculationsAreLoaded && basisSetsAreLoaded && methodsAreLoaded;
             })
         );
+
+        this.newJobIsSubmitting$ = this.store.select(selectNewJobIsSubmitting);
 
         combineLatest([
             this.store.select(selectAvailableCalculations),
@@ -185,6 +189,7 @@ export class NewCalculationComponent implements OnInit {
             file: this.form.get('file')?.value,
         };
 
+        this.store.dispatch(setNewJobIsSubmitting());
         this.store.dispatch(postNewJob({ jobDetail: dto }));
         this.store.dispatch(resetNewCalculationForm());
     }

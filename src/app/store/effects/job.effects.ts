@@ -17,6 +17,7 @@ import {
 import { selectUserEmail } from '../selectors/user.selectors';
 import { DashboardService } from '../../features/dashboard/dashboard.service';
 import { NewCalculationService } from '../../features/new-calculation/new-calculation.service';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class JobEffects {
@@ -66,7 +67,10 @@ export class JobEffects {
             ofType(postNewJob),
             mergeMap((action) =>
                 this.newCalculationService.submitNewCalculation$(action.jobDetail).pipe(
-                    map((job) => postNewJobSuccess({ job })),
+                    map((job) => {
+                        this.router.navigate(['/dashboard']);
+                        return postNewJobSuccess({ job });
+                    }),
                     catchError((error) => of(postNewJobFail({ error })))
                     // TODO: toast service to handle error
                 )
@@ -78,6 +82,7 @@ export class JobEffects {
         private actions$: Actions,
         private store: Store,
         private dashboardService: DashboardService,
-        private newCalculationService: NewCalculationService
+        private newCalculationService: NewCalculationService,
+        private router: Router
     ) {}
 }
