@@ -25,7 +25,7 @@ describe('StatusMenuComponent', () => {
     });
 
     it('should emit custom event when button is clicked', () => {
-        component.status = 'running';
+        component.status = 'RUNNING';
         const emittedData = 'cancel';
         jest.spyOn(component, 'onStatusMenuClick');
 

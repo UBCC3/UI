@@ -15,6 +15,7 @@ export class EditStructureComponent {
     };
 
     ngOnInit(): void {
+        console.log('window history', window.history);
         this.route.paramMap.subscribe((param) => {
             this.file = history.state.file;
         });
