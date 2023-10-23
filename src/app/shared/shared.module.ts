@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { EditStructureHeaderComponent } from './components/edit-structure-header/edit-structure-header.component';
 
 import { FocusRemoverDirective } from './directives/focus-remover.directive';
+import { ToastComponent } from './components/toast/toast.component';
 
 @NgModule({
     declarations: [
@@ -22,6 +23,7 @@ import { FocusRemoverDirective } from './directives/focus-remover.directive';
         EditStructureComponent,
         EditStructureHeaderComponent,
         FocusRemoverDirective,
+        ToastComponent,
     ],
     imports: [CommonModule, RouterModule, FormsModule],
     exports: [
@@ -34,6 +36,7 @@ import { FocusRemoverDirective } from './directives/focus-remover.directive';
         EditStructureComponent,
         EditStructureHeaderComponent,
         FocusRemoverDirective,
+        ToastComponent,
     ],
 })
 export class SharedModule {}

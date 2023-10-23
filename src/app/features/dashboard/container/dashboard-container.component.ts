@@ -105,13 +105,11 @@ export class DashboardContainerComponent implements OnInit {
     }
 
     handlePreviousEvent(data: any): void {
-        console.log('prev event', data);
         this.offset = Math.max(this.offset - this.limit, 0);
         this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
     }
 
     handleNextEvent(data: any): void {
-        console.log('next event', data);
         this.offset += this.limit;
         this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
     }

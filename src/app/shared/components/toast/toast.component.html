@@ -1,0 +1,44 @@
+<div class="toast toast-end">
+    <div *ngFor="let toast of toasts">
+        <ng-container [ngSwitch]="toast.type">
+            <ng-container *ngSwitchCase="'Error'">
+                <div class="alert bg-error-500 border-error-500">
+                    <span>{{ toast.message ? toast.message : 'Something went wrong. Please try again later' }}</span>
+                    <img
+                        src="../../../../assets/x.svg"
+                        (click)="dismissToast(toast.id ? toast.id : '')"
+                        alt="close"
+                        class="hover:cursor-pointer"
+                    />
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'Warning'">
+                <div class="alert bg-warning-500 border-warning-500">
+                    <span>{{ toast.message ? toast.message : 'Warning' }}</span>
+                    <img
+                        src="../../../../assets/x.svg"
+                        (click)="dismissToast(toast.id ? toast.id : '')"
+                        alt="close"
+                        class="hover:cursor-pointer"
+                    />
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'Success'">
+                <div class="alert bg-success-500 border-success-500">
+                    <span>{{ toast.message ? toast.message : 'Success' }}</span>
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'Info'">
+                <div class="alert alert-info">
+                    <span>{{ toast.message ? toast.message : 'Info' }}</span>
+                    <img
+                        src="../../../../assets/x.svg"
+                        (click)="dismissToast(toast.id ? toast.id : '')"
+                        alt="close"
+                        class="hover:cursor-pointer"
+                    />
+                </div>
+            </ng-container>
+        </ng-container>
+    </div>
+</div>
