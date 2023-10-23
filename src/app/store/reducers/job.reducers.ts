@@ -95,6 +95,7 @@ export const inProgressJobsReducer = createReducer<InProgressJobsEntityState>(
     on(postNewJobFail, (state, { error }) => {
         return {
             ...state,
+            newJobIsSubmitting: false,
             newJobSubmittingError: error,
         };
     })

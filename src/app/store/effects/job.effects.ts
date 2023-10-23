@@ -18,6 +18,8 @@ import { selectUserEmail } from '../selectors/user.selectors';
 import { DashboardService } from '../../features/dashboard/dashboard.service';
 import { NewCalculationService } from '../../features/new-calculation/new-calculation.service';
 import { Router } from '@angular/router';
+import { ToastService } from '../../shared/services/toast.service';
+import { ToastType } from '../../shared/models/toast-type.enum';
 
 @Injectable()
 export class JobEffects {
@@ -34,6 +36,9 @@ export class JobEffects {
                     );
                 } else {
                     const error = { error: 'Email is required.' };
+                    this.toastService.toast({
+                        type: ToastType.Error,
+                    });
                     return of(loadInProgressJobsFail(error));
                 }
             })
@@ -56,6 +61,9 @@ export class JobEffects {
                     );
                 } else {
                     const error = { error: 'Email is required.' };
+                    this.toastService.toast({
+                        type: ToastType.Error,
+                    });
                     return of(loadCompletedJobsFail(error));
                 }
             })
@@ -71,8 +79,12 @@ export class JobEffects {
                         this.router.navigate(['/dashboard']);
                         return postNewJobSuccess({ job });
                     }),
-                    catchError((error) => of(postNewJobFail({ error })))
-                    // TODO: toast service to handle error
+                    catchError((error) => {
+                        this.toastService.toast({
+                            type: ToastType.Error,
+                        });
+                        return of(postNewJobFail({ error }));
+                    })
                 )
             )
         )
@@ -83,6 +95,7 @@ export class JobEffects {
         private store: Store,
         private dashboardService: DashboardService,
         private newCalculationService: NewCalculationService,
-        private router: Router
+        private router: Router,
+        private toastService: ToastService
     ) {}
 }

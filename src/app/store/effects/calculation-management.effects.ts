@@ -20,6 +20,8 @@ import {
     selectAvailableCalculations,
     selectAvailableMethods,
 } from '../selectors/calculation-management.selectors';
+import { ToastService } from '../../shared/services/toast.service';
+import { ToastType } from '../../shared/models/toast-type.enum';
 
 @Injectable()
 export class CalculationManagementEffects {
@@ -35,7 +37,13 @@ export class CalculationManagementEffects {
                     // Data doesn't exist in the state, fetch it from the API
                     return this.newCalculationService.getAvailableCalculations$().pipe(
                         map((availableCalculations) => loadAvailableCalculationsSuccess({ availableCalculations })),
-                        catchError((error) => of(loadAvailableCalculationsFail({ error })))
+                        catchError((error) => {
+                            this.toastService.toast({
+                                type: ToastType.Error,
+                            });
+
+                            return of(loadAvailableCalculationsFail({ error }));
+                        })
                     );
                 }
             })
@@ -54,7 +62,12 @@ export class CalculationManagementEffects {
                     // Data doesn't exist in the state, fetch it from the API
                     return this.newCalculationService.getAvailableBasisSets$().pipe(
                         map((availableBasisSets) => loadAvailableBasisSetsSuccess({ availableBasisSets })),
-                        catchError((error) => of(loadAvailableBasisSetsFail({ error })))
+                        catchError((error) => {
+                            this.toastService.toast({
+                                type: ToastType.Error,
+                            });
+                            return of(loadAvailableBasisSetsFail({ error }));
+                        })
                     );
                 }
             })
@@ -73,7 +86,12 @@ export class CalculationManagementEffects {
                     // Data doesn't exist in the state, fetch it from the API
                     return this.newCalculationService.getAvailableMethods$().pipe(
                         map((availableMethods) => loadAvailableMethodsSuccess({ availableMethods })),
-                        catchError((error) => of(loadAvailableMethodsFail({ error })))
+                        catchError((error) => {
+                            this.toastService.toast({
+                                type: ToastType.Error,
+                            });
+                            return of(loadAvailableMethodsFail({ error }));
+                        })
                     );
                 }
             })
@@ -83,6 +101,7 @@ export class CalculationManagementEffects {
     constructor(
         private actions$: Actions,
         private store: Store,
-        private newCalculationService: NewCalculationService
+        private newCalculationService: NewCalculationService,
+        private toastService: ToastService
     ) {}
 }
