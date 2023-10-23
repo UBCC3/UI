@@ -18,7 +18,6 @@ const info = {
     styleUrls: ['./edit-structure.component.scss'],
 })
 export class EditStructureComponent implements AfterViewInit {
-    // TODO: add props for file and can edit
     @Input()
     file!: File;
     @Input() style!: { [key: string]: string };
@@ -31,7 +30,7 @@ export class EditStructureComponent implements AfterViewInit {
     private appletElement!: HTMLDivElement;
     private appletObject: any;
     appletHtml!: string;
-    // private file: any;
+
     zoomValue: string;
     toggledDrag: boolean;
     constructor(private renderer: Renderer2) {
@@ -49,18 +48,11 @@ export class EditStructureComponent implements AfterViewInit {
                 this.appletElement.innerHTML = appletHtml;
 
                 if (this.file) {
-                    console.log('has file...', this.file);
-                    console.log('loading file');
                     setTimeout(() => {
                         this.loadFile();
                         this.setRightClickMenuAccess();
                     }, 100);
                 }
-
-                // NOTE: need a delay before setting jmol params or else it won't render
-                // setTimeout(() => {
-                //     Jmol.script(this.appletObject, 'set disablePopupMenu TRUE');
-                // }, 1000);
             })
 
             .catch((err) => console.error('error loading jsmol: ', err));
@@ -131,9 +123,7 @@ export class EditStructureComponent implements AfterViewInit {
     }
 
     handleZoomInput(): void {
-        console.log('enter pressed');
         if (!this.zoomValue.endsWith('%')) this.zoomValue = this.zoomValue + '%';
-        console.log('zoomValue', this.zoomValue);
 
         Jmol.script(this.appletObject, `zoom ${this.zoomValue.slice(0, -1)}`);
     }
@@ -146,10 +136,5 @@ export class EditStructureComponent implements AfterViewInit {
             this.toggledDrag = !this.toggledDrag;
             Jmol.script(this.appletObject, 'set picking ON');
         }
-    }
-
-    // to get zoom % value
-    getZoom(): void {
-        console.log(Jmol.scriptEcho(this.appletObject, 'show zoom'));
     }
 }
