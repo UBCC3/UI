@@ -15,11 +15,12 @@ export class DashboardService {
         return this.http.get<Job[]>(`${environment.api.serverUrl}/jobs/in-progress`, { params });
     }
 
-    getCompletedJobs$(email: string, limit: any, offset: any): Observable<PaginatedJob> {
+    getCompletedJobs$(email: string, limit: number, offset: number, filter: string): Observable<PaginatedJob> {
         const params = new HttpParams()
             .set('email', email)
             .set('limit', limit.toString())
-            .set('offset', offset.toString());
+            .set('offset', offset.toString())
+            .set('filter', filter);
         return this.http.get<PaginatedJob>(`${environment.api.serverUrl}/jobs/completed`, { params });
     }
 }

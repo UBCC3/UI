@@ -77,18 +77,20 @@ async def get_complete_jobs(
 async def get_paginated_complete_jobs(
     email: str,
     response: Response,
-    token: str = Depends(token_auth),
+    filter: str,
     limit: int = 5,
     offset: int = 0,
+    token: str = Depends(token_auth),
 ):
-    total_count = get_completed_jobs_count(email)
+    total_count = get_completed_jobs_count(email, filter)
 
-    data = get_paginated_completed_jobs(email, limit, offset)
+    data = get_paginated_completed_jobs(email, limit, offset, filter)
 
     return {
         "offset": offset,
         "limit": limit,
         "total_count": total_count,
+        "filter": filter,
         "data": data,
     }
 

@@ -100,6 +100,7 @@ export class DashboardContainerComponent implements OnInit {
         });
     }
 
+    // NOTE: handle type for event emit handler
     handleEmitterService(data: any): void {
         console.log('event from status menu handled');
     }
@@ -112,5 +113,10 @@ export class DashboardContainerComponent implements OnInit {
     handleNextEvent(data: any): void {
         this.offset += this.limit;
         this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
+    }
+
+    handleFilterEvent(data: any): void {
+        this.display = data;
+        this.offset = 0;
     }
 }

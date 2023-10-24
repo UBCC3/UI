@@ -6,6 +6,7 @@ import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../../store';
 import { selectCompletedJobsAreLoading } from '../../../../store/selectors/complete-job.selector';
 import { DisplayEnum } from '../../../../shared/models/display.enum';
+import { loadCompletedJobs } from '../../../../store/actions/job.actions';
 
 @Component({
     selector: 'app-completed-jobs-table',
@@ -32,10 +33,14 @@ export class CompletedJobsTableComponent implements OnInit {
 
     selectedJobs: Job[];
     // show: string;
+
+    // NOTE: type for the events
     @Output()
     previousEvent: EventEmitter<any>;
     @Output()
     nextEvent: EventEmitter<any>;
+    @Output()
+    filterEvent: EventEmitter<any>;
 
     dataIsLoading$!: Observable<boolean>;
 
@@ -43,6 +48,7 @@ export class CompletedJobsTableComponent implements OnInit {
         this.selectedJobs = [];
         this.previousEvent = new EventEmitter();
         this.nextEvent = new EventEmitter();
+        this.filterEvent = new EventEmitter();
     }
 
     ngOnInit(): void {
@@ -102,21 +108,21 @@ export class CompletedJobsTableComponent implements OnInit {
     }
 
     onShowClick(index: number): void {
+        let display: DisplayEnum;
         switch (index) {
-            case 0:
-                this.display = DisplayEnum.All;
-                // TODO: send action
-                return;
             case 1:
-                this.display = DisplayEnum.Completed;
-                return;
+                display = DisplayEnum.Completed;
+                break;
             case 2:
-                this.display = DisplayEnum.Failed;
-                return;
+                display = DisplayEnum.Failed;
+                break;
             default:
-                this.display = DisplayEnum.All;
-                return;
+                display = DisplayEnum.All;
+                break;
         }
+        this.display = display;
+        this.filterEvent.emit(display);
+        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: 0, display }));
     }
 
     openJob(jobId: string): void {

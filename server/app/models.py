@@ -60,6 +60,7 @@ class PaginatedJobModel(BaseModel):
     offset: int
     limit: int
     total_count: int
+    filter: str
     data: List[JobModel]
 
 

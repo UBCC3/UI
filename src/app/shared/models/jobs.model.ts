@@ -15,6 +15,7 @@ export interface PaginatedJob {
     limit: number;
     total_count: number;
     data: Job[];
+    filter?: string;
 }
 
 // TODO: get requirements for DTO

@@ -47,8 +47,15 @@ def get_all_completed_jobs(email: str) -> List[JobModel]:
     return jobs
 
 
-def get_completed_jobs_count(email: str) -> int:
-    status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
+def get_completed_jobs_count(email: str, filter: str) -> int:
+    if filter == "All":
+        status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
+    elif filter == "Completed":
+        status_values = [JobStatus.COMPLETED]
+    elif filter == "Failed":
+        # NOTE: failed should include stopped?
+        status_values = [JobStatus.FAILED, JobStatus.STOPPED]
+
     with Session(db_engine.engine) as session:
         total_count = (
             session.query(Job)
@@ -59,8 +66,16 @@ def get_completed_jobs_count(email: str) -> int:
     return total_count
 
 
-def get_paginated_completed_jobs(email: str, limit: int, offset: int) -> List[Job]:
-    status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
+def get_paginated_completed_jobs(
+    email: str, limit: int, offset: int, filter: str
+) -> List[Job]:
+    if filter == "All":
+        status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
+    elif filter == "Completed":
+        status_values = [JobStatus.COMPLETED]
+    elif filter == "Failed":
+        # NOTE: failed should include stopped?
+        status_values = [JobStatus.FAILED, JobStatus.STOPPED]
 
     with Session(db_engine.engine) as session:
         jobs = (
@@ -106,6 +121,8 @@ def post_new_job(
             session.commit()
 
             session.refresh(job)
+
+            # calculate_energy(job.id, file)
 
             return item_to_dict(job)
         except SQLAlchemyError as e:
