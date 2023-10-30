@@ -18,8 +18,8 @@ export class StatusMenuComponent {
     }
 
     onStatusMenuClick(type: string): void {
-        // this.statusMenuClick.emit(type);
+        this.statusMenuClick.emit(type);
         // NOTE: maybe move service file from shared to status-menu and have specific emitter for comp
-        this.service.emitStatusMenuEvent(type);
+        // this.service.emitStatusMenuEvent(type);
     }
 }

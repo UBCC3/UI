@@ -3,6 +3,9 @@ import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 import { Job, PaginatedJob } from '../../shared/models/jobs.model';
 import { AppState } from '..';
 import {
+    deleteCompletedJob,
+    deleteCompletedJobFail,
+    deleteCompletedJobSuccess,
     loadCompletedJobs,
     loadCompletedJobsFail,
     loadCompletedJobsSuccess,
@@ -118,6 +121,23 @@ export const completedJobsReducer = createReducer<CompletedJobsEntityState>(
         };
     }),
     on(loadCompletedJobsFail, (state, { error }) => {
+        return {
+            ...state,
+            error,
+        };
+    }),
+    on(deleteCompletedJob, (state) => {
+        return {
+            ...state,
+            completedJobsAreLoading: true,
+        };
+    }),
+    on(deleteCompletedJobSuccess, (state, { jobId }) => {
+        return {
+            ...state,
+        };
+    }),
+    on(deleteCompletedJobFail, (state, { error }) => {
         return {
             ...state,
             error,

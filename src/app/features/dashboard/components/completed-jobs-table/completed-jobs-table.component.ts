@@ -6,7 +6,7 @@ import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../../store';
 import { selectCompletedJobsAreLoading } from '../../../../store/selectors/complete-job.selector';
 import { DisplayEnum } from '../../../../shared/models/display.enum';
-import { loadCompletedJobs } from '../../../../store/actions/job.actions';
+import { deleteCompletedJob, loadCompletedJobs } from '../../../../store/actions/job.actions';
 
 @Component({
     selector: 'app-completed-jobs-table',
@@ -101,10 +101,8 @@ export class CompletedJobsTableComponent implements OnInit {
         return this.selectedJobs?.includes(job);
     }
 
-    handleStatusMenuClick(type: string): void {
-        // TODO: handle event
-        // use shared service to make code less coupled
-        console.log('handle event emitted by status menu', type);
+    handleStatusMenuClick(type: string, job: Job): void {
+        this.store.dispatch(deleteCompletedJob({ jobId: job.id }));
     }
 
     onShowClick(index: number): void {

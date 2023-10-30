@@ -4,6 +4,9 @@ import { of } from 'rxjs';
 import { catchError, filter, map, mergeMap, switchMap, take, withLatestFrom } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import {
+    deleteCompletedJob,
+    deleteCompletedJobFail,
+    deleteCompletedJobSuccess,
     loadCompletedJobs,
     loadCompletedJobsFail,
     loadCompletedJobsSuccess,
@@ -20,6 +23,7 @@ import { NewCalculationService } from '../../features/new-calculation/new-calcul
 import { Router } from '@angular/router';
 import { ToastService } from '../../shared/services/toast.service';
 import { ToastType } from '../../shared/models/toast-type.enum';
+import { DisplayEnum } from '../../shared/models/display.enum';
 
 @Injectable()
 export class JobEffects {
@@ -84,6 +88,38 @@ export class JobEffects {
                             type: ToastType.Error,
                         });
                         return of(postNewJobFail({ error }));
+                    })
+                )
+            )
+        )
+    );
+
+    deleteCompletedJob$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(deleteCompletedJob),
+            switchMap((action) =>
+                this.newCalculationService.deleteCompletedJob$(action.jobId).pipe(
+                    switchMap((res) => {
+                        if (res) {
+                            return [
+                                loadCompletedJobs({
+                                    limit: 5,
+                                    offset: 0,
+                                    display: DisplayEnum.All,
+                                }),
+                            ];
+                        } else {
+                            this.toastService.toast({
+                                type: ToastType.Error,
+                            });
+                            return of(deleteCompletedJobFail({ error: 'Failed to delete job' }));
+                        }
+                    }),
+                    catchError((error) => {
+                        this.toastService.toast({
+                            type: ToastType.Error,
+                        });
+                        return of(deleteCompletedJobFail({ error }));
                     })
                 )
             )

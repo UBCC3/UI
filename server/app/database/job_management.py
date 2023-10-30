@@ -4,7 +4,7 @@ from .db_tables import Job, Structure
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import asc, and_, or_, desc
-from typing import Optional, Any, Dict, List
+from typing import Optional, Any, Dict, List, Union
 
 
 from typing import List
@@ -92,7 +92,7 @@ def get_paginated_completed_jobs(
 
 def post_new_job(
     email: str, job: CreateJobDTO, file: UploadFile = File(None)
-) -> JobModel:
+) -> Union[JobModel, bool]:
     with Session(db_engine.engine) as session:
         try:
             # create new row in job table
@@ -122,6 +122,7 @@ def post_new_job(
 
             session.refresh(job)
 
+            # test for calculating using psi4
             # calculate_energy(job.id, file)
 
             return item_to_dict(job)
@@ -131,7 +132,7 @@ def post_new_job(
             return False
 
 
-def update_job(job_id: str, update_job_dto: UpdateJobDTO) -> bool:
+def update_job(job_id: uuid.UUID, update_job_dto: UpdateJobDTO) -> bool:
     with Session(db_engine.engine) as session:
         try:
             job = session.query(Job).filter_by(id=job_id).first()
@@ -143,6 +144,22 @@ def update_job(job_id: str, update_job_dto: UpdateJobDTO) -> bool:
             job.finished = update_job_dto.finished
             job.status = update_job_dto.status
 
+            session.commit()
+
+            return True
+        except SQLAlchemyError as e:
+            session.rollback()
+            print(f"Error: {str(e)}")
+            return False
+
+
+# TODO: return type
+def remove_job(job_id: uuid.UUID) -> bool:
+    with Session(db_engine.engine) as session:
+        try:
+            job_record = session.get(Job, job_id)
+            session.delete(job_record)
+            session.flush()
             session.commit()
 
             return True

@@ -40,4 +40,8 @@ export class NewCalculationService {
 
         return this.http.post<Job>(`${environment.api.serverUrl}/jobs/`, formData);
     }
+
+    deleteCompletedJob$(jobId: string): Observable<boolean> {
+        return this.http.delete<boolean>(`${environment.api.serverUrl}/jobs/${jobId}`);
+    }
 }

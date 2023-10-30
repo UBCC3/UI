@@ -17,6 +17,7 @@ from ..database.job_management import (
     get_completed_jobs_count,
     post_new_job,
     update_job,
+    remove_job,
 )
 
 import json
@@ -28,8 +29,9 @@ from ..models import (
     CreateJobDTO,
     UpdateJobDTO,
 )
-from ..util import token_auth
-from typing import Union
+from ..util import token_auth, download_from_s3, read_from_s3
+from typing import Union, Any
+from uuid import UUID
 
 router = APIRouter(
     prefix="/jobs",
@@ -108,10 +110,38 @@ async def create_new_job(
 
 
 @router.patch("/", response_model=Union[bool, JwtErrorModel])
-async def patch_job(job_id: str, job: UpdateJobDTO, token: str = Depends(token_auth)):
+async def patch_job(job_id: UUID, job: UpdateJobDTO, token: str = Depends(token_auth)):
     res = update_job(job_id, job)
 
     if not res:
         raise HTTPException(status_code=404, detail="Job not found")
     else:
         return True
+
+
+# TODO: return type
+@router.delete("/{job_id}", response_model=Union[bool, JwtErrorModel])
+async def delete_job(job_id: UUID, token: str = Depends(token_auth)):
+    return remove_job(job_id)
+
+
+# TODO: response type
+# @router.get("/download/{job_id}/{file_name}", response_model=Union[Any, JwtErrorModel])
+# async def download(
+#     file_name: str,
+#     job_id: UUID,
+#     response: Response,
+#     token: str = Depends(token_auth)
+# ):
+#     return download_from_s3(file_name, job_id)
+
+
+# TODO: response type
+# @router.get("/read-file/{job_id}/{file_name}", response_model=Union[Any, JwtErrorModel])
+# async def read_file(
+#     file_name: str,
+#     job_id: UUID,
+#     response: Response,
+#     token: str = Depends(token_auth)
+# ):
+#     return read_from_s3(file_name, job_id)

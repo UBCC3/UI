@@ -29,3 +29,13 @@ export const postNewJob = createAction('[Jobs] post new job', props<{ jobDetail:
 export const postNewJobSuccess = createAction('[Jobs] post new job success', props<{ job: Job }>());
 
 export const postNewJobFail = createAction('[Jobs] post new job fail', props<{ error: string }>());
+
+export const deleteCompletedJob = createAction('[Jobs] delete completed job', props<{ jobId: string }>());
+
+// NOTE: return id to call reduce fn on reducer?
+export const deleteCompletedJobSuccess = createAction(
+    '[Jobs] delete completed job success',
+    props<{ jobId: string }>()
+);
+
+export const deleteCompletedJobFail = createAction('[Jobs] delete completed job fail', props<{ error: string }>());
