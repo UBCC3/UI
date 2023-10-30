@@ -11,8 +11,8 @@ from ..models import StructureModel, StructureOrigin
 
 
 def post_structure(
-    jobid: uuid.uuid4,
-    userid: str,
+    job_id: uuid.uuid4,
+    user_id: str,
     structure_name: str,
     structure_origin: StructureOrigin,
 ) -> bool:
@@ -20,8 +20,8 @@ def post_structure(
         try:
             structure = Structure(
                 id=uuid.uuid4(),
-                jobid=jobid,
-                userid=userid,
+                jobid=job_id,
+                userid=user_id,
                 name=structure_name,
                 source=structure_origin,
             )
