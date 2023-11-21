@@ -1,9 +1,5 @@
-import { Action, createReducer, on } from '@ngrx/store';
-import {
-    AvailableBasisSet,
-    AvailableCalculation,
-    AvailableMethod,
-} from '../../shared/models/calculation-management.model';
+import { Action, combineReducers, createReducer, on } from '@ngrx/store';
+import { CalculationOption } from '../../shared/models/calculation-option.model';
 import {
     loadAvailableCalculations,
     loadAvailableCalculationsSuccess,
@@ -17,96 +13,131 @@ import {
     setNewCalculationForm,
     resetNewCalculationForm,
 } from '../actions/calculation-management.actions';
+import { EntityAdapter, EntityState, createEntityAdapter } from '@ngrx/entity';
 
 export interface CalculationManagementState {
-    availableCalculations: AvailableCalculation[] | null;
-    availableCalculationsAreLoading: boolean;
-    availableCalculationsAreLoaded: boolean;
-    availableCalculationsError: string;
-    availableBasisSets: AvailableBasisSet[] | null;
-    availableBasisSetsAreLoading: boolean;
-    availableBasisSetsAreLoaded: boolean;
-    availableBasisSetsError: string;
-    availableMethods: AvailableMethod[] | null;
-    availableMethodsAreLoading: boolean;
-    availableMethodsAreLoaded: boolean;
-    availableMethodsError: string;
-    newCalculationForm: any;
+    availableCalculations: AvailableCalculationsEntityState;
+    availableBasisSets: AvailableBasisSetsEntityState;
+    availableMethods: AvailableMethodsEntityState;
+    newCalculationForm: NewCalculationFormState;
 }
 
-const initialState: CalculationManagementState = {
-    availableCalculations: null,
-    availableCalculationsAreLoading: false,
-    availableCalculationsAreLoaded: false,
-    availableCalculationsError: '',
-    availableBasisSets: null,
-    availableBasisSetsAreLoading: false,
+export interface AvailableCalculationsEntityState extends EntityState<CalculationOption> {
+    availableCalculationsAreLoading: boolean;
+    availableCalculationsAreLoaded: boolean;
+    availableCalculationsError: string | null;
+}
+
+export const availableCalculationsAdapter: EntityAdapter<CalculationOption> = createEntityAdapter<CalculationOption>();
+
+export interface AvailableBasisSetsEntityState extends EntityState<CalculationOption> {
+    availableBasisSetsAreLoading: boolean;
+    availableBasisSetsAreLoaded: boolean;
+    availableBasisSetsError: string | null;
+}
+
+export const availableBasisSetsAdapter: EntityAdapter<CalculationOption> = createEntityAdapter<CalculationOption>();
+
+export interface AvailableMethodsEntityState extends EntityState<CalculationOption> {
+    availableMethodsAreLoading: boolean;
+    availableMethodsAreLoaded: boolean;
+    availableMethodsError: string | null;
+}
+
+export const availableMethodsAdapter: EntityAdapter<CalculationOption> = createEntityAdapter<CalculationOption>();
+
+// TODO: type for new calculation form
+export interface NewCalculationFormState {
+    newCalculationForm: any;
+    newCalculationFormError: string | null;
+}
+
+export const initialAvailableCalculationsState: AvailableCalculationsEntityState =
+    availableCalculationsAdapter.getInitialState({
+        availableCalculationsAreLoaded: false,
+        availableCalculationsAreLoading: false,
+        availableCalculationsError: null,
+    });
+
+export const initialAvailableBasisSetsState: AvailableBasisSetsEntityState = availableBasisSetsAdapter.getInitialState({
     availableBasisSetsAreLoaded: false,
-    availableBasisSetsError: '',
-    availableMethods: null,
-    availableMethodsAreLoading: false,
+    availableBasisSetsAreLoading: false,
+    availableBasisSetsError: null,
+});
+
+export const initialAvailableMethodsState: AvailableMethodsEntityState = availableMethodsAdapter.getInitialState({
     availableMethodsAreLoaded: false,
-    availableMethodsError: '',
+    availableMethodsAreLoading: false,
+    availableMethodsError: null,
+});
+
+export const initialNewCalculationState: NewCalculationFormState = {
     newCalculationForm: null,
+    newCalculationFormError: null,
 };
 
-const reducer = createReducer<CalculationManagementState>(
-    initialState,
-    // Available Calculations
+export const availableCalculationsReducer = createReducer<AvailableCalculationsEntityState>(
+    initialAvailableCalculationsState,
     on(loadAvailableCalculations, (state) => ({
         ...state,
         availableCalculationsAreLoading: true,
     })),
-    on(loadAvailableCalculationsSuccess, (state, { availableCalculations }) => {
-        return {
+    on(loadAvailableCalculationsSuccess, (state, { availableCalculations }) =>
+        availableCalculationsAdapter.addMany(availableCalculations, {
             ...state,
-            availableCalculations,
-            availableCalculationsAreLoading: false,
             availableCalculationsAreLoaded: true,
-        };
-    }),
+            availableCalculationsAreLoading: false,
+        })
+    ),
     on(loadAvailableCalculationsFail, (state, { error }) => ({
         ...state,
         availableCalculationsAreLoading: false,
         availableCalculationsError: error,
-    })),
-    // Available Basis Sets
+    }))
+);
+
+export const availableBasisSetsReducer = createReducer<AvailableBasisSetsEntityState>(
+    initialAvailableBasisSetsState,
     on(loadAvailableBasisSets, (state) => ({
         ...state,
         availableBasisSetsAreLoading: true,
     })),
-    on(loadAvailableBasisSetsSuccess, (state, { availableBasisSets }) => {
-        return {
+    on(loadAvailableBasisSetsSuccess, (state, { availableBasisSets }) =>
+        availableBasisSetsAdapter.addMany(availableBasisSets, {
             ...state,
-            availableBasisSets,
-            availableBasisSetsAreLoading: false,
             availableBasisSetsAreLoaded: true,
-        };
-    }),
+            availableBasisSetsAreLoading: false,
+        })
+    ),
     on(loadAvailableBasisSetsFail, (state, { error }) => ({
         ...state,
         availableBasisSetsAreLoading: false,
         availableBasisSetsError: error,
-    })),
-    // Available Methods
+    }))
+);
+
+export const availableMethodsReducer = createReducer<AvailableMethodsEntityState>(
+    initialAvailableMethodsState,
     on(loadAvailableMethods, (state) => ({
         ...state,
         availableMethodsAreLoading: true,
     })),
-    on(loadAvailableMethodsSuccess, (state, { availableMethods }) => {
-        return {
+    on(loadAvailableMethodsSuccess, (state, { availableMethods }) =>
+        availableMethodsAdapter.addMany(availableMethods, {
             ...state,
-            availableMethods,
-            availableMethodsAreLoading: false,
             availableMethodsAreLoaded: true,
-        };
-    }),
+            availableMethodsAreLoading: false,
+        })
+    ),
     on(loadAvailableMethodsFail, (state, { error }) => ({
         ...state,
         availableMethodsAreLoading: false,
         availableMethodsError: error,
-    })),
-    // set form
+    }))
+);
+
+export const newCalculationFormReducer = createReducer<NewCalculationFormState>(
+    initialNewCalculationState,
     on(setNewCalculationForm, (state, { newCalculationForm }) => {
         return {
             ...state,
@@ -121,9 +152,16 @@ const reducer = createReducer<CalculationManagementState>(
     })
 );
 
+export const reducers = combineReducers({
+    availableCalculations: availableCalculationsReducer,
+    availableBasisSets: availableBasisSetsReducer,
+    availableMethods: availableMethodsReducer,
+    newCalculationForm: newCalculationFormReducer,
+});
+
 export function calculationManagementReducer(
     state: CalculationManagementState | undefined,
     action: Action
 ): CalculationManagementState {
-    return reducer(state, action);
+    return reducers(state, action);
 }

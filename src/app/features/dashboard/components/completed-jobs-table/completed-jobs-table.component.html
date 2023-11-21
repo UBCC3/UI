@@ -104,14 +104,18 @@
                     </td>
                     <td>
                         <div>
-                            <!-- NOTE: what date to display start, finished? -->
-                            {{ job.started | date : 'dd/MM/yyy' }}
+                            <ng-container *ngIf="job.started; else canceled">
+                                {{ job.started | date : 'dd/MM/yyyy' }}
+                            </ng-container>
+                            <!-- NOTE:  if no start and finished display canceled, can cancel while already started then no finished-->
+                            <!-- or will canceling set a finished timestamp -->
+                            <ng-template #canceled> Canceled </ng-template>
                         </div>
                     </td>
                     <td>
-                        <div>
+                        <ng-container *ngIf="job.finished; else canceled">
                             {{ getTimeDifference(job.started, job.finished) }}
-                        </div>
+                        </ng-container>
                     </td>
                     <td>
                         <div>

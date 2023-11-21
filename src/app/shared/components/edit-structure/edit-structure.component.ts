@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input, Renderer2, ViewChild } from '@angular/core';
+import { SourceEnum } from '../../models/source.enum';
 
 declare const Jmol: any;
 
@@ -25,6 +26,8 @@ export class EditStructureComponent implements AfterViewInit {
     isPreview!: boolean;
     @Input()
     canEdit!: boolean;
+    @Input()
+    source!: SourceEnum;
 
     @ViewChild('appletContainer', { static: false }) appletContainer!: ElementRef;
     private appletElement!: HTMLDivElement;
@@ -86,14 +89,19 @@ export class EditStructureComponent implements AfterViewInit {
 
     loadFile() {
         if (this.file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const fileContents = event.target?.result as string;
-                const fileContentsAppended = `load data "model" ${fileContents} end "model"`;
+            if (this.source == SourceEnum.CALCULATED) {
+                const fileContentsAppended = `load data "model" ${this.file} end "model"`;
                 Jmol.script(this.appletObject, fileContentsAppended);
-            };
+            } else {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const fileContents = event.target?.result as string;
+                    const fileContentsAppended = `load data "model" ${fileContents} end "model"`;
+                    Jmol.script(this.appletObject, fileContentsAppended);
+                };
 
-            reader.readAsText(this.file);
+                reader.readAsText(this.file);
+            }
         }
     }
 

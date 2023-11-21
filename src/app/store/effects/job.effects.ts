@@ -16,6 +16,8 @@ import {
     postNewJob,
     postNewJobFail,
     postNewJobSuccess,
+    updateJob,
+    updateJobFail,
 } from '../actions/job.actions';
 import { selectUserEmail } from '../selectors/user.selectors';
 import { DashboardService } from '../../features/dashboard/dashboard.service';
@@ -120,6 +122,40 @@ export class JobEffects {
                             type: ToastType.Error,
                         });
                         return of(deleteCompletedJobFail({ error }));
+                    })
+                )
+            )
+        )
+    );
+
+    updateJob$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(updateJob),
+            switchMap((action) =>
+                this.newCalculationService.patchJob$(action.jobId, action.dto).pipe(
+                    switchMap((res) => {
+                        if (res) {
+                            console.log('res..., loading completed and in progress jobs', res);
+                            return [
+                                loadCompletedJobs({
+                                    limit: 5,
+                                    offset: 0,
+                                    display: DisplayEnum.All,
+                                }),
+                                loadInProgressJobs(),
+                            ];
+                        } else {
+                            this.toastService.toast({
+                                type: ToastType.Error,
+                            });
+                            return of(updateJobFail({ error: 'Failed to update job' }));
+                        }
+                    }),
+                    catchError((error) => {
+                        this.toastService.toast({
+                            type: ToastType.Error,
+                        });
+                        return of(updateJobFail({ error }));
                     })
                 )
             )

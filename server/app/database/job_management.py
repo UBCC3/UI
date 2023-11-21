@@ -3,13 +3,13 @@ from .db_engine import db_engine
 from .db_tables import Job, Structure
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import asc, and_, or_, desc
+from sqlalchemy import asc, and_, or_, desc, func
 from typing import Optional, Any, Dict, List, Union
 
 
 from typing import List
 import uuid
-from ..models import JobModel, JobStatus, CreateJobDTO, UpdateJobDTO
+from ..models import JobModel, JobStatus, CreateJobDTO, UpdateJobDTO, StructureOrigin
 from fastapi import File, UploadFile
 
 from ..util import upload_to_s3, item_to_dict
@@ -35,7 +35,8 @@ def get_all_running_jobs(email: str) -> List[JobModel]:
 
 def get_all_completed_jobs(email: str) -> List[JobModel]:
     # TODO: update STOPPED to CANCELLED when enum updates
-    status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
+    # status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
+    status_values = [JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.COMPLETED]
 
     with Session(db_engine.engine) as session:
         jobs = (
@@ -49,12 +50,14 @@ def get_all_completed_jobs(email: str) -> List[JobModel]:
 
 def get_completed_jobs_count(email: str, filter: str) -> int:
     if filter == "All":
-        status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
+        # status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
+        status_values = [JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.COMPLETED]
     elif filter == "Completed":
         status_values = [JobStatus.COMPLETED]
     elif filter == "Failed":
         # NOTE: failed should include stopped?
-        status_values = [JobStatus.FAILED, JobStatus.STOPPED]
+        # status_values = [JobStatus.FAILED, JobStatus.STOPPED]
+        status_values = [JobStatus.FAILED, JobStatus.CANCELLED]
 
     with Session(db_engine.engine) as session:
         total_count = (
@@ -70,12 +73,14 @@ def get_paginated_completed_jobs(
     email: str, limit: int, offset: int, filter: str
 ) -> List[Job]:
     if filter == "All":
-        status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
+        # status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
+        status_values = [JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.COMPLETED]
     elif filter == "Completed":
         status_values = [JobStatus.COMPLETED]
     elif filter == "Failed":
         # NOTE: failed should include stopped?
-        status_values = [JobStatus.FAILED, JobStatus.STOPPED]
+        # status_values = [JobStatus.FAILED, JobStatus.STOPPED]
+        status_values = [JobStatus.FAILED, JobStatus.CANCELLED]
 
     with Session(db_engine.engine) as session:
         jobs = (
@@ -100,22 +105,26 @@ def post_new_job(
                 id=uuid.uuid4(),
                 userid=email,
                 job_name=job.job_name,
+                submitted= func.now(),
                 parameters=job.parameters,
             )
 
             session.add(job)
             session.commit()
-            # upload structure file to s3
-            upload_to_s3(file, job.id)
 
-            # create new row in structure table
-            structure = Structure(
-                id=uuid.uuid4(),
-                jobid=job.id,
-                userid=email,
-                name=job.job_name,
-                source=job.parameters["source"],
-            )
+            # if source is upload, create new row in structure table
+            if job.parameters["source"] == StructureOrigin.UPLOADED:
+                structure = Structure(
+                    id=uuid.uuid4(),
+                    jobid=job.id,
+                    userid=email,
+                    name=job.job_name,
+                    source=job.parameters["source"],
+                )
+            
+            # upload structure file to s3
+            # s3 structure 
+            # upload_to_s3(file, structure.id)
 
             session.add(structure)
             session.commit()
@@ -153,13 +162,31 @@ def update_job(job_id: uuid.UUID, update_job_dto: UpdateJobDTO) -> bool:
             return False
 
 
-# TODO: return type
 def remove_job(job_id: uuid.UUID) -> bool:
     with Session(db_engine.engine) as session:
         try:
             job_record = session.get(Job, job_id)
             session.delete(job_record)
             session.flush()
+            session.commit()
+
+            return True
+        except SQLAlchemyError as e:
+            session.rollback()
+            print(f"Error: {str(e)}")
+            return False
+
+# TODO: return type
+def cancel_job(job_id: uuid.UUID, status: str) -> Any:
+    with Session(db_engine.engine) as session:
+        try:
+            job_record = session.query(Job).filter_by(id=job_id).first()
+            
+            if not job_record:
+                return False
+            
+            job_record.status = status
+            
             session.commit()
 
             return True

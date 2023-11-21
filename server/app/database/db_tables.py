@@ -9,6 +9,7 @@ from .entity_names import (
     AVAILABLE_BASIS_SETS,
     AVAILABLE_CALCULATIONS,
     AVAILABLE_METHODS,
+    AVAILABLE_SOLVENT_EFFECTS
 )
 from .db_engine import db_engine
 
@@ -56,3 +57,6 @@ class Available_Basis_Sets(Base):
 
 class Available_Methods(Base):
     __table__ = Table(AVAILABLE_METHODS, Base.metadata, autoload_with=db_engine.engine)
+
+class Available_Solvent_Effects(Base):
+    __table__ = Table(AVAILABLE_SOLVENT_EFFECTS, Base.metadata, autoload_with=db_engine.engine)

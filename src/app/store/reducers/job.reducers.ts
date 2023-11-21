@@ -15,6 +15,9 @@ import {
     postNewJobFail,
     postNewJobSuccess,
     setNewJobIsSubmitting,
+    updateJob,
+    updateJobFail,
+    updateJobSuccess,
 } from '../actions/job.actions';
 
 export interface JobState {
@@ -64,15 +67,31 @@ export const inProgressJobsReducer = createReducer<InProgressJobsEntityState>(
         return {
             ...state,
             inProgressJobsAreLoading: true,
+            inProgressJobsAreLoaded: false,
         };
     }),
-    on(loadInProgressJobsSuccess, (state, { jobs }) =>
-        inProgressJobsAdapter.addMany(jobs, {
+    on(loadInProgressJobsSuccess, (state, { jobs }) => {
+        const newJobIds = jobs.map((job) => job.id);
+
+        const newState = {
             ...state,
             inProgressJobsAreLoaded: true,
             inProgressJobsAreLoading: false,
-        })
-    ),
+        };
+
+        const { ids, entities } = newState;
+
+        const stringIds = ids.map(String);
+
+        const updatedIds = stringIds.filter((id) => newJobIds.includes(id));
+
+        const updatedState = inProgressJobsAdapter.upsertMany(jobs, {
+            ...newState,
+            ids: updatedIds,
+        });
+
+        return updatedState;
+    }),
     on(loadInProgressJobsFail, (state, { error }) => {
         return {
             ...state,
@@ -100,6 +119,23 @@ export const inProgressJobsReducer = createReducer<InProgressJobsEntityState>(
             ...state,
             newJobIsSubmitting: false,
             newJobSubmittingError: error,
+        };
+    }),
+    on(updateJob, (state) => {
+        return {
+            ...state,
+            completedJobsAreLoading: true,
+        };
+    }),
+    on(updateJobSuccess, (state, { jobId }) => {
+        return {
+            ...state,
+        };
+    }),
+    on(updateJobFail, (state, { error }) => {
+        return {
+            ...state,
+            error,
         };
     })
 );
@@ -143,6 +179,23 @@ export const completedJobsReducer = createReducer<CompletedJobsEntityState>(
             error,
         };
     })
+    // on(updateJob, (state) => {
+    //     return {
+    //         ...state,
+    //         completedJobsAreLoading: true,
+    //     };
+    // }),
+    // on(updateJobSuccess, (state, { jobId }) => {
+    //     return {
+    //         ...state,
+    //     };
+    // }),
+    // on(updateJobFail, (state, { error }) => {
+    //     return {
+    //         ...state,
+    //         error,
+    //     };
+    // })
 );
 
 export const reducers = combineReducers({

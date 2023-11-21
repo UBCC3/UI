@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Job, NewJobDTO, PaginatedJob } from '../../shared/models/jobs.model';
+import { Job, NewJobDTO, PaginatedJob, UpdateJobDTO } from '../../shared/models/jobs.model';
 import { DisplayEnum } from '../../shared/models/display.enum';
 
 export const loadInProgressJobs = createAction('[Jobs] load inprogress jobs');
@@ -39,3 +39,9 @@ export const deleteCompletedJobSuccess = createAction(
 );
 
 export const deleteCompletedJobFail = createAction('[Jobs] delete completed job fail', props<{ error: string }>());
+
+export const updateJob = createAction('[Jobs] update in progress job', props<{ jobId: string; dto: UpdateJobDTO }>());
+
+export const updateJobSuccess = createAction('[Jobs] update job success', props<{ jobId: string }>());
+
+export const updateJobFail = createAction('[Jobs] update job fail', props<{ error: string }>());

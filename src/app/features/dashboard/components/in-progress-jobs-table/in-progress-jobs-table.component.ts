@@ -1,5 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { Job } from '../../../../shared/models/jobs.model';
+import { Job, JobStatus } from '../../../../shared/models/jobs.model';
+import { AppState } from '../../../../store';
+import { Store } from '@ngrx/store';
+import { updateJob } from '../../../../store/actions/job.actions';
 
 @Component({
     selector: 'app-in-progress-jobs-table',
@@ -10,12 +13,9 @@ export class InProgressJobsTableComponent {
     @Input()
     inProgressJobs!: Job[] | null;
 
-    page = 1;
-    pageSize = 5;
-
     selectedJobs: Job[];
 
-    constructor() {
+    constructor(public store: Store<AppState>) {
         this.selectedJobs = [];
     }
 
@@ -32,10 +32,12 @@ export class InProgressJobsTableComponent {
         }
     }
 
-    handleStatusMenuClick(type: string): void {
-        // TODO: handle event
-        // use shared service to make code less coupled
-        console.log('handle event emitted by status menu', type);
+    handleStatusMenuClick(type: string, job: Job): void {
+        console.log('type', type);
+
+        // TODO: change status to cancelled after db table update
+        // this.store.dispatch(updateJob({ jobId: job.id, dto: { status: JobStatus.STOPPED } }));
+        this.store.dispatch(updateJob({ jobId: job.id, dto: { status: JobStatus.CANCELLED } }));
     }
 
     isSelected(job: Job): boolean {

@@ -18,29 +18,18 @@ class UserModel(BaseModel):
 class JwtErrorModel(BaseModel):
     status: str
     msg: str
-
-
-class AvailableCalculationsModel(BaseModel):
+    
+class CalculationOptionModel(BaseModel):
     id: int
     name: str
-
-
-class AvailableBasisSetsModel(BaseModel):
-    id: int
-    name: str
-
-
-class AvailableMethodsModel(BaseModel):
-    id: int
-    name: str
-
 
 class JobStatus(str, Enum):
     SUBMITTED = "SUBMITTED"
     RUNNING = "RUNNING"
     FAILED = "FAILED"
     # TODO: update to cancelled
-    STOPPED = "STOPPED"
+    # STOPPED = "STOPPED"
+    CANCELLED = "CANCELLED"
     COMPLETED = "COMPLETED"
 
 

@@ -18,6 +18,7 @@ from ..database.job_management import (
     post_new_job,
     update_job,
     remove_job,
+    cancel_job
 )
 
 import json
@@ -85,9 +86,9 @@ async def get_paginated_complete_jobs(
     token: str = Depends(token_auth),
 ):
     total_count = get_completed_jobs_count(email, filter)
-
+    print('total', total_count)
     data = get_paginated_completed_jobs(email, limit, offset, filter)
-
+    print('data', data)
     return {
         "offset": offset,
         "limit": limit,
@@ -109,7 +110,7 @@ async def create_new_job(
     return post_new_job(email, job, file)
 
 
-@router.patch("/", response_model=Union[bool, JwtErrorModel])
+@router.patch("/{job_id}", response_model=Union[bool, JwtErrorModel])
 async def patch_job(job_id: UUID, job: UpdateJobDTO, token: str = Depends(token_auth)):
     res = update_job(job_id, job)
 
@@ -119,10 +120,19 @@ async def patch_job(job_id: UUID, job: UpdateJobDTO, token: str = Depends(token_
         return True
 
 
-# TODO: return type
 @router.delete("/{job_id}", response_model=Union[bool, JwtErrorModel])
 async def delete_job(job_id: UUID, token: str = Depends(token_auth)):
     return remove_job(job_id)
+
+# TODO: return type
+# @router.patch("/{job_id}", response_model=Union[Any, JwtErrorModel])
+# async def cancel_job(job_id: UUID, status: str, token: str = Depends(token_auth)):
+#     res = cancel_job(job_id, status)
+
+#     if not res:
+#         raise HTTPException(status_code=404, detail="Job not found")
+#     else:
+#         return True
 
 
 # TODO: response type

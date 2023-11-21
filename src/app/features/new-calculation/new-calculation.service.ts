@@ -1,13 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import {
-    AvailableBasisSet,
-    AvailableCalculation,
-    AvailableMethod,
-} from '../../shared/models/calculation-management.model';
+import { CalculationOption } from '../../shared/models/calculation-option.model';
 import { environment } from '../../../environments/environments';
-import { Job, NewJobDTO } from '../../shared/models/jobs.model';
+import { Job, NewJobDTO, UpdateJobDTO } from '../../shared/models/jobs.model';
 
 @Injectable({
     providedIn: 'root',
@@ -15,18 +11,22 @@ import { Job, NewJobDTO } from '../../shared/models/jobs.model';
 export class NewCalculationService {
     constructor(private http: HttpClient) {}
 
-    getAvailableCalculations$(): Observable<AvailableCalculation[]> {
-        return this.http.get<AvailableCalculation[]>(
+    getAvailableCalculations$(): Observable<CalculationOption[]> {
+        return this.http.get<CalculationOption[]>(
             `${environment.api.serverUrl}/calculations/get-available-calculations`
         );
     }
 
-    getAvailableBasisSets$(): Observable<AvailableBasisSet[]> {
-        return this.http.get<AvailableBasisSet[]>(`${environment.api.serverUrl}/calculations/get-available-basis-sets`);
+    getAvailableBasisSets$(): Observable<CalculationOption[]> {
+        return this.http.get<CalculationOption[]>(`${environment.api.serverUrl}/calculations/get-available-basis-sets`);
     }
 
-    getAvailableMethods$(): Observable<AvailableMethod[]> {
-        return this.http.get<AvailableMethod[]>(`${environment.api.serverUrl}/calculations/get-available-methods`);
+    getAvailableMethods$(): Observable<CalculationOption[]> {
+        return this.http.get<CalculationOption[]>(`${environment.api.serverUrl}/calculations/get-available-methods`);
+    }
+
+    getAvailableSolventEffects$(): Observable<CalculationOption[]> {
+        return this.http.get<CalculationOption[]>(`${environment.api.serverUrl}/calculations/get-solvent-effects`);
     }
 
     submitNewCalculation$(dto: NewJobDTO): Observable<Job> {
@@ -43,5 +43,10 @@ export class NewCalculationService {
 
     deleteCompletedJob$(jobId: string): Observable<boolean> {
         return this.http.delete<boolean>(`${environment.api.serverUrl}/jobs/${jobId}`);
+    }
+
+    // TODO: type
+    patchJob$(jobId: string, dto: UpdateJobDTO): Observable<any> {
+        return this.http.patch<any>(`${environment.api.serverUrl}/jobs/${jobId}`, dto);
     }
 }

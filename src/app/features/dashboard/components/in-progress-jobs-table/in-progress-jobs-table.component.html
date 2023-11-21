@@ -10,7 +10,8 @@
                     <th>Calculation</th>
                     <th>Progress</th>
                     <th>Status</th>
-                    <th>Date</th>
+                    <th>Submitted</th>
+                    <th>Started</th>
                     <th></th>
                 </tr>
             </thead>
@@ -50,9 +51,14 @@
                     </td>
                     <td>
                         <div>
-                            <!-- NOTE: what date to use subbmitted or started -->
-                            {{ job.started | date : 'dd/MM/yyy' }}
+                            {{ job.submitted | date : 'dd/MM/yyy' }}
                         </div>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="job.started; else pending">
+                            {{ job.started | date : 'dd/MM/yyyy' }}
+                        </ng-container>
+                        <ng-template #pending> Pending </ng-template>
                     </td>
                     <th>
                         <!-- dropdown -->
@@ -62,7 +68,7 @@
                             </label>
                             <shrd-status-menu
                                 [status]="job.status"
-                                (statusMenuClick)="handleStatusMenuClick($event)"
+                                (statusMenuClick)="handleStatusMenuClick($event, job)"
                             ></shrd-status-menu>
                         </div>
                     </th>

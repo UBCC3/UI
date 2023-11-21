@@ -26,3 +26,20 @@ export interface NewJobDTO {
     file?: File;
     [key: string]: any;
 }
+
+export interface UpdateJobDTO {
+    started?: string;
+    finished?: string;
+    status?: JobStatus;
+    parameters?: Record<string, any>;
+}
+
+export enum JobStatus {
+    SUBMITTED = 'SUBMITTED',
+    RUNNING = 'RUNNING',
+    FAILED = 'FAILED',
+    STOPPED = 'STOPPED',
+    // TODO: remove stopped
+    CANCELLED = 'CANCELLED',
+    COMPLETED = 'COMPLETED',
+}

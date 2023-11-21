@@ -21,7 +21,7 @@
         </div>
     </div>
     <ng-container *ngIf="dataIsLoaded$ | async; else loading">
-        <div class="basis-2/3" *ngIf="completedJobsLength > 0 && inProgressJobsLength > 0; else isEmpty">
+        <div class="basis-2/3" *ngIf="completedJobsLength > 0 || inProgressJobsLength > 0; else isEmpty">
             <app-in-progress-jobs-table [inProgressJobs]="inProgressJobs"></app-in-progress-jobs-table>
             <app-completed-jobs-table
                 [completedJobs]="completedJobs"

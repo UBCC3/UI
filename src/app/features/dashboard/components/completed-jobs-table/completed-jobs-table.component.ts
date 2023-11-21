@@ -102,7 +102,14 @@ export class CompletedJobsTableComponent implements OnInit {
     }
 
     handleStatusMenuClick(type: string, job: Job): void {
-        this.store.dispatch(deleteCompletedJob({ jobId: job.id }));
+        switch (type) {
+            case 'delete':
+                this.store.dispatch(deleteCompletedJob({ jobId: job.id }));
+                break;
+            case 'download':
+                console.log('download');
+                break;
+        }
     }
 
     onShowClick(index: number): void {

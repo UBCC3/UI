@@ -9,13 +9,12 @@ import { ActivatedRoute } from '@angular/router';
 export class EditStructureComponent {
     file!: any;
     constructor(private route: ActivatedRoute) {}
-    testStyle = {
+    JSmolStyle = {
         width: '100vw',
         height: 'calc(100vh - 66.5px)',
     };
 
     ngOnInit(): void {
-        console.log('window history', window.history);
         this.route.paramMap.subscribe((param) => {
             this.file = history.state.file;
         });

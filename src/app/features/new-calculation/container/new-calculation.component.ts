@@ -3,11 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { trigger, state, style, transition, animate, AUTO_STYLE } from '@angular/animations';
 import { NavigationExtras, Router } from '@angular/router';
 import { Observable, Subscription, combineLatest, map } from 'rxjs';
-import {
-    AvailableBasisSet,
-    AvailableCalculation,
-    AvailableMethod,
-} from '../../../shared/models/calculation-management.model';
+import { CalculationOption } from '../../../shared/models/calculation-option.model';
 import { AppState } from '../../../store';
 import { Store, select } from '@ngrx/store';
 import {
@@ -52,9 +48,9 @@ export class NewCalculationComponent implements OnInit {
     isEditStructure: boolean;
     extensionError!: string;
 
-    calculationTypes!: AvailableCalculation[] | null;
-    basisSets!: AvailableBasisSet[] | null;
-    methods!: AvailableMethod[] | null;
+    calculationTypes!: CalculationOption[] | null;
+    basisSets!: CalculationOption[] | null;
+    methods!: CalculationOption[] | null;
     email!: string | undefined;
     availableCalculationsAreLoaded$!: Observable<boolean>;
     availableBasisSetsAreLoaded$!: Observable<boolean>;

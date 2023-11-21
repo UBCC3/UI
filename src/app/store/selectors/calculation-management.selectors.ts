@@ -1,70 +1,119 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { CalculationManagementState } from '../reducers/calculation-management.reducer';
+import {
+    CalculationManagementState,
+    availableBasisSetsAdapter,
+    availableCalculationsAdapter,
+    availableMethodsAdapter,
+} from '../reducers/calculation-management.reducer';
+import { AppState } from '..';
+
+// Available Calculations
+const {
+    selectAll: selectAllAvailableCalculations,
+    selectEntities: selectEntitiesAvailableCalculations,
+    selectIds: selectIdsAvailableCalculations,
+} = availableCalculationsAdapter.getSelectors();
 
 export const selectCalculationManagementState =
     createFeatureSelector<CalculationManagementState>('calculationManagement');
 
-export const selectAvailableCalculations = createSelector(
+export const selectAvailableCalculationsState = createSelector(
     selectCalculationManagementState,
-    (state: CalculationManagementState) => state?.availableCalculations
+    (state: CalculationManagementState) => state.availableCalculations
 );
-
+export const selectAvailableCalculations = createSelector(
+    selectAvailableCalculationsState,
+    selectAllAvailableCalculations
+);
+export const selectAvailableCalculationsById = createSelector(
+    selectAvailableCalculationsState,
+    selectEntitiesAvailableCalculations
+);
+export const selectAvailableCalculationsId = createSelector(
+    selectAvailableCalculationsState,
+    selectIdsAvailableCalculations
+);
 export const selectAvailableCalculationsAreLoading = createSelector(
-    selectCalculationManagementState,
+    selectAvailableCalculationsState,
     (state) => state?.availableCalculationsAreLoading
 );
-
 export const selectAvailableCalculationsAreLoaded = createSelector(
-    selectCalculationManagementState,
+    selectAvailableCalculationsState,
     (state) => state?.availableCalculationsAreLoaded
 );
-
 export const selectAvailableCalculationsError = createSelector(
-    selectCalculationManagementState,
+    selectAvailableCalculationsState,
     (state) => state?.availableCalculationsError
 );
 
-export const selectAvailableBasisSets = createSelector(
-    selectCalculationManagementState,
-    (state: CalculationManagementState) => state?.availableBasisSets
-);
+// Available Basis Sets
+const {
+    selectAll: selectAllAvailableBasisSets,
+    selectEntities: selectEntitiesAvailableBasisSets,
+    selectIds: selectIdsAvailableBasisSets,
+} = availableBasisSetsAdapter.getSelectors();
 
-export const selectAvailableBasisSetsAreLoading = createSelector(
+export const selectAvailableBasisSetsState = createSelector(
     selectCalculationManagementState,
+    (state: CalculationManagementState) => state.availableBasisSets
+);
+export const selectAvailableBasisSets = createSelector(selectAvailableBasisSetsState, selectAllAvailableBasisSets);
+export const selectAvailableBasisSetsById = createSelector(
+    selectAvailableBasisSetsState,
+    selectEntitiesAvailableBasisSets
+);
+export const selectAvailableBasisSetsId = createSelector(selectAvailableBasisSetsState, selectIdsAvailableCalculations);
+export const selectAvailableBasisSetsAreLoading = createSelector(
+    selectAvailableBasisSetsState,
     (state) => state?.availableBasisSetsAreLoading
 );
-
 export const selectAvailableBasisSetsAreLoaded = createSelector(
-    selectCalculationManagementState,
+    selectAvailableBasisSetsState,
     (state) => state?.availableBasisSetsAreLoaded
 );
 
 export const selectAvailableBasisSetsError = createSelector(
-    selectCalculationManagementState,
+    selectAvailableBasisSetsState,
     (state) => state?.availableBasisSetsError
 );
 
-export const selectAvailableMethods = createSelector(
-    selectCalculationManagementState,
-    (state: CalculationManagementState) => state?.availableMethods
-);
+// Available Methods
+const {
+    selectAll: selectAllAvailableMethods,
+    selectEntities: selectEntitiesAvailableMethods,
+    selectIds: selectIdsAvailableMethods,
+} = availableMethodsAdapter.getSelectors();
 
-export const selectAvailableMethodsAreLoading = createSelector(
+export const selectAvailableMethodsState = createSelector(
     selectCalculationManagementState,
+    (state: CalculationManagementState) => state.availableMethods
+);
+export const selectAvailableMethods = createSelector(selectAvailableMethodsState, selectAllAvailableMethods);
+export const selectAvailableMethodsById = createSelector(selectAvailableMethodsState, selectEntitiesAvailableMethods);
+export const selectAvailableMethodsId = createSelector(selectAvailableMethodsState, selectIdsAvailableMethods);
+export const selectAvailableMethodsAreLoading = createSelector(
+    selectAvailableMethodsState,
     (state) => state?.availableMethodsAreLoading
 );
-
 export const selectAvailableMethodsAreLoaded = createSelector(
-    selectCalculationManagementState,
+    selectAvailableMethodsState,
     (state) => state?.availableMethodsAreLoaded
 );
-
 export const selectAvailableMethodsError = createSelector(
-    selectCalculationManagementState,
+    selectAvailableMethodsState,
     (state) => state?.availableMethodsError
 );
 
-export const selectNewCalculationForm = createSelector(
+// New Calculation Form
+export const selectNewCalculationFormState = createSelector(
     selectCalculationManagementState,
+    (state: CalculationManagementState) => state.newCalculationForm
+);
+export const selectNewCalculationForm = createSelector(
+    selectNewCalculationFormState,
     (state) => state?.newCalculationForm
+);
+export const selectNewCalculationFormError = createSelector(
+    selectNewCalculationFormState,
+    (state) => state?.newCalculationFormError
 );

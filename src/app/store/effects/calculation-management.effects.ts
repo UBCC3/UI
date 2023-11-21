@@ -28,9 +28,9 @@ export class CalculationManagementEffects {
     loadAvailableCalculations$ = createEffect(() =>
         this.actions$.pipe(
             ofType(loadAvailableCalculations),
-            withLatestFrom(this.store.select(selectAvailableCalculations)), // Check if data exists in the state
-            switchMap(([_, availableCalculations]) => {
-                if (availableCalculations) {
+            withLatestFrom(this.store.select(selectAvailableCalculations)), // Check if data exists in the state;
+            switchMap(([action, availableCalculations]) => {
+                if (availableCalculations.length > 0) {
                     // Data already exists in the state, no need to fetch
                     return of(loadAvailableCalculationsSuccess({ availableCalculations }));
                 } else {
@@ -54,8 +54,8 @@ export class CalculationManagementEffects {
         this.actions$.pipe(
             ofType(loadAvailableBasisSets),
             withLatestFrom(this.store.select(selectAvailableBasisSets)), // Check if data exists in the state
-            switchMap(([_, availableBasisSets]) => {
-                if (availableBasisSets) {
+            switchMap(([action, availableBasisSets]) => {
+                if (availableBasisSets.length > 0) {
                     // Data already exists in the state, no need to fetch
                     return of(loadAvailableBasisSetsSuccess({ availableBasisSets }));
                 } else {
@@ -78,8 +78,8 @@ export class CalculationManagementEffects {
         this.actions$.pipe(
             ofType(loadAvailableMethods),
             withLatestFrom(this.store.select(selectAvailableMethods)), // Check if data exists in the state
-            switchMap(([_, availableMethods]) => {
-                if (availableMethods) {
+            switchMap(([action, availableMethods]) => {
+                if (availableMethods.length > 0) {
                     // Data already exists in the state, no need to fetch
                     return of(loadAvailableMethodsSuccess({ availableMethods }));
                 } else {
