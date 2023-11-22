@@ -75,17 +75,37 @@ CREATE TABLE AVAILABLE_BASIS_SETS(
     NAME VARCHAR(255) NOT NULL,
 );
 INSERT INTO AVAILABLE_CALCULATIONS (name)
-VALUES 'Single Point Calculation',
+VALUES ('Single Point Calculation'),
     ('Geometry Optimization'),
     ('Vibrational Frequencies');
-INSERT INTO AVAILABLE_METHOD (name)
+INSERT INTO AVAILABLE_METHODS (name)
 VALUES ('Hartree-Fock'),
     ('Moller-Plesset (MP2)'),
     ('Density Functional Theory (DFT)');
-INSERT INTO AVAILABLE_BASIS_SET (name)
+INSERT INTO AVAILABLE_BASIS_SETS (name)
 VALUES ('Minimal: STO-3G'),
     ('Basic: 3-21G'),
     ('Routine: 6-31G(d)'),
     ('Accurate: 6-311+G(2d,p)'),
     ('cc-pVDZ'),
     ('cc-pVTZ');
+CREATE TABLE AVAILABLE_SOLVENT_EFFECTS(
+    ID SERIAL PRIMARY KEY,
+    NAME VARCHAR(255) NOT NULL,
+);
+-- CREATE TABLE WAVE_THEORY(
+--     ID SERIAL PRIMARY KEY,
+--     NAME VARCHAR(255) NOT NULL,
+-- );
+INSERT INTO AVAILABLE_SOLVENT_EFFECTS (name)
+VALUES ('Water'),
+    ('Acetonitrile'),
+    ('Cyclohexane'),
+    ('Acetone'),
+    ('Methanol'),
+    ('MethylCyclohexane'),
+    ('DiEthylEther'),
+    ('Tetrahydrofuran'),
+    ('0-Dichlorobenzene'),
+    ('Benzene'),
+    ('DiButylether');
