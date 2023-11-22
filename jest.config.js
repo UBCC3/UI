@@ -4,7 +4,7 @@ const { compilerOptions } = require('./tsconfig');
 module.exports = {
     preset: 'jest-preset-angular',
     roots: ['<rootDir>/src/'],
-    testMatch: ['**/+(*.)+(spec).+(ts)', '!**/new-calculation.component.spec.ts'],
+    testMatch: ['**/+(*.)+(spec).+(ts)'],
     setupFilesAfterEnv: ['<rootDir>/setupJest.ts'],
     collectCoverage: true,
     coverageReporters: ['html'],
