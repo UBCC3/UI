@@ -32,7 +32,7 @@ export class NewCalculationService {
     submitNewCalculation$(dto: NewJobDTO): Observable<Job> {
         const formData = new FormData();
         for (const key in dto) {
-            if (dto.hasOwnProperty(key as keyof NewJobDTO)) {
+            if (Object.prototype.hasOwnProperty.call(dto, key as keyof NewJobDTO)) {
                 if (key === 'parameters') formData.append(key, JSON.stringify(dto[key]));
                 else formData.append(key, dto[key]);
             }

@@ -1,12 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditStructureComponent } from './edit-structure.component';
+import { EditStructureContainerComponent } from './edit-structure-container.component';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
+import { SharedModule } from '../../../shared/shared.module';
 
-describe('EditStructureComponent', () => {
-    let component: EditStructureComponent;
-    let fixture: ComponentFixture<EditStructureComponent>;
+describe('EditStructureContainerComponent', () => {
+    let component: EditStructureContainerComponent;
+    let fixture: ComponentFixture<EditStructureContainerComponent>;
     let mockActivatedRoute;
     let routerSpy;
 
@@ -29,13 +30,14 @@ describe('EditStructureComponent', () => {
         };
 
         TestBed.configureTestingModule({
-            declarations: [EditStructureComponent],
+            declarations: [EditStructureContainerComponent],
             providers: [
                 { provide: ActivatedRoute, useValue: mockActivatedRoute },
                 { provide: Router, useValue: routerSpy },
             ],
+            imports: [SharedModule],
         });
-        fixture = TestBed.createComponent(EditStructureComponent);
+        fixture = TestBed.createComponent(EditStructureContainerComponent);
         component = fixture.componentInstance;
         jest.spyOn(window.history, 'state', 'get').mockReturnValue(mockHistoryState);
         fixture.detectChanges();

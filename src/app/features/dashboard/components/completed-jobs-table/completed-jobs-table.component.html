@@ -46,7 +46,7 @@
             </ul>
         </div>
     </div>
-    <div class="bg-white rounded-lg border border-grey-200" *ngIf="!(dataIsLoading$ | async); else loading">
+    <div class="bg-white rounded-lg border border-grey-200" *ngIf="(dataIsLoading$ | async) === false; else loading">
         <table class="table">
             <!-- head -->
             <thead>

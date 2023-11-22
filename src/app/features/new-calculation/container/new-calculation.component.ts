@@ -82,6 +82,11 @@ export class NewCalculationComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        // Dispatch the action to fetch data only if it's not available in the state
+        this.store.dispatch(loadAvailableCalculations());
+        this.store.dispatch(loadAvailableBasisSets());
+        this.store.dispatch(loadAvailableMethods());
+
         this.dataIsLoaded$ = combineLatest([
             this.store.pipe(select(selectAvailableCalculationsAreLoaded)),
             this.store.pipe(select(selectAvailableBasisSetsAreLoaded)),
@@ -119,16 +124,10 @@ export class NewCalculationComponent implements OnInit {
         //         this.form.patchValue({ calculationType: this.calculationType[0].name });
         //     }
         // });
-
-        // Dispatch the action to fetch data only if it's not available in the state
-        this.store.dispatch(loadAvailableCalculations());
-        this.store.dispatch(loadAvailableBasisSets());
-        this.store.dispatch(loadAvailableMethods());
     }
 
     moreSettingsClick(): void {
         this.moreSettings = !this.moreSettings;
-        console.log(this.moreSettings);
     }
 
     handleFileUpload(event: Event): void {
@@ -148,7 +147,7 @@ export class NewCalculationComponent implements OnInit {
                 this.file = null; // Reset selectedFile to null
                 this.deleteFile(); // Reset file in form
                 this.extensionError = 'Invalid file extension. Allowed extensions: ' + allowedExtensions.join(', ');
-                console.error('Invalid file extension. Allowed extensions:', allowedExtensions.join(', '));
+                // console.error('Invalid file extension. Allowed extensions:', allowedExtensions.join(', '));
             }
         }
     }

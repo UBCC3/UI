@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { EditStructureComponent } from './edit-structure.component';
+import { EditStructureContainerComponent } from './container/edit-structure-container.component';
 
 const routes: Routes = [
     {
         path: '',
-        component: EditStructureComponent,
+        component: EditStructureContainerComponent,
     },
 ];
 

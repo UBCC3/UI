@@ -5,10 +5,12 @@
                 <div class="alert bg-error-500 border-error-500">
                     <span>{{ toast.message ? toast.message : 'Something went wrong. Please try again later' }}</span>
                     <img
+                        tabindex="0"
                         src="../../../../assets/x.svg"
                         (click)="dismissToast(toast.id ? toast.id : '')"
                         alt="close"
                         class="hover:cursor-pointer"
+                        (keydown.enter)="dismissToast(toast.id ? toast.id : '')"
                     />
                 </div>
             </ng-container>
@@ -16,10 +18,12 @@
                 <div class="alert bg-warning-500 border-warning-500">
                     <span>{{ toast.message ? toast.message : 'Warning' }}</span>
                     <img
+                        tabindex="0"
                         src="../../../../assets/x.svg"
                         (click)="dismissToast(toast.id ? toast.id : '')"
                         alt="close"
                         class="hover:cursor-pointer"
+                        (keydown.enter)="dismissToast(toast.id ? toast.id : '')"
                     />
                 </div>
             </ng-container>
@@ -32,10 +36,12 @@
                 <div class="alert alert-info">
                     <span>{{ toast.message ? toast.message : 'Info' }}</span>
                     <img
+                        tabindex="0"
                         src="../../../../assets/x.svg"
                         (click)="dismissToast(toast.id ? toast.id : '')"
                         alt="close"
                         class="hover:cursor-pointer"
+                        (keydown.enter)="dismissToast(toast.id ? toast.id : '')"
                     />
                 </div>
             </ng-container>

@@ -3,10 +3,10 @@ import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-edit-structure',
-    templateUrl: './edit-structure.component.html',
-    styleUrls: ['./edit-structure.component.scss'],
+    templateUrl: './edit-structure-container.component.html',
+    styleUrls: ['./edit-structure-container.component.scss'],
 })
-export class EditStructureComponent {
+export class EditStructureContainerComponent {
     file!: any;
     constructor(private route: ActivatedRoute) {}
     JSmolStyle = {

@@ -135,7 +135,6 @@ export class JobEffects {
                 this.newCalculationService.patchJob$(action.jobId, action.dto).pipe(
                     switchMap((res) => {
                         if (res) {
-                            console.log('res..., loading completed and in progress jobs', res);
                             return [
                                 loadCompletedJobs({
                                     limit: 5,

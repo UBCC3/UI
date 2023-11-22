@@ -19,7 +19,7 @@ export const selectCalculationManagementState =
 
 export const selectAvailableCalculationsState = createSelector(
     selectCalculationManagementState,
-    (state: CalculationManagementState) => state.availableCalculations
+    (state: CalculationManagementState) => state?.availableCalculations
 );
 export const selectAvailableCalculations = createSelector(
     selectAvailableCalculationsState,
@@ -55,7 +55,7 @@ const {
 
 export const selectAvailableBasisSetsState = createSelector(
     selectCalculationManagementState,
-    (state: CalculationManagementState) => state.availableBasisSets
+    (state: CalculationManagementState) => state?.availableBasisSets
 );
 export const selectAvailableBasisSets = createSelector(selectAvailableBasisSetsState, selectAllAvailableBasisSets);
 export const selectAvailableBasisSetsById = createSelector(
@@ -86,7 +86,7 @@ const {
 
 export const selectAvailableMethodsState = createSelector(
     selectCalculationManagementState,
-    (state: CalculationManagementState) => state.availableMethods
+    (state: CalculationManagementState) => state?.availableMethods
 );
 export const selectAvailableMethods = createSelector(selectAvailableMethodsState, selectAllAvailableMethods);
 export const selectAvailableMethodsById = createSelector(selectAvailableMethodsState, selectEntitiesAvailableMethods);
@@ -107,7 +107,7 @@ export const selectAvailableMethodsError = createSelector(
 // New Calculation Form
 export const selectNewCalculationFormState = createSelector(
     selectCalculationManagementState,
-    (state: CalculationManagementState) => state.newCalculationForm
+    (state: CalculationManagementState) => state?.newCalculationForm
 );
 export const selectNewCalculationForm = createSelector(
     selectNewCalculationFormState,

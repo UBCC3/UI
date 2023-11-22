@@ -151,7 +151,6 @@ export class CompletedJobsTableComponent implements OnInit {
     }
 
     onNextClick(): void {
-        console.log('cur page', this.currentPage);
         ++this.currentPage;
         this.nextEvent.emit('next click');
     }
