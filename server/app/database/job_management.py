@@ -55,9 +55,10 @@ def get_completed_jobs_count(email: str, filter: str) -> int:
     elif filter == "Completed":
         status_values = [JobStatus.COMPLETED]
     elif filter == "Failed":
-        # NOTE: failed should include stopped?
         # status_values = [JobStatus.FAILED, JobStatus.STOPPED]
         status_values = [JobStatus.FAILED, JobStatus.CANCELLED]
+    elif filter == "Cancelled":
+        status_values = [JobStatus.CANCELLED]
 
     with Session(db_engine.engine) as session:
         total_count = (
@@ -78,9 +79,10 @@ def get_paginated_completed_jobs(
     elif filter == "Completed":
         status_values = [JobStatus.COMPLETED]
     elif filter == "Failed":
-        # NOTE: failed should include stopped?
         # status_values = [JobStatus.FAILED, JobStatus.STOPPED]
-        status_values = [JobStatus.FAILED, JobStatus.CANCELLED]
+        status_values = [JobStatus.FAILED]
+    elif filter == "Cancelled":
+        status_values = [JobStatus.CANCELLED]
 
     with Session(db_engine.engine) as session:
         jobs = (
@@ -131,8 +133,6 @@ def post_new_job(
 
             session.refresh(job)
 
-            # test for calculating using psi4
-            # calculate_energy(job.id, file)
 
             return item_to_dict(job)
         except SQLAlchemyError as e:

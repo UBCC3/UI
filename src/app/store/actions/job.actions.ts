@@ -13,8 +13,6 @@ export const loadInProgressJobsSuccess = createAction('[Jobs] load in progress j
 
 export const loadInProgressJobsFail = createAction('[Jobs] load in progress jobs failed', props<{ error: string }>());
 
-// export const loadCompletedJobsSuccess = createAction('[Jobs] load completed jobs success', props<{ jobs: Job[] }>());
-
 export const loadCompletedJobsSuccess = createAction(
     '[Jobs] load completed jobs success',
     props<{ paginatedJobs: PaginatedJob }>()

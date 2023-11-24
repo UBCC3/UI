@@ -32,13 +32,12 @@ export class CompletedJobsTableComponent implements OnInit {
     pageSize = 5;
 
     selectedJobs: Job[];
-    // show: string;
 
     // NOTE: type for the events
     @Output()
-    previousEvent: EventEmitter<any>;
+    previousEvent: EventEmitter<boolean>;
     @Output()
-    nextEvent: EventEmitter<any>;
+    nextEvent: EventEmitter<boolean>;
     @Output()
     filterEvent: EventEmitter<any>;
 
@@ -63,26 +62,27 @@ export class CompletedJobsTableComponent implements OnInit {
         return moment.duration(duartionInMs).humanize();
     }
 
-    selectAllJobs(event: any, page: number): void {
-        const target = event.target as HTMLInputElement;
+    // NOTE: currently disabled
+    // selectAllJobs(event: any, page: number): void {
+    //     const target = event.target as HTMLInputElement;
 
-        if (target.checked) {
-            if (this.completedJobs)
-                for (let i = 5 * (page - 1); i < 5 * (page - 1) + 5; i++) {
-                    if (i <= this.completedJobs.length - 1) {
-                        this.selectedJobs.push(this.completedJobs[i]);
-                    }
-                }
-        } else {
-            if (this.completedJobs)
-                for (let i = 5 * (page - 1); i < 5 * (page - 1) + 5; i++) {
-                    const index = this.selectedJobs?.indexOf(this.completedJobs[i]);
-                    if (index !== -1) {
-                        this.selectedJobs.splice(index, 1);
-                    }
-                }
-        }
-    }
+    //     if (target.checked) {
+    //         if (this.completedJobs)
+    //             for (let i = 5 * (page - 1); i < 5 * (page - 1) + 5; i++) {
+    //                 if (i <= this.completedJobs.length - 1) {
+    //                     this.selectedJobs.push(this.completedJobs[i]);
+    //                 }
+    //             }
+    //     } else {
+    //         if (this.completedJobs)
+    //             for (let i = 5 * (page - 1); i < 5 * (page - 1) + 5; i++) {
+    //                 const index = this.selectedJobs?.indexOf(this.completedJobs[i]);
+    //                 if (index !== -1) {
+    //                     this.selectedJobs.splice(index, 1);
+    //                 }
+    //             }
+    //     }
+    // }
 
     toggleSelection(job: Job, event: Event): void {
         const target = event.target as HTMLInputElement;
@@ -121,6 +121,9 @@ export class CompletedJobsTableComponent implements OnInit {
             case 2:
                 display = DisplayEnum.Failed;
                 break;
+            case 3:
+                display = DisplayEnum.Cancelled;
+                break;
             default:
                 display = DisplayEnum.All;
                 break;
@@ -144,7 +147,7 @@ export class CompletedJobsTableComponent implements OnInit {
 
     onPreviousClick(): void {
         --this.currentPage;
-        this.previousEvent.emit('previous click');
+        this.previousEvent.emit(true);
     }
     isPreviousButtonIsDisabled(): boolean {
         return this.currentPage === 1;
@@ -152,7 +155,7 @@ export class CompletedJobsTableComponent implements OnInit {
 
     onNextClick(): void {
         ++this.currentPage;
-        this.nextEvent.emit('next click');
+        this.nextEvent.emit(true);
     }
 
     isNextButtonIsDisabled(): boolean {

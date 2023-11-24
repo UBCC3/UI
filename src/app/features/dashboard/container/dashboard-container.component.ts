@@ -60,10 +60,10 @@ export class DashboardContainerComponent implements OnInit {
         this.user$ = this.store.pipe(select(selectUser));
         this.auth.getAccessTokenSilently().subscribe((token) => console.log('token', token));
         this.getUserName();
-        // NOTE: subscriber to handle dropdown menu clicks
-        this.statusMenuService.getStatusMenuEvent().subscribe((data: any) => {
-            this.handleEmitterService(data);
-        });
+        // NOTE: service not being used
+        // this.statusMenuService.getStatusMenuEvent().subscribe((data: any) => {
+        //     this.handleEmitterService(data);
+        // });
 
         this.store.dispatch(loadInProgressJobs());
         this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
@@ -100,17 +100,17 @@ export class DashboardContainerComponent implements OnInit {
         });
     }
 
-    // NOTE: handle type for event emit handler
-    handleEmitterService(data: any): void {
-        console.log('event from status menu handled');
-    }
+    // NOTE: Service not being used anything
+    // handleEmitterService(data: any): void {
+    //     console.log('event from status menu handled');
+    // }
 
-    handlePreviousEvent(data: any): void {
+    handlePreviousEvent(data: boolean): void {
         this.offset = Math.max(this.offset - this.limit, 0);
         this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
     }
 
-    handleNextEvent(data: any): void {
+    handleNextEvent(data: boolean): void {
         this.offset += this.limit;
         this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
     }

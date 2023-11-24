@@ -124,17 +124,8 @@ async def patch_job(job_id: UUID, job: UpdateJobDTO, token: str = Depends(token_
 async def delete_job(job_id: UUID, token: str = Depends(token_auth)):
     return remove_job(job_id)
 
-# TODO: return type
-# @router.patch("/{job_id}", response_model=Union[Any, JwtErrorModel])
-# async def cancel_job(job_id: UUID, status: str, token: str = Depends(token_auth)):
-#     res = cancel_job(job_id, status)
 
-#     if not res:
-#         raise HTTPException(status_code=404, detail="Job not found")
-#     else:
-#         return True
-
-
+# NOTE: disabled for now
 # TODO: response type
 # @router.get("/download/{job_id}/{file_name}", response_model=Union[Any, JwtErrorModel])
 # async def download(
@@ -145,7 +136,7 @@ async def delete_job(job_id: UUID, token: str = Depends(token_auth)):
 # ):
 #     return download_from_s3(file_name, job_id)
 
-
+# NOTE: disabled for now
 # TODO: response type
 # @router.get("/read-file/{job_id}/{file_name}", response_model=Union[Any, JwtErrorModel])
 # async def read_file(

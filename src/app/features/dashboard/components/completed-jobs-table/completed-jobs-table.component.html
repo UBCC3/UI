@@ -43,6 +43,9 @@
                 <li tabindex="0" (click)="onShowClick(2)" (keydown.enter)="onShowClick(2)">
                     <a>Failed</a>
                 </li>
+                <li tabindex="0" (click)="onShowClick(2)" (keydown.enter)="onShowClick(3)">
+                    <a>Cancelled</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -107,13 +110,16 @@
                             <ng-container *ngIf="job.started; else canceled">
                                 {{ job.started | date : 'dd/MM/yyyy' }}
                             </ng-container>
-                            <!-- NOTE:  if no start and finished display canceled, can cancel while already started then no finished-->
-                            <!-- or will canceling set a finished timestamp -->
+                            <!-- NOTE: if there no started time, means its canceled -->
                             <ng-template #canceled> Canceled </ng-template>
                         </div>
                     </td>
                     <td>
                         <ng-container *ngIf="job.finished; else canceled">
+                            <!-- 
+                                NOTE: no finished time means its canceled
+                                 TODO: does cancel action update finished time in db
+                             -->
                             {{ getTimeDifference(job.started, job.finished) }}
                         </ng-container>
                     </td>
@@ -145,7 +151,6 @@
             >
                 previous
             </button>
-            <!-- <p>{{ getCurrentPage() }} of {{ getTotalPages() }}</p> -->
             <p>{{ currentPage }} of {{ getTotalPages() }}</p>
 
             <button

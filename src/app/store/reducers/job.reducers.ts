@@ -179,23 +179,6 @@ export const completedJobsReducer = createReducer<CompletedJobsEntityState>(
             error,
         };
     })
-    // on(updateJob, (state) => {
-    //     return {
-    //         ...state,
-    //         completedJobsAreLoading: true,
-    //     };
-    // }),
-    // on(updateJobSuccess, (state, { jobId }) => {
-    //     return {
-    //         ...state,
-    //     };
-    // }),
-    // on(updateJobFail, (state, { error }) => {
-    //     return {
-    //         ...state,
-    //         error,
-    //     };
-    // })
 );
 
 export const reducers = combineReducers({

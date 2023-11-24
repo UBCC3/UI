@@ -6,9 +6,10 @@ from ..calculation_management import (
     get_all_available_basis_sets,
     get_all_available_calculations,
     get_all_available_methods,
+    get_all_available_solvent_effects
 )
 from ..db_tables import User
-from ...models import UserModel, AvailableCalculationsModel
+from ...models import UserModel
 
 
 class TestDB(unittest.TestCase):
@@ -85,6 +86,29 @@ class TestDB(unittest.TestCase):
         ]
 
         self.assertEqual(available_methods_as_dict, available_methods)
+        
+    def test_get_available_solvent_effects(self):
+        available_solvent_effects = [
+            {"id": 1, "name": "Water"},
+            {"id": 2, "name": "Acetonitrile"},
+            {"id": 3, "name": "Cyclohexane"},
+            {"id": 4, "name": "Acetone"},
+            {"id": 5, "name": "Methanol"},
+            {"id": 6, "name": "MethylCyclohexane"},
+            {"id": 7, "name": "DiEthylEther"},
+            {"id": 8, "name": "Tetrahydrofuran"},
+            {"id": 9, "name": "0-Dichlorobenzene"},
+            {"id": 10, "name": "Benzene"},
+            {"id": 11, "name": "DiButylether"},
+        ]
+
+        available_solvent_effects_response = get_all_available_solvent_effects()
+
+        available_solvent_effects_as_dict = [
+            {"id": item.id, "name": item.name} for item in available_solvent_effects_response
+        ]
+
+        self.assertEqual(available_solvent_effects_as_dict, available_solvent_effects)
 
 
 if __name__ == "__main__":

@@ -109,17 +109,48 @@ class VerifyToken:
         return result
 
 
-def upload_to_s3(file: File, jobid: UUID):
+def upload_to_s3(file: File, structure_id: UUID):
     s3 = boto3.client("s3")
     # TODO: update to actual bucketname
     bucket_name = "alexy-devel"
     try:
         response = s3.upload_fileobj(
-            file.file, bucket_name, str(jobid) + "/" + file.filename
+            file.file, bucket_name, str(structure_id) + "/" + file.filename
         )
     except ClientError as e:
         logging.error(e)
         return False
+
+# NOTE: route for downloading disabled for no
+def download_from_s3(file_name: str, job_id: UUID):
+    s3 = boto3.client("s3")
+    # TODO: replace bucket name with actual bucket
+    bucket_name = "alexy-devel"
+    file_key = str(job_id) + "/" + file_name
+    try:
+        response = s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket_name, "Key": file_key},
+            ExpiresIn=60,  # One minute, should be enough time to download file?
+        )
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+# NOTE: route for reading file disabled for now
+def read_from_s3(file_name: str, structure_id: UUID):
+    s3 = boto3.client("s3")
+    # TODO: replace bucket name with actual bucket
+    bucket_name = "alexy-devel"
+    file_key = structure_id + "/" + file_name
+    try:
+        response = s3.get_object(Bucket=bucket_name, Key=file_key)
+        bytes = response["Body"].read()
+        # pythonObject = json.loads(obj['Body'].read().decode('utf-8'))
+        return bytes
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 def item_to_dict(item):
