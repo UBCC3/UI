@@ -21,7 +21,6 @@
         <div class="dropdown dropdown-bottom dropdown-end flex items-center">
             <p class="text-gray-500">Show:</p>
             <label appFocusRemover tabindex="0" class="btn btn-ghost normal-case h-auto min-h-max">
-                <!-- TODO: dispatch action to filter based on what selected -->
                 {{ display }}
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path
@@ -70,7 +69,8 @@
                     </th>
                     <th>Name</th>
                     <th>Calculation</th>
-                    <th>Date</th>
+                    <th>Submitted</th>
+                    <th>Started</th>
                     <th>Time</th>
                     <th>Status</th>
                     <th></th>
@@ -107,18 +107,23 @@
                     </td>
                     <td>
                         <div>
+                            {{ job.submitted | date : 'dd/MM/yyy' }}
+                        </div>
+                    </td>
+                    <td>
+                        <div>
                             <ng-container *ngIf="job.started; else canceled">
                                 {{ job.started | date : 'dd/MM/yyyy' }}
                             </ng-container>
                             <!-- NOTE: if there no started time, means its canceled -->
-                            <ng-template #canceled> Canceled </ng-template>
+                            <ng-template #canceled> N/A </ng-template>
                         </div>
                     </td>
                     <td>
                         <ng-container *ngIf="job.finished; else canceled">
                             <!-- 
                                 NOTE: no finished time means its canceled
-                                 TODO: does cancel action update finished time in db
+                                TODO: does cancel action update finished time in db
                              -->
                             {{ getTimeDifference(job.started, job.finished) }}
                         </ng-container>

@@ -74,7 +74,7 @@ export class NewCalculationComponent implements OnInit {
             calculation: new FormControl(null, [Validators.required.bind(this)]),
             theory: new FormControl(null, [Validators.required.bind(this)]),
             basisSet: new FormControl(null, [Validators.required.bind(this)]),
-            file: new FormControl(null), //NOTE: is file required?
+            file: new FormControl(null, [Validators.required.bind(this)]),
             source: new FormControl(null),
             solventEffects: new FormControl(null),
             waveTheory: new FormControl(null),
@@ -157,6 +157,7 @@ export class NewCalculationComponent implements OnInit {
     }
 
     editStructure(): void {
+        console.log('form value', this.form.get('file')?.value);
         const navExtras: NavigationExtras = {
             state: {
                 file: this.file,

@@ -18,7 +18,6 @@ from ..database.job_management import (
     post_new_job,
     update_job,
     remove_job,
-    cancel_job
 )
 
 import json

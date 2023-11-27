@@ -18,7 +18,6 @@ export interface PaginatedJob {
     filter?: string;
 }
 
-// TODO: get requirements for DTO
 export interface NewJobDTO {
     email: string;
     job_name: string;
@@ -38,8 +37,17 @@ export enum JobStatus {
     SUBMITTED = 'SUBMITTED',
     RUNNING = 'RUNNING',
     FAILED = 'FAILED',
-    STOPPED = 'STOPPED',
-    // TODO: remove stopped
     CANCELLED = 'CANCELLED',
     COMPLETED = 'COMPLETED',
+}
+
+export interface NewCalculationForm {
+    calculationName: string;
+    calculation: string;
+    theory: string;
+    basisSet: string;
+    file: File;
+    source: string;
+    solventEffects?: string;
+    waveTheory?: string;
 }

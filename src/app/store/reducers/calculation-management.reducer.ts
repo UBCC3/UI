@@ -14,6 +14,7 @@ import {
     resetNewCalculationForm,
 } from '../actions/calculation-management.actions';
 import { EntityAdapter, EntityState, createEntityAdapter } from '@ngrx/entity';
+import { NewCalculationForm } from '../../shared/models/jobs.model';
 
 export interface CalculationManagementState {
     availableCalculations: AvailableCalculationsEntityState;
@@ -46,9 +47,8 @@ export interface AvailableMethodsEntityState extends EntityState<CalculationOpti
 
 export const availableMethodsAdapter: EntityAdapter<CalculationOption> = createEntityAdapter<CalculationOption>();
 
-// TODO: type for new calculation form
 export interface NewCalculationFormState {
-    newCalculationForm: any;
+    newCalculationForm: NewCalculationForm | null;
     newCalculationFormError: string | null;
 }
 

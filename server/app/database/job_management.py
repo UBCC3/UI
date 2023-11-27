@@ -34,8 +34,6 @@ def get_all_running_jobs(email: str) -> List[JobModel]:
 
 
 def get_all_completed_jobs(email: str) -> List[JobModel]:
-    # TODO: update STOPPED to CANCELLED when enum updates
-    # status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
     status_values = [JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.COMPLETED]
 
     with Session(db_engine.engine) as session:
@@ -176,21 +174,3 @@ def remove_job(job_id: uuid.UUID) -> bool:
             print(f"Error: {str(e)}")
             return False
 
-# TODO: return type
-def cancel_job(job_id: uuid.UUID, status: str) -> Any:
-    with Session(db_engine.engine) as session:
-        try:
-            job_record = session.query(Job).filter_by(id=job_id).first()
-            
-            if not job_record:
-                return False
-            
-            job_record.status = status
-            
-            session.commit()
-
-            return True
-        except SQLAlchemyError as e:
-            session.rollback()
-            print(f"Error: {str(e)}")
-            return False

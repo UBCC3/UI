@@ -33,8 +33,7 @@ export class InProgressJobsTableComponent {
     }
 
     handleStatusMenuClick(type: string, job: Job): void {
-        // TODO: change status to cancelled after db table update
-        // this.store.dispatch(updateJob({ jobId: job.id, dto: { status: JobStatus.STOPPED } }));
+        // Only cancel CTA from in-progress
         this.store.dispatch(updateJob({ jobId: job.id, dto: { status: JobStatus.CANCELLED } }));
     }
 

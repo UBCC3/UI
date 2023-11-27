@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { CalculationOption } from '../../shared/models/calculation-option.model';
+import { NewCalculationForm } from '../../shared/models/jobs.model';
 
 export const loadAvailableCalculations = createAction('[CalculationManagement] load available calculations');
 
@@ -51,7 +52,7 @@ export const loadAvailableSolventEffectsFail = createAction(
 
 export const setNewCalculationForm = createAction(
     '[NewCalculation] setting new calculation form',
-    props<{ newCalculationForm: any }>() //TODO: model for this
+    props<{ newCalculationForm: NewCalculationForm }>()
 );
 
 export const resetNewCalculationForm = createAction('[NewCalculation] reset new calculation form');

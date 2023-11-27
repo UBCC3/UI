@@ -27,8 +27,6 @@ class JobStatus(str, Enum):
     SUBMITTED = "SUBMITTED"
     RUNNING = "RUNNING"
     FAILED = "FAILED"
-    # TODO: update to cancelled
-    # STOPPED = "STOPPED"
     CANCELLED = "CANCELLED"
     COMPLETED = "COMPLETED"
 
