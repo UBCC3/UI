@@ -3,8 +3,6 @@ from .db_engine import db_engine
 from .db_tables import Structure
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import asc, and_, or_, desc
-from typing import Optional, Any, Dict, List
 
 import uuid
 from ..models import StructureModel, StructureOrigin

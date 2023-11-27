@@ -3,8 +3,8 @@ from .db_engine import db_engine
 from .db_tables import Job, Structure
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import asc, and_, or_, desc, func
-from typing import Optional, Any, Dict, List, Union
+from sqlalchemy import desc, func
+from typing import List, Union
 
 
 from typing import List
@@ -48,12 +48,10 @@ def get_all_completed_jobs(email: str) -> List[JobModel]:
 
 def get_completed_jobs_count(email: str, filter: str) -> int:
     if filter == "All":
-        # status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
         status_values = [JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.COMPLETED]
     elif filter == "Completed":
         status_values = [JobStatus.COMPLETED]
     elif filter == "Failed":
-        # status_values = [JobStatus.FAILED, JobStatus.STOPPED]
         status_values = [JobStatus.FAILED, JobStatus.CANCELLED]
     elif filter == "Cancelled":
         status_values = [JobStatus.CANCELLED]
@@ -72,12 +70,10 @@ def get_paginated_completed_jobs(
     email: str, limit: int, offset: int, filter: str
 ) -> List[Job]:
     if filter == "All":
-        # status_values = [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.COMPLETED]
         status_values = [JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.COMPLETED]
     elif filter == "Completed":
         status_values = [JobStatus.COMPLETED]
     elif filter == "Failed":
-        # status_values = [JobStatus.FAILED, JobStatus.STOPPED]
         status_values = [JobStatus.FAILED]
     elif filter == "Cancelled":
         status_values = [JobStatus.CANCELLED]
