@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
+// NOTE: might not be needed
 export class StatusMenuService {
     private statusMenuEmit = new BehaviorSubject<any>(null);
 

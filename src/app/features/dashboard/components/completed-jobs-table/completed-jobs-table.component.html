@@ -20,8 +20,8 @@
 
         <div class="dropdown dropdown-bottom dropdown-end flex items-center">
             <p class="text-gray-500">Show:</p>
-            <label appFocusRemover tabindex="0" class="btn btn-ghost normal-case h-auto min-h-max"
-                >{{ show }}
+            <label appFocusRemover tabindex="0" class="btn btn-ghost normal-case h-auto min-h-max">
+                {{ display }}
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path
                         d="M5 7.5L10 12.5L15 7.5"
@@ -42,16 +42,19 @@
                 <li tabindex="0" (click)="onShowClick(2)" (keydown.enter)="onShowClick(2)">
                     <a>Failed</a>
                 </li>
+                <li tabindex="0" (click)="onShowClick(3)" (keydown.enter)="onShowClick(3)">
+                    <a>Cancelled</a>
+                </li>
             </ul>
         </div>
     </div>
-    <div class="bg-white rounded-lg border border-grey-200">
+    <div class="bg-white rounded-lg border border-grey-200" *ngIf="(dataIsLoading$ | async) === false; else loading">
         <table class="table">
             <!-- head -->
             <thead>
                 <tr>
                     <th>
-                        <div class="flex items-center -mr-6">
+                        <!-- <div class="flex items-center -mr-6">
                             <label class="flex items-center">
                                 <input
                                     type="checkbox"
@@ -61,19 +64,19 @@
                                 />
                                 Job
                             </label>
-                        </div>
+                        </div> -->
+                        <div class="pl-6">Job</div>
                     </th>
                     <th>Name</th>
                     <th>Calculation</th>
-                    <th>Date</th>
+                    <th>Submitted</th>
+                    <th>Started</th>
                     <th>Time</th>
                     <th>Status</th>
                     <th></th>
                 </tr>
             </thead>
-            <tbody
-                *ngFor="let job of completedJobs | paginate : { itemsPerPage: 5, currentPage: page }; let last = last"
-            >
+            <tbody *ngFor="let job of completedJobs; let last = last">
                 <tr class="py-4 {{ last ? 'border-b-0' : '' }}">
                     <th>
                         <label>
@@ -99,18 +102,31 @@
                     </td>
                     <td>
                         <div class="text-sm text-gray-500">
-                            {{ job.parameters.calculation }}
+                            {{ job.parameters?.['calculation'] }}
                         </div>
                     </td>
                     <td>
                         <div>
-                            {{ job.started | date : 'dd/MM/yyy' }}
+                            {{ job.submitted | date : 'dd/MM/yyy' }}
                         </div>
                     </td>
                     <td>
                         <div>
+                            <ng-container *ngIf="job.started; else canceled">
+                                {{ job.started | date : 'dd/MM/yyyy' }}
+                            </ng-container>
+                            <!-- NOTE: if there no started time, means its canceled -->
+                            <ng-template #canceled> N/A </ng-template>
+                        </div>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="job.finished; else canceled">
+                            <!-- 
+                                NOTE: no finished time means its canceled
+                                TODO: does cancel action update finished time in db
+                             -->
                             {{ getTimeDifference(job.started, job.finished) }}
-                        </div>
+                        </ng-container>
                     </td>
                     <td>
                         <div>
@@ -125,25 +141,35 @@
                             </label>
                             <shrd-status-menu
                                 [status]="job.status"
-                                (statusMenuClick)="handleStatusMenuClick($event)"
+                                (statusMenuClick)="handleStatusMenuClick($event, job)"
                             ></shrd-status-menu>
                         </div>
                     </th>
                 </tr>
             </tbody>
         </table>
-        <div class="flex justify-center">
-            <!-- TODO: change to serverside pagintation -->
-            <pagination-controls
-                (pageChange)="handlePageChange($event)"
-                previousLabel="Previous"
-                nextLabel="Next"
-                [autoHide]="true"
-                [responsive]="true"
-                screenReaderPaginationLabel="Pagination"
-                screenReaderPageLabel="page"
-                screenReaderCurrentLabel="You're on page"
-            ></pagination-controls>
+        <div class="flex justify-between px-6 py-4">
+            <button
+                class="btn btn-sm btn-outline border-gray-300"
+                [disabled]="isPreviousButtonIsDisabled()"
+                (click)="onPreviousClick()"
+            >
+                previous
+            </button>
+            <p>{{ currentPage }} of {{ getTotalPages() }}</p>
+
+            <button
+                class="btn btn-sm btn-outline border-gray-300"
+                [disabled]="isNextButtonIsDisabled()"
+                (click)="onNextClick()"
+            >
+                next
+            </button>
         </div>
     </div>
+    <ng-template #loading>
+        <div class="flex justify-center items-center h-full">
+            <app-splash></app-splash>
+        </div>
+    </ng-template>
 </div>

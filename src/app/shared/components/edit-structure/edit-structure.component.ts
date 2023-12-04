@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input, Renderer2, ViewChild } from '@angular/core';
+import { SourceEnum } from '../../models/source.enum';
 
 declare const Jmol: any;
 
@@ -18,7 +19,6 @@ const info = {
     styleUrls: ['./edit-structure.component.scss'],
 })
 export class EditStructureComponent implements AfterViewInit {
-    // TODO: add props for file and can edit
     @Input()
     file!: File;
     @Input() style!: { [key: string]: string };
@@ -26,12 +26,14 @@ export class EditStructureComponent implements AfterViewInit {
     isPreview!: boolean;
     @Input()
     canEdit!: boolean;
+    @Input()
+    source!: SourceEnum;
 
     @ViewChild('appletContainer', { static: false }) appletContainer!: ElementRef;
     private appletElement!: HTMLDivElement;
     private appletObject: any;
     appletHtml!: string;
-    // private file: any;
+
     zoomValue: string;
     toggledDrag: boolean;
     constructor(private renderer: Renderer2) {
@@ -49,18 +51,11 @@ export class EditStructureComponent implements AfterViewInit {
                 this.appletElement.innerHTML = appletHtml;
 
                 if (this.file) {
-                    console.log('has file...', this.file);
-                    console.log('loading file');
                     setTimeout(() => {
                         this.loadFile();
                         this.setRightClickMenuAccess();
                     }, 100);
                 }
-
-                // NOTE: need a delay before setting jmol params or else it won't render
-                // setTimeout(() => {
-                //     Jmol.script(this.appletObject, 'set disablePopupMenu TRUE');
-                // }, 1000);
             })
 
             .catch((err) => console.error('error loading jsmol: ', err));
@@ -94,14 +89,19 @@ export class EditStructureComponent implements AfterViewInit {
 
     loadFile() {
         if (this.file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const fileContents = event.target?.result as string;
-                const fileContentsAppended = `load data "model" ${fileContents} end "model"`;
+            if (this.source == SourceEnum.CALCULATED) {
+                const fileContentsAppended = `load data "model" ${this.file} end "model"`;
                 Jmol.script(this.appletObject, fileContentsAppended);
-            };
+            } else {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const fileContents = event.target?.result as string;
+                    const fileContentsAppended = `load data "model" ${fileContents} end "model"`;
+                    Jmol.script(this.appletObject, fileContentsAppended);
+                };
 
-            reader.readAsText(this.file);
+                reader.readAsText(this.file);
+            }
         }
     }
 
@@ -131,9 +131,7 @@ export class EditStructureComponent implements AfterViewInit {
     }
 
     handleZoomInput(): void {
-        console.log('enter pressed');
         if (!this.zoomValue.endsWith('%')) this.zoomValue = this.zoomValue + '%';
-        console.log('zoomValue', this.zoomValue);
 
         Jmol.script(this.appletObject, `zoom ${this.zoomValue.slice(0, -1)}`);
     }
@@ -146,10 +144,5 @@ export class EditStructureComponent implements AfterViewInit {
             this.toggledDrag = !this.toggledDrag;
             Jmol.script(this.appletObject, 'set picking ON');
         }
-    }
-
-    // to get zoom % value
-    getZoom(): void {
-        console.log(Jmol.scriptEcho(this.appletObject, 'show zoom'));
     }
 }

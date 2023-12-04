@@ -1,7 +1,5 @@
-# from database.db_engine import db_engine
 from .db_engine import db_engine
 
-# from database.db_tables import User
 from .db_tables import User
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError

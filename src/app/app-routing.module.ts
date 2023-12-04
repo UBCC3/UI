@@ -20,6 +20,12 @@ const routes: Routes = [
         canActivate: [AuthGuard],
     },
     {
+        path: 'edit-structure',
+        loadChildren: () =>
+            import('./features/edit-structure/edit-structure.module').then((m) => m.EditStructureModule),
+        canActivate: [AuthGuard],
+    },
+    {
         path: 'profile',
         loadChildren: () => import('./features/profile/profile.module').then((m) => m.ProfileModule),
         canActivate: [AuthGuard],

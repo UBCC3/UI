@@ -1,194 +1,235 @@
-<app-layout [isEditStructure]="isEditStructure" [name]="form.get('calculationName')?.value">
-    <div class="flex flex-col w-full justify-center items-center p-6">
-        <form class="flex flex-col w-3/4 justify-center bg-white p-6 rounded-md" [formGroup]="form">
-            <div class="flex w-full justify-between items-center p-4">
-                <div class="basis-1/3">Name of Calculation</div>
-                <div class="basis-2/3">
-                    <input
-                        type="text"
-                        placeholder=""
-                        class="input border-gray-300 w-full max-w-lg bg-white focus:outline-none focus:border-primary-300"
-                        formControlName="calculationName"
-                    />
-                </div>
-            </div>
-            <div class="flex w-full justify-between items-center p-4">
-                <div class="basis-1/3">
-                    <p class="">Type of Calculation</p>
-                </div>
-                <div class="basis-2/3">
-                    <select
-                        tabindex="0"
-                        class="select border-gray-300 w-full max-w-lg bg-white focus:outline-none focus:border-primary-300"
-                        formControlName="calculationType"
-                    >
-                        <option value="" disabled selected>Select an option</option>
-                        <option *ngFor="let types of calculationType" [value]="types.name">{{ types.name }}</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="flex w-full justify-between p-4" [class.items-center]="!form.get('file')?.value">
-                <div class="basis-1/3">
-                    <p [class.pt-2.5]="form.get('file')?.value">Structure</p>
-                </div>
-                <div class="basis-2/3">
-                    <div class="flex w-full justify-between" *ngIf="!form.get('file')?.value">
+<ng-container *ngIf="dataIsLoaded$ | async; else loading">
+    <app-layout [isEditStructure]="isEditStructure" [name]="form.get('calculationName')?.value">
+        <div class="flex flex-col w-full justify-center items-center p-6">
+            <form class="flex flex-col w-3/4 justify-center bg-white p-6 rounded-md" [formGroup]="form">
+                <div class="flex w-full justify-between items-center p-4">
+                    <div class="basis-1/3">Name of Calculation</div>
+                    <div class="basis-2/3">
                         <input
-                            type="file"
-                            class="file-input w-full hidden"
-                            id="file-input"
-                            (change)="handleFileUpload($event)"
+                            type="text"
+                            placeholder=""
+                            class="input border-gray-300 w-full max-w-lg bg-white focus:outline-none focus:border-primary-300"
+                            formControlName="calculationName"
                         />
-                        <label class="btn bg-white rounded-full" for="file-input"> From a File </label>
-                        <!-- <button for="file-input" class="btn">From File</button> -->
-                        <!-- TODO: add on click handler for the rest -->
-                        <button class="btn bg-white rounded-full">From Database</button>
-                        <button class="btn bg-white rounded-full">From previous calculation</button>
                     </div>
+                </div>
+                <div class="flex w-full justify-between items-center p-4">
+                    <div class="flex items-center basis-1/3">
+                        <p class="">Type of Calculation</p>
+                        <!-- NOTE: tooltip msg -->
+                        <div class="tooltip ml-2" data-tip="hello">
+                            <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
+                        </div>
+                    </div>
+                    <div class="basis-2/3">
+                        <select
+                            tabindex="0"
+                            class="select border-gray-300 w-full max-w-lg bg-white focus:outline-none focus:border-primary-300"
+                            formControlName="calculation"
+                        >
+                            <option value="" disabled selected>Select an option</option>
+                            <option *ngFor="let types of calculationTypes" [value]="types.name">
+                                {{ types.name }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
 
-                    <p class="text-red-500 pt-2" *ngIf="extensionError">{{ extensionError }}</p>
+                <div class="flex w-full justify-between p-4" [class.items-center]="!form.get('file')?.value">
+                    <div class="flex items-centerbasis-1/3">
+                        <p [class.pt-2.5]="form.get('file')?.value">Structure</p>
+                        <!-- NOTE: tooltip msg -->
+                        <div class="tooltip ml-2" data-tip="hello">
+                            <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
+                        </div>
+                    </div>
+                    <div class="basis-2/3">
+                        <div class="flex w-full justify-between" *ngIf="!form.get('file')?.value">
+                            <input
+                                type="file"
+                                class="file-input w-full hidden"
+                                id="file-input"
+                                (change)="handleFileUpload($event)"
+                            />
+                            <label class="btn bg-white rounded-full" for="file-input"> From a File </label>
+                            <!-- TODO: add on click handler for the rest -->
+                            <button class="btn bg-white rounded-full">From Database</button>
+                            <button class="btn bg-white rounded-full">From previous calculation</button>
+                        </div>
 
-                    <div class="flex w-full flex-col items-start" *ngIf="form.get('file')?.value">
-                        <div class="flex items-center">
-                            <p class="text-gray-900">{{ form.get('file')?.value.name }}</p>
-                            <button class="btn btn-ghost rounded-full mx-2" (click)="deleteFile()">
-                                <svg
-                                    width="20"
-                                    height="20"
-                                    viewBox="0 0 16 16"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    alt="delete"
+                        <p class="text-red-500 pt-2" *ngIf="extensionError">{{ extensionError }}</p>
+
+                        <div class="flex w-full flex-col items-start" *ngIf="form.get('file')?.value">
+                            <div class="flex items-center">
+                                <p class="text-gray-900">{{ form.get('file')?.value.name }}</p>
+                                <button class="btn btn-ghost rounded-full mx-2" (click)="deleteFile()">
+                                    <svg
+                                        width="20"
+                                        height="20"
+                                        viewBox="0 0 16 16"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        alt="delete"
+                                    >
+                                        <g id="trash-01">
+                                            <path
+                                                id="Icon"
+                                                d="M10.6667 3.99992V3.46659C10.6667 2.71985 10.6667 2.34648 10.5213 2.06126C10.3935 1.81038 10.1895 1.60641 9.93865 1.47858C9.65344 1.33325 9.28007 1.33325 8.53333 1.33325H7.46667C6.71993 1.33325 6.34656 1.33325 6.06135 1.47858C5.81046 1.60641 5.60649 1.81038 5.47866 2.06126C5.33333 2.34648 5.33333 2.71985 5.33333 3.46659V3.99992M6.66667 7.66659V10.9999M9.33333 7.66659V10.9999M2 3.99992H14M12.6667 3.99992V11.4666C12.6667 12.5867 12.6667 13.1467 12.4487 13.5746C12.2569 13.9509 11.951 14.2569 11.5746 14.4486C11.1468 14.6666 10.5868 14.6666 9.46667 14.6666H6.53333C5.41323 14.6666 4.85318 14.6666 4.42535 14.4486C4.04903 14.2569 3.74307 13.9509 3.55132 13.5746C3.33333 13.1467 3.33333 12.5867 3.33333 11.4666V3.99992"
+                                                stroke="#D92D20"
+                                                stroke-width="1.5"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            />
+                                        </g>
+                                    </svg>
+                                </button>
+                                <button class="btn btn-ghost rounded-full" (click)="editStructure()">
+                                    <img src="../../../../assets/edit-icon.svg" alt="edit" />
+                                </button>
+                            </div>
+                            <shrd-edit-structure
+                                [style]="smallJsMolContainer"
+                                [file]="form.get('file')?.value"
+                                [source]="form.get('source')?.value"
+                                [isPreview]="true"
+                                [canEdit]="false"
+                            ></shrd-edit-structure>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex w-full justify-between items-center p-4">
+                    <div class="flex items-centerbasis-1/3">
+                        <p>Theory</p>
+                        <div class="tooltip ml-2" data-tip="hello">
+                            <!-- NOTE: tooltip msg -->
+                            <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
+                        </div>
+                    </div>
+                    <div class="basis-2/3">
+                        <select
+                            tabindex="0"
+                            class="select border-gray-300 w-full max-w-lg bg-white focus:outline-none focus:border-primary-300"
+                            formControlName="theory"
+                        >
+                            <option value="" disabled selected>Select an option</option>
+                            <option *ngFor="let types of methods" [value]="types.name">
+                                {{ types.name }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex w-full justify-between items-center p-4">
+                    <div class="flex items-center basis-1/3">
+                        <p>Basis Set</p>
+                        <div class="tooltip ml-2" data-tip="hello">
+                            <!-- NOTE: tooltip msg -->
+                            <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
+                        </div>
+                    </div>
+                    <div class="basis-2/3">
+                        <select
+                            tabindex="0"
+                            class="select border-gray-300 w-full max-w-lg bg-white focus:outline-none focus:border-primary-300"
+                            formControlName="basisSet"
+                        >
+                            <option value="" disabled selected>Select an option</option>
+                            <option *ngFor="let types of basisSets" [value]="types.name">
+                                {{ types.name }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex flex-col px-4">
+                    <label
+                        tabindex="0"
+                        class="flex items-center text-primary-700 hover:cursor-pointer"
+                        (click)="moreSettingsClick()"
+                        (keydown.enter)="moreSettingsClick()"
+                    >
+                        More Settings
+                        <svg
+                            class="ml-2"
+                            [class.rotate-180]="moreSettings"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                        >
+                            <path
+                                d="M5 7.5L10 12.5L15 7.5"
+                                stroke="#BC1B06"
+                                stroke-width="1.66667"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </label>
+
+                    <div class="collapsible" [@collapse]="!moreSettings">
+                        <div class="flex w-full justify-between items-center py-4">
+                            <div class="flex items-center basis-1/3">
+                                <p>Solvent Effects</p>
+                                <div class="tooltip ml-2" data-tip="hello">
+                                    <!-- NOTE: tooltip msg -->
+                                    <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
+                                </div>
+                            </div>
+                            <div class="basis-2/3">
+                                <select
+                                    tabindex="0"
+                                    class="select border-gray-300 w-full max-w-lg bg-white focus:outline-none focus:border-primary-300"
+                                    formControlName="solventEffects"
                                 >
-                                    <g id="trash-01">
-                                        <path
-                                            id="Icon"
-                                            d="M10.6667 3.99992V3.46659C10.6667 2.71985 10.6667 2.34648 10.5213 2.06126C10.3935 1.81038 10.1895 1.60641 9.93865 1.47858C9.65344 1.33325 9.28007 1.33325 8.53333 1.33325H7.46667C6.71993 1.33325 6.34656 1.33325 6.06135 1.47858C5.81046 1.60641 5.60649 1.81038 5.47866 2.06126C5.33333 2.34648 5.33333 2.71985 5.33333 3.46659V3.99992M6.66667 7.66659V10.9999M9.33333 7.66659V10.9999M2 3.99992H14M12.6667 3.99992V11.4666C12.6667 12.5867 12.6667 13.1467 12.4487 13.5746C12.2569 13.9509 11.951 14.2569 11.5746 14.4486C11.1468 14.6666 10.5868 14.6666 9.46667 14.6666H6.53333C5.41323 14.6666 4.85318 14.6666 4.42535 14.4486C4.04903 14.2569 3.74307 13.9509 3.55132 13.5746C3.33333 13.1467 3.33333 12.5867 3.33333 11.4666V3.99992"
-                                            stroke="#D92D20"
-                                            stroke-width="1.5"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        />
-                                    </g>
-                                </svg>
-                            </button>
-                            <button class="btn btn-ghost rounded-full" (click)="editStructure()">
-                                <img src="../../../../assets/edit-icon.svg" alt="edit" />
-                            </button>
+                                    <option value="" disabled selected>Select an option</option>
+                                    <option value="basis-set1">solvent effect1</option>
+                                    <option value="basis-set2">solvent effect2</option>
+                                </select>
+                            </div>
                         </div>
-                        <shrd-edit-structure
-                            [style]="smallJsMolContainer"
-                            [file]="form.get('file')?.value"
-                            [isPreview]="true"
-                            [canEdit]="false"
-                        ></shrd-edit-structure>
-                    </div>
-                </div>
-            </div>
-            <div class="flex w-full justify-between items-center p-4">
-                <div class="basis-1/3">
-                    <p>Theory</p>
-                </div>
-                <div class="basis-2/3">
-                    <select
-                        tabindex="0"
-                        class="select border-gray-300 w-full max-w-lg bg-white focus:outline-none focus:border-primary-300"
-                        formControlName="theory"
-                    >
-                        <option value="" disabled selected>Select an option</option>
-                        <option value="theory1">theory1</option>
-                        <option value="theory2">theory2</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- TODO: api call to fetch options -->
-            <div class="flex w-full justify-between items-center p-4">
-                <div class="basis-1/3">
-                    <p>Basis Set</p>
-                </div>
-                <div class="basis-2/3">
-                    <select
-                        tabindex="0"
-                        class="select border-gray-300 w-full max-w-lg bg-white focus:outline-none focus:border-primary-300"
-                        formControlName="basisSet"
-                    >
-                        <option value="" disabled selected>Select an option</option>
-                        <option value="basis-set1">basis set1</option>
-                        <option value="basis-set2">basis set2</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="flex flex-col px-4">
-                <label
-                    tabindex="0"
-                    class="flex items-center text-primary-700 hover:cursor-pointer"
-                    (click)="moreSettingsClick()"
-                    (keydown.enter)="moreSettingsClick()"
-                >
-                    More Settings
-                    <svg
-                        class="ml-2"
-                        [class.rotate-180]="moreSettings"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                    >
-                        <path
-                            d="M5 7.5L10 12.5L15 7.5"
-                            stroke="#BC1B06"
-                            stroke-width="1.66667"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        />
-                    </svg>
-                </label>
-
-                <div class="collapsible" [@collapse]="!moreSettings">
-                    <div class="flex w-full justify-between items-center py-4">
-                        <div class="basis-1/3">
-                            <p>Solvent Effects</p>
-                        </div>
-                        <div class="basis-2/3">
-                            <select
-                                tabindex="0"
-                                class="select border-gray-300 w-full max-w-lg bg-white focus:outline-none focus:border-primary-300"
-                                formControlName="solventEffects"
-                            >
-                                <option value="" disabled selected>Select an option</option>
-                                <option value="basis-set1">solvent effect1</option>
-                                <option value="basis-set2">solvent effect2</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="flex w-full justify-between items-center py-4">
-                        <div class="basis-1/3">
-                            <p>Wave Theory</p>
-                        </div>
-                        <div class="basis-2/3">
-                            <select
-                                tabindex="0"
-                                class="select border-gray-300 w-full max-w-lg bg-white focus:outline-none focus:border-primary-300"
-                                formControlName="waveTheory"
-                            >
-                                <option value="" disabled selected>Select an option</option>
-                                <option value="basis-set1">wave theory1</option>
-                                <option value="basis-set2">wave theory2</option>
-                            </select>
+                        <div class="flex w-full justify-between items-center py-4">
+                            <div class="flex items-center basis-1/3">
+                                <p>Wave Theory</p>
+                                <div class="tooltip ml-2" data-tip="hello">
+                                    <!-- NOTE: tooltip msg -->
+                                    <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
+                                </div>
+                            </div>
+                            <div class="basis-2/3">
+                                <select
+                                    tabindex="0"
+                                    class="select border-gray-300 w-full max-w-lg bg-white focus:outline-none focus:border-primary-300"
+                                    formControlName="waveTheory"
+                                >
+                                    <option value="" disabled selected>Select an option</option>
+                                    <option value="basis-set1">wave theory1</option>
+                                    <option value="basis-set2">wave theory2</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="flex sticky justify-end bottom-6">
-                <button class="btn bg-primary-500 text-white" [class.btn-disabled]="!form.valid" (click)="calculate()">
-                    Calculate
-                </button>
-            </div>
-        </form>
+                <div class="flex sticky justify-end bottom-6">
+                    <button
+                        class="btn bg-primary-500 text-white"
+                        [class.btn-disabled]="!form.valid"
+                        [disabled]="newJobIsSubmitting$ | async"
+                        (click)="calculate()"
+                    >
+                        <span class="loading loading-spinner" *ngIf="newJobIsSubmitting$ | async"></span>
+                        Calculate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </app-layout>
+</ng-container>
+
+<ng-template #loading>
+    <div class="flex justify-center items-center h-full">
+        <app-splash></app-splash>
     </div>
-</app-layout>
+</ng-template>

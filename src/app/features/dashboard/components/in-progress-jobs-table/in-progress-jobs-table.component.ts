@@ -1,5 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { Job } from '../../../../shared/models/jobs.model';
+import { Job, JobStatus } from '../../../../shared/models/jobs.model';
+import { AppState } from '../../../../store';
+import { Store } from '@ngrx/store';
+import { updateJob } from '../../../../store/actions/job.actions';
 
 @Component({
     selector: 'app-in-progress-jobs-table',
@@ -8,14 +11,11 @@ import { Job } from '../../../../shared/models/jobs.model';
 })
 export class InProgressJobsTableComponent {
     @Input()
-    inProgressJobs!: Job[];
-
-    page = 1;
-    pageSize = 5;
+    inProgressJobs!: Job[] | null;
 
     selectedJobs: Job[];
 
-    constructor() {
+    constructor(public store: Store<AppState>) {
         this.selectedJobs = [];
     }
 
@@ -32,10 +32,9 @@ export class InProgressJobsTableComponent {
         }
     }
 
-    handleStatusMenuClick(type: string): void {
-        // TODO: handle event
-        // use shared service to make code less coupled
-        console.log('handle event emitted by status menu', type);
+    handleStatusMenuClick(type: string, job: Job): void {
+        // Only cancel CTA from in-progress
+        this.store.dispatch(updateJob({ jobId: job.id, dto: { status: JobStatus.CANCELLED } }));
     }
 
     isSelected(job: Job): boolean {

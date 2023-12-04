@@ -4,133 +4,21 @@ import { AuthService, User } from '@auth0/auth0-angular';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../../../store';
 import { selectUser } from '../../../store/selectors/user.selectors';
-import { Observable } from 'rxjs';
-import moment from 'moment';
+import { Observable, combineLatest, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { StatusMenuService } from '../../../shared/components/status-menu/status-menu.service';
-
-const inProgress = [
-    {
-        id: '98ecc611-f384-490c-9f8a-3f5084110341',
-        created: new Date(),
-        userid: 'email@gmail.com',
-        job_name: 'test job name',
-        submitted: '2023-08-01 19:58:27.094',
-        started: '2023-08-01 19:58:27.094',
-        finished: null,
-        status: 'running',
-        parameters: {
-            calculation: 'Geometry Optimization',
-        },
-    },
-    {
-        id: '07010fe6-1591-44dc-b188-b04610320969',
-        created: new Date(),
-        userid: 'email@gmail.com',
-        job_name: 'test job name3',
-        submitted: new Date(),
-        started: new Date(),
-        finished: null,
-        status: 'submitted',
-        parameters: {
-            calculation: 'Natural Bond Orbitals',
-        },
-    },
-];
-
-const isCompleted = [
-    {
-        id: '98ecc611-f384-490c-9f8a-3f5084110341',
-        created: new Date(),
-        userid: 'email@gmail.com',
-        job_name: 'test job name',
-        submitted: new Date(),
-        started: '2023-08-01 19:58:27.094',
-        finished: '2023-08-01 20:58:27.094',
-        status: 'completed',
-        parameters: {
-            calculation: 'Geometry Optimization',
-        },
-    },
-    {
-        id: '07010fe6-1591-44dc-b188-b04610320969',
-        created: new Date(),
-        userid: 'email@gmail.com',
-        job_name: 'test job name2',
-        submitted: new Date(),
-        started: '2023-08-01 19:58:27.094',
-        finished: '2023-08-02 09:58:27.094',
-        status: 'completed',
-        parameters: {
-            calculation: 'Natural Bond Orbitals',
-        },
-    },
-    {
-        id: '07010fe6-1591-44dc-b188-b04610320969',
-        created: new Date(),
-        userid: 'email@gmail.com',
-        job_name: 'test job name3',
-        submitted: new Date(),
-        started: '2023-08-01 19:58:27.094',
-        finished: '2023-08-01 21:58:27.094',
-        status: 'failed',
-        parameters: {
-            calculation: 'Natural Bond Orbitals',
-        },
-    },
-    {
-        id: '07010fe6-1591-44dc-b188-b04610320969',
-        created: new Date(),
-        userid: 'email@gmail.com',
-        job_name: 'test job name3',
-        submitted: new Date(),
-        started: '2023-07-01 19:58:27.094',
-        finished: '2023-07-016 19:58:27.094',
-        status: 'cancelled',
-        parameters: {
-            calculation: 'Natural Bond Orbitals',
-        },
-    },
-    {
-        id: '07010fe6-1591-44dc-b188-b04610320969',
-        created: new Date(),
-        userid: 'email@gmail.com',
-        job_name: 'test job name4',
-        submitted: new Date(),
-        started: '2023-07-01 19:58:27.094',
-        finished: '2023-07-016 19:58:27.094',
-        status: 'cancelled',
-        parameters: {
-            calculation: 'Natural Bond Orbitals',
-        },
-    },
-    {
-        id: '07010fe6-1591-44dc-b188-b04610320969',
-        created: new Date(),
-        userid: 'email@gmail.com',
-        job_name: 'test job name5',
-        submitted: new Date(),
-        started: '2023-07-01 19:58:27.094',
-        finished: '2023-07-016 19:58:27.094',
-        status: 'cancelled',
-        parameters: {
-            calculation: 'Natural Bond Orbitals',
-        },
-    },
-    {
-        id: '07010fe6-1591-44dc-b188-b04610320969',
-        created: new Date(),
-        userid: 'email@gmail.com',
-        job_name: 'test job name6',
-        submitted: new Date(),
-        started: '2023-07-01 19:58:27.094',
-        finished: '2023-07-016 19:58:27.094',
-        status: 'cancelled',
-        parameters: {
-            calculation: 'Natural Bond Orbitals',
-        },
-    },
-];
+import { loadCompletedJobs, loadInProgressJobs } from '../../../store/actions/job.actions';
+import {
+    selectInProgressJobs,
+    selectInProgressJobsAreLoaded,
+} from '../../../store/selectors/in-progress-job.selectors';
+import {
+    selectCompletedJobs,
+    selectCompletedJobsAreLoaded,
+    selectCompletedJobsCount,
+} from '../../../store/selectors/complete-job.selector';
+import { Job } from '../../../shared/models/jobs.model';
+import { DisplayEnum } from '../../../shared/models/display.enum';
 
 @Component({
     selector: 'app-dashboard-container',
@@ -142,14 +30,21 @@ export class DashboardContainerComponent implements OnInit {
     hasApiError = false;
 
     userName!: string | undefined;
+    inProgressJobs!: Job[] | null;
+    completedJobs!: Job[] | null | undefined;
+    inProgressJobsLength!: number;
+    completedJobsLength!: number;
 
     user$!: Observable<User | undefined>;
 
-    // for test data
-    inProgress: any;
-    isCompleted: any;
+    dataIsLoaded$!: Observable<boolean>;
 
-    show: string;
+    display: DisplayEnum;
+
+    // Pagination
+    offset = 0;
+    limit = 5;
+    jobsCount!: number | undefined;
 
     constructor(
         public auth: AuthService,
@@ -158,48 +53,45 @@ export class DashboardContainerComponent implements OnInit {
         public router: Router,
         private statusMenuService: StatusMenuService
     ) {
-        this.inProgress = inProgress;
-        this.isCompleted = isCompleted;
-        this.show = 'All';
+        this.display = DisplayEnum.All;
     }
 
     ngOnInit() {
         this.user$ = this.store.pipe(select(selectUser));
         this.auth.getAccessTokenSilently().subscribe((token) => console.log('token', token));
         this.getUserName();
-        this.statusMenuService.getStatusMenuEvent().subscribe((data: any) => {
-            this.handleEmitterService(data);
+        // NOTE: service not being used
+        // this.statusMenuService.getStatusMenuEvent().subscribe((data: any) => {
+        //     this.handleEmitterService(data);
+        // });
+
+        this.store.dispatch(loadInProgressJobs());
+        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
+
+        this.dataIsLoaded$ = combineLatest([
+            this.store.pipe(select(selectInProgressJobsAreLoaded)),
+            this.store.pipe(select(selectCompletedJobsAreLoaded)),
+        ]).pipe(
+            map(([inProgressJobsAreLoaded, completeJobsAreLoaded]) => {
+                return inProgressJobsAreLoaded && completeJobsAreLoaded;
+            })
+        );
+
+        combineLatest([
+            this.store.select(selectInProgressJobs),
+            this.store.select(selectCompletedJobs),
+            this.store.select(selectCompletedJobsCount),
+        ]).subscribe(([inProgressJobs, completedJobs, completedJobsCount]) => {
+            this.inProgressJobs = inProgressJobs;
+            this.completedJobs = completedJobs;
+            this.jobsCount = completedJobsCount;
+            this.completedJobsLength = completedJobs?.length as number;
+            this.inProgressJobsLength = inProgressJobs.length;
         });
     }
 
     startACalculationClick(): void {
         this.router.navigate(['new-calculation']);
-    }
-
-    // NOTE: delete after
-    testApi() {
-        this.http.get('http://localhost:8000/api/private').subscribe({
-            next: (res) => {
-                this.hasApiError = false;
-                this.responseJson = JSON.stringify(res, null, 2).trim();
-                console.log('res', this.responseJson);
-            },
-            error: () => (this.hasApiError = true),
-        });
-    }
-
-    // NOTE: delete after
-    testPost() {
-        this.http
-            .post('http://localhost:8000/api/private', { name: 'test name', content: 'some text for content' })
-            .subscribe({
-                next: (res) => {
-                    this.hasApiError = false;
-                    this.responseJson = JSON.stringify(res, null, 2).trim();
-                    console.log('res', this.responseJson);
-                },
-                error: () => (this.hasApiError = true),
-            });
     }
 
     getUserName(): void {
@@ -208,7 +100,23 @@ export class DashboardContainerComponent implements OnInit {
         });
     }
 
-    handleEmitterService(data: any): void {
-        console.log('event from status menu handled');
+    // NOTE: Service not being used anything
+    // handleEmitterService(data: any): void {
+    //     console.log('event from status menu handled');
+    // }
+
+    handlePreviousEvent(data: boolean): void {
+        this.offset = Math.max(this.offset - this.limit, 0);
+        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
+    }
+
+    handleNextEvent(data: boolean): void {
+        this.offset += this.limit;
+        this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
+    }
+
+    handleFilterEvent(data: any): void {
+        this.display = data;
+        this.offset = 0;
     }
 }

@@ -29,9 +29,6 @@
             >
                 <img src="../../../../assets/minus.svg" alt="zoom-out" />
             </button>
-            <!-- no way to get zoom value from scroll zoom -->
-            <!-- disable zoom makes button zooms not work too -->
-            <input type="text" class="w-12" (keyup.enter)="handleZoomInput()" [(ngModel)]="zoomValue" />
             <button tabindex="0" class="btn btn-ghost rounded-full mx-2" (click)="zoomIn()" (keydown.enter)="zoomIn()">
                 <img src="../../../../assets/plus.svg" alt="zoom-in" />
             </button>
