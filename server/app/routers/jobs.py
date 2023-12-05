@@ -19,6 +19,7 @@ from ..database.job_management import (
     update_job,
     remove_job,
 )
+from ..database.structure_management import get_structure_by_job_id
 
 import json
 
@@ -27,7 +28,7 @@ from ..models import (
     JwtErrorModel,
     PaginatedJobModel,
     CreateJobDTO,
-    UpdateJobDTO,
+    UpdateJobDTO
 )
 from ..util import token_auth, download_from_s3, read_from_s3
 from typing import Union, Any
@@ -85,9 +86,7 @@ async def get_paginated_complete_jobs(
     token: str = Depends(token_auth),
 ):
     total_count = get_completed_jobs_count(email, filter)
-    print('total', total_count)
     data = get_paginated_completed_jobs(email, limit, offset, filter)
-    print('data', data)
     return {
         "offset": offset,
         "limit": limit,
@@ -125,15 +124,16 @@ async def delete_job(job_id: UUID, token: str = Depends(token_auth)):
 
 
 # NOTE: disabled for now
-# TODO: response type
-# @router.get("/download/{job_id}/{file_name}", response_model=Union[Any, JwtErrorModel])
+# @router.get("/download/{job_id}/{file_name}", response_model=Union[str, JwtErrorModel])
 # async def download(
 #     file_name: str,
 #     job_id: UUID,
 #     response: Response,
 #     token: str = Depends(token_auth)
 # ):
-#     return download_from_s3(file_name, job_id)
+#     structure = get_structure_by_job_id(job_id)
+
+#     return download_from_s3(file_name, structure.id)
 
 # NOTE: disabled for now
 # TODO: response type
