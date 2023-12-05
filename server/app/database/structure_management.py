@@ -6,6 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 import uuid
 from ..models import StructureModel, StructureOrigin
+from typing import List
 
 
 def post_structure(
@@ -33,8 +34,14 @@ def post_structure(
             return False
 
 
-def get_structure(id: uuid.uuid4) -> StructureModel:
+def get_structure_by_job_id(job_id: uuid.uuid4) -> StructureModel:
     with Session(db_engine.engine) as session:
-        structure = session.query(Structure).filter(id=id).first()
-
+        structure = session.query(Structure).filter_by(jobid=job_id).first()
     return structure
+
+
+def get_all_structure() -> list[StructureModel]:
+    with Session(db_engine.engine) as session:
+        structures = session.query(Structure).all()
+
+    return structures
