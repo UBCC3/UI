@@ -120,7 +120,7 @@ def post_new_job(
             
             # upload structure file to s3
             # s3 structure 
-            # upload_to_s3(file, structure.id)
+            upload_to_s3(file, structure.id)
 
             session.add(structure)
             session.commit()

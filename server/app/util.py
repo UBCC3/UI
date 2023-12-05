@@ -108,7 +108,7 @@ class VerifyToken:
                 return result
         return result
 
-
+# TODO: use openbabel to convert file type for consistency *.xyz
 def upload_to_s3(file: File, structure_id: UUID):
     s3 = boto3.client("s3")
     # TODO: update to actual bucketname
@@ -121,18 +121,21 @@ def upload_to_s3(file: File, structure_id: UUID):
         logging.error(e)
         return False
 
-# NOTE: route for downloading disabled for no
-def download_from_s3(file_name: str, job_id: UUID):
+# NOTE: route for downloading disabled for now
+#       files in s3 should all be in .xyz from the upload fn
+def download_from_s3(file_name: str, structure_id: UUID):
     s3 = boto3.client("s3")
     # TODO: replace bucket name with actual bucket
     bucket_name = "alexy-devel"
-    file_key = str(job_id) + "/" + file_name
+    file = file_name + '.xyz'
+    file_key = str(structure_id) + "/" + file
     try:
         response = s3.generate_presigned_url(
             "get_object",
             Params={"Bucket": bucket_name, "Key": file_key},
             ExpiresIn=60,  # One minute, should be enough time to download file?
         )
+        print('respnse', response)
         return response
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))

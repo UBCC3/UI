@@ -26,9 +26,7 @@ class Job(Base):
 
 
 class Structure(Base):
-    __table__ = Table(
-        STRUCTURES_TABLE_NAME, Base.metadata, autoload_with=db_engine.engine
-    )
+    __table__ = Table(STRUCTURES_TABLE_NAME, Base.metadata, autoload_with=db_engine.engine)
 
 
 class Structure_Property(Base):
