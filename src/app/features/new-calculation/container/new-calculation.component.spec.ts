@@ -6,7 +6,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppState } from '../../../store';
 import { SharedModule } from '../../../shared/shared.module';
 
-// NOTE: test suite is skipped
 describe('NewCalculationComponent', () => {
     let component: NewCalculationComponent;
     let fixture: ComponentFixture<NewCalculationComponent>;
