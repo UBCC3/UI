@@ -123,16 +123,17 @@ async def delete_job(job_id: UUID, token: str = Depends(token_auth)):
     return remove_job(job_id)
 
 
-@router.get("/download/{job_id}/{file_name}", response_model=Union[str, JwtErrorModel])
-async def download(
-    file_name: str,
-    job_id: UUID,
-    response: Response,
-    token: str = Depends(token_auth)
-):
-    structure = get_structure_by_job_id(job_id)
+# NOTE: disabled for now
+# @router.get("/download/{job_id}/{file_name}", response_model=Union[str, JwtErrorModel])
+# async def download(
+#     file_name: str,
+#     job_id: UUID,
+#     response: Response,
+#     token: str = Depends(token_auth)
+# ):
+#     structure = get_structure_by_job_id(job_id)
 
-    return download_from_s3(file_name, structure.id)
+#     return download_from_s3(file_name, structure.id)
 
 # NOTE: disabled for now
 # TODO: response type
