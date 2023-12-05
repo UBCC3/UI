@@ -33,7 +33,6 @@ export class CompletedJobsTableComponent implements OnInit {
 
     selectedJobs: Job[];
 
-    // NOTE: type for the events
     @Output()
     previousEvent: EventEmitter<boolean>;
     @Output()

@@ -112,17 +112,15 @@
                     </td>
                     <td>
                         <div>
-                            <ng-container *ngIf="job.started; else canceled">
+                            <ng-container *ngIf="job.status !== 'CANCELLED'; else canceled">
                                 {{ job.started | date : 'dd/MM/yyyy' }}
                             </ng-container>
-                            <!-- NOTE: if there no started time, means its canceled -->
                             <ng-template #canceled> N/A </ng-template>
                         </div>
                     </td>
                     <td>
-                        <ng-container *ngIf="job.finished; else canceled">
+                        <ng-container *ngIf="job.status !== 'CANCELLED'; else canceled">
                             <!-- 
-                                NOTE: no finished time means its canceled
                                 TODO: does cancel action update finished time in db
                              -->
                             {{ getTimeDifference(job.started, job.finished) }}
