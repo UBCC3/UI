@@ -10,12 +10,28 @@ from typing import List
 
 
 def check_user_exists(email: str) -> bool:
+    """Checks if user exists in DB
+
+    Args:
+        email (str): Email to look for
+
+    Returns:
+        bool: Returns True if user exists and False if does not
+    """
     with Session(db_engine.engine) as session:
         exists = session.query(User.email).filter_by(email=email).first() is not None
     return exists
 
 
 def add_new_user(email: str) -> bool:
+    """Create new User
+
+    Args:
+        email (str): Email
+
+    Returns:
+        bool: Returns True if success or False if fail
+    """
     with Session(db_engine.engine) as session:
         try:
             user = User(email=email, active=True, admin=False)
@@ -29,6 +45,14 @@ def add_new_user(email: str) -> bool:
 
 
 def remove_user(email: str) -> bool:
+    """Remove a User from DB
+
+    Args:
+        email (str): Email to remove
+
+    Returns:
+        bool: Returns True if success or False if fail
+    """
     with Session(db_engine.engine) as session:
         user_record = session.get(User, email)
         session.delete(user_record)
@@ -39,6 +63,11 @@ def remove_user(email: str) -> bool:
 
 
 def get_all_users() -> List[UserModel]:
+    """Gets all Users
+
+    Returns:
+        List[UserModel]: Array of Users
+    """
     with Session(db_engine.engine) as session:
         users = session.query(User).all()
 
@@ -48,6 +77,14 @@ def get_all_users() -> List[UserModel]:
 def update_user(
     user: UserModel,
 ) -> bool:
+    """Updates a User
+
+    Args:
+        user (UserModel): User Model
+
+    Returns:
+        bool: Returns True if success or False if fail
+    """
     with Session(db_engine.engine) as session:
         try:
             update_user = session.query(User).filter_by(email=user.email).first()

@@ -15,6 +15,17 @@ def post_structure(
     structure_name: str,
     structure_origin: StructureOrigin,
 ) -> bool:
+    """Create new Structure entry
+
+    Args:
+        job_id (uuid.uuid4): Job ID
+        user_id (str): User ID
+        structure_name (str): Structure name
+        structure_origin (StructureOrigin): Upload or Calculated
+
+    Returns:
+        bool: Returns True if successful or False on fail
+    """
     with Session(db_engine.engine) as session:
         try:
             structure = Structure(
@@ -35,12 +46,25 @@ def post_structure(
 
 
 def get_structure_by_job_id(job_id: uuid.uuid4) -> StructureModel:
+    """Gets a structure from Job ID
+
+    Args:
+        job_id (uuid.uuid4): Job ID
+
+    Returns:
+        StructureModel: Structure
+    """
     with Session(db_engine.engine) as session:
         structure = session.query(Structure).filter_by(jobid=job_id).first()
     return structure
 
 
 def get_all_structure() -> list[StructureModel]:
+    """Gets all structures
+
+    Returns:
+        list[StructureModel]: Array of structures
+    """
     with Session(db_engine.engine) as session:
         structures = session.query(Structure).all()
 
