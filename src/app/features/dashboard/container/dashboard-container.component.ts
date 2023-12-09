@@ -88,6 +88,8 @@ export class DashboardContainerComponent implements OnInit {
             this.completedJobsLength = completedJobs?.length as number;
             this.inProgressJobsLength = inProgressJobs.length;
         });
+
+        // TODO: dispatch action to get in-progress and completed jobs in an interval
     }
 
     startACalculationClick(): void {

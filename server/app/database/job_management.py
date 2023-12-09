@@ -16,6 +16,11 @@ from ..util import upload_to_s3, item_to_dict
 
 
 def get_all_jobs() -> List[JobModel]:
+    """Gets all jobs
+
+    Returns:
+        List[JobModel]: Array of Jobs
+    """
     with Session(db_engine.engine) as session:
         jobs = session.query(Job).all()
 
@@ -23,6 +28,14 @@ def get_all_jobs() -> List[JobModel]:
 
 
 def get_all_running_jobs(email: str) -> List[JobModel]:
+    """Gets all jobs that are running or submitted
+
+    Args:
+        email (str): email
+
+    Returns:
+        List[JobModel]: Array of Jobs
+    """
     status_values = [JobStatus.RUNNING, JobStatus.SUBMITTED]
 
     with Session(db_engine.engine) as session:
@@ -32,8 +45,15 @@ def get_all_running_jobs(email: str) -> List[JobModel]:
 
     return jobs
 
-
 def get_all_completed_jobs(email: str) -> List[JobModel]:
+    """Gets all the jobs that are not running or submitted
+
+    Args:
+        email (str): email
+
+    Returns:
+        List[JobModel]: Array of Jobs
+    """
     status_values = [JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.COMPLETED]
 
     with Session(db_engine.engine) as session:
@@ -47,6 +67,15 @@ def get_all_completed_jobs(email: str) -> List[JobModel]:
 
 
 def get_completed_jobs_count(email: str, filter: str) -> int:
+    """Gets the count of jobs for a specific status
+
+    Args:
+        email (str): email
+        filter (str): Status of jobs to get count for
+
+    Returns:
+        int: Number of jobs
+    """
     if filter == "All":
         status_values = [JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.COMPLETED]
     elif filter == "Completed":
@@ -69,6 +98,17 @@ def get_completed_jobs_count(email: str, filter: str) -> int:
 def get_paginated_completed_jobs(
     email: str, limit: int, offset: int, filter: str
 ) -> List[Job]:
+    """Gets the paginated data for completed jobs
+
+    Args:
+        email (str): email
+        limit (int): How many entries to fetch 
+        offset (int): Starting at which index
+        filter (str): Job status
+
+    Returns:
+        List[Job]: Array of Jobs
+    """
     if filter == "All":
         status_values = [JobStatus.FAILED, JobStatus.CANCELLED, JobStatus.COMPLETED]
     elif filter == "Completed":
@@ -94,6 +134,16 @@ def get_paginated_completed_jobs(
 def post_new_job(
     email: str, job: CreateJobDTO, file: UploadFile = File(None)
 ) -> Union[JobModel, bool]:
+    """Create new job entry
+
+    Args:
+        email (str): email
+        job (CreateJobDTO): DTO of job
+        file (UploadFile, optional): File of chemical structure. NOTE file might be required
+
+    Returns:
+        Union[JobModel, bool]: Returns a Job or false if fails
+    """
     with Session(db_engine.engine) as session:
         try:
             # create new row in job table
@@ -117,13 +167,13 @@ def post_new_job(
                     name=job.job_name,
                     source=job.parameters["source"],
                 )
+                
+                 # upload structure file to s3
+                # s3 structure 
+                upload_to_s3(file, structure.id)
             
-            # upload structure file to s3
-            # s3 structure 
-            upload_to_s3(file, structure.id)
-
-            session.add(structure)
-            session.commit()
+                session.add(structure)
+                session.commit()
 
             session.refresh(job)
 
@@ -136,6 +186,15 @@ def post_new_job(
 
 
 def update_job(job_id: uuid.UUID, update_job_dto: UpdateJobDTO) -> bool:
+    """Updates a job
+
+    Args:
+        job_id (uuid.UUID): Job ID
+        update_job_dto (UpdateJobDTO): DTO to update
+
+    Returns:
+        bool: Returns True if successful update or False on fail
+    """
     with Session(db_engine.engine) as session:
         try:
             job = session.query(Job).filter_by(id=job_id).first()
@@ -157,6 +216,14 @@ def update_job(job_id: uuid.UUID, update_job_dto: UpdateJobDTO) -> bool:
 
 
 def remove_job(job_id: uuid.UUID) -> bool:
+    """Removes a Job from the Job Table
+
+    Args:
+        job_id (uuid.UUID): Job ID
+
+    Returns:
+        bool: Returns True if successful delete or False on fail
+    """
     with Session(db_engine.engine) as session:
         try:
             job_record = session.get(Job, job_id)
