@@ -6,7 +6,6 @@ import { AppState } from '../../../store';
 import { selectUser } from '../../../store/selectors/user.selectors';
 import { Observable, combineLatest, map } from 'rxjs';
 import { Router } from '@angular/router';
-import { StatusMenuService } from '../../../shared/components/status-menu/status-menu.service';
 import { loadCompletedJobs, loadInProgressJobs } from '../../../store/actions/job.actions';
 import {
     selectInProgressJobs,
@@ -50,8 +49,7 @@ export class DashboardContainerComponent implements OnInit {
         public auth: AuthService,
         public http: HttpClient,
         public store: Store<AppState>,
-        public router: Router,
-        private statusMenuService: StatusMenuService
+        public router: Router
     ) {
         this.display = DisplayEnum.All;
     }
@@ -60,10 +58,6 @@ export class DashboardContainerComponent implements OnInit {
         this.user$ = this.store.pipe(select(selectUser));
         this.auth.getAccessTokenSilently().subscribe((token) => console.log('token', token));
         this.getUserName();
-        // NOTE: service not being used
-        // this.statusMenuService.getStatusMenuEvent().subscribe((data: any) => {
-        //     this.handleEmitterService(data);
-        // });
 
         this.store.dispatch(loadInProgressJobs());
         this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
@@ -102,11 +96,6 @@ export class DashboardContainerComponent implements OnInit {
         });
     }
 
-    // NOTE: Service not being used anything
-    // handleEmitterService(data: any): void {
-    //     console.log('event from status menu handled');
-    // }
-
     handlePreviousEvent(data: boolean): void {
         this.offset = Math.max(this.offset - this.limit, 0);
         this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
@@ -117,7 +106,7 @@ export class DashboardContainerComponent implements OnInit {
         this.store.dispatch(loadCompletedJobs({ limit: this.limit, offset: this.offset, display: this.display }));
     }
 
-    handleFilterEvent(data: any): void {
+    handleFilterEvent(data: DisplayEnum): void {
         this.display = data;
         this.offset = 0;
     }

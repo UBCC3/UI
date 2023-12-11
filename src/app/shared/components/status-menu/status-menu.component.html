@@ -25,7 +25,7 @@
         </li>
     </div>
 
-    <div class="flex flex-col" *ngIf="status === 'CAMCELLED'">
+    <div class="flex flex-col" *ngIf="status === 'CANCELLED'">
         <li>
             <span
                 tabindex="0"
@@ -62,17 +62,6 @@
             </li>
         </div>
         <div class="flex flex-col py-1 my-1 border-b">
-            <!-- NOTE: do not need duplicate  -->
-            <!-- <li>
-                <span
-                    tabindex="0"
-                    class="text-gray-700 text-xs"
-                    (click)="onStatusMenuClick('duplicate')"
-                    (keydown.enter)="onStatusMenuClick('duplicate')"
-                    ><img src="../../../../assets/copy-icon.svg" alt="duplicate" />
-                    Duplicate
-                </span>
-            </li> -->
             <li>
                 <span
                     tabindex="0"

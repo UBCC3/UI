@@ -5,7 +5,6 @@ import {
     availableCalculationsAdapter,
     availableMethodsAdapter,
 } from '../reducers/calculation-management.reducer';
-import { AppState } from '..';
 
 // Available Calculations
 const {
