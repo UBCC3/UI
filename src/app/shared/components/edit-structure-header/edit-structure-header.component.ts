@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
     selector: 'shrd-edit-structure-header',
@@ -13,11 +13,7 @@ export class EditStructureHeaderComponent {
     @Input()
     name!: string;
 
-    @Output()
-    backEvent: EventEmitter<any>;
-    constructor(private location: Location) {
-        this.backEvent = new EventEmitter();
-    }
+    constructor(private location: Location) {}
 
     onBackClick(): void {
         this.location.back();

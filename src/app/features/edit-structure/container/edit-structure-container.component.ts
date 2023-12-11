@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -6,8 +6,8 @@ import { ActivatedRoute } from '@angular/router';
     templateUrl: './edit-structure-container.component.html',
     styleUrls: ['./edit-structure-container.component.scss'],
 })
-export class EditStructureContainerComponent {
-    file!: any;
+export class EditStructureContainerComponent implements OnInit {
+    file!: File;
     constructor(private route: ActivatedRoute) {}
     JSmolStyle = {
         width: '100vw',

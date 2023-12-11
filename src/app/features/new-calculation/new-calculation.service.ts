@@ -46,6 +46,6 @@ export class NewCalculationService {
     }
 
     patchJob$(jobId: string, dto: UpdateJobDTO): Observable<boolean> {
-        return this.http.patch<any>(`${environment.api.serverUrl}/jobs/${jobId}`, dto);
+        return this.http.patch<boolean>(`${environment.api.serverUrl}/jobs/${jobId}`, dto);
     }
 }

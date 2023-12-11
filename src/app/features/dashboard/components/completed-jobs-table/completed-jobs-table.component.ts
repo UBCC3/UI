@@ -38,7 +38,7 @@ export class CompletedJobsTableComponent implements OnInit {
     @Output()
     nextEvent: EventEmitter<boolean>;
     @Output()
-    filterEvent: EventEmitter<any>;
+    filterEvent: EventEmitter<DisplayEnum>;
 
     dataIsLoading$!: Observable<boolean>;
 
