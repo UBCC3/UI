@@ -1,3 +1,9 @@
-<div class="flex justify-center items-center h-screen">Hello World</div>
+<div class="flex justify-center items-center w-full h-full" *ngIf="isAuth0Loading$ | async; else loaded">
+    <app-splash></app-splash>
+</div>
 
-<router-outlet></router-outlet>
+<ng-template #loaded>
+    <router-outlet></router-outlet>
+</ng-template>
+
+<app-toast></app-toast>

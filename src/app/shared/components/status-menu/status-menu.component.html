@@ -1,0 +1,89 @@
+<div appFocusRemover tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-white rounded-box w-52">
+    <div class="flex flex-col" *ngIf="status === 'RUNNING' || status === 'SUBMITTED'">
+        <li>
+            <span
+                tabindex="0"
+                class="text-gray-700 text-xs"
+                (click)="onStatusMenuClick('cancel')"
+                (keydown.enter)="onStatusMenuClick('cancel')"
+                ><img src="../../../../assets/cancel-icon.svg" alt="pause" />
+                Cancel
+            </span>
+        </li>
+    </div>
+
+    <div class="flex flex-col" *ngIf="status === 'FAILED'">
+        <li>
+            <span
+                tabindex="0"
+                class="text-error-600 text-xs hover:text-error-600"
+                (click)="onStatusMenuClick('delete')"
+                (keydown.enter)="onStatusMenuClick('delete')"
+                ><img src="../../../../assets/trash-icon.svg" alt="delete" />
+                Delete
+            </span>
+        </li>
+    </div>
+
+    <div class="flex flex-col" *ngIf="status === 'CANCELLED'">
+        <li>
+            <span
+                tabindex="0"
+                class="text-error-600 text-xs hover:text-error-600"
+                (click)="onStatusMenuClick('delete')"
+                (keydown.enter)="onStatusMenuClick('delete')"
+                ><img src="../../../../assets/trash-icon.svg" alt="delete" />
+                Delete
+            </span>
+        </li>
+    </div>
+
+    <div class="flex flex-col" *ngIf="status === 'COMPLETED'">
+        <div class="flex flex-col py-1 my-1 border-b">
+            <li>
+                <span
+                    tabindex="0"
+                    class="text-gray-700 text-xs"
+                    (click)="onStatusMenuClick('report')"
+                    (keydown.enter)="onStatusMenuClick('report')"
+                    ><img src="../../../../assets/book-open-icon.svg" alt="summary report" />
+                    Summary Report
+                </span>
+            </li>
+            <li>
+                <span
+                    tabindex="0"
+                    class="text-gray-700 text-xs"
+                    (click)="onStatusMenuClick('calculations')"
+                    (keydown.enter)="onStatusMenuClick('calculations')"
+                    ><img src="../../../../assets/calculator-icon.svg" alt="calculation" />
+                    Detailed Calculation
+                </span>
+            </li>
+        </div>
+        <div class="flex flex-col py-1 my-1 border-b">
+            <li>
+                <span
+                    tabindex="0"
+                    class="text-gray-700 text-xs"
+                    (click)="onStatusMenuClick('download')"
+                    (keydown.enter)="onStatusMenuClick('download')"
+                    ><img src="../../../../assets/download-cloud-icon.svg" alt="download" />
+                    Download
+                </span>
+            </li>
+        </div>
+        <div class="flex flex-col py-1">
+            <li>
+                <span
+                    tabindex="0"
+                    class="text-error-600 text-xs hover:text-error-600"
+                    (click)="onStatusMenuClick('delete')"
+                    (keydown.enter)="onStatusMenuClick('delete')"
+                    ><img src="../../../../assets/trash-icon.svg" alt="delete" />
+                    Delete
+                </span>
+            </li>
+        </div>
+    </div>
+</div>

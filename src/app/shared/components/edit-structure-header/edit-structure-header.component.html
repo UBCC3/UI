@@ -1,0 +1,50 @@
+<div class="navbar justify-between top-0 z-50 px-10 py-2 bg-white">
+    <div class="flex">
+        <button
+            tabindex="0"
+            class="btn bg-white border-gray-300 rounded-full"
+            (click)="onBackClick()"
+            (keydown.enter)="onBackClick()"
+        >
+            <img src="../../../../assets/arrow-left.svg" alt="back" />
+            Back
+        </button>
+        <button class="btn btn-ghost rounded-full mx-2">PlaceHolder</button>
+        <button class="btn btn-ghost rounded-full">PlaceHolder</button>
+    </div>
+    <div class="flex">
+        <p class="text-gray-800 mr-1">{{ name | titlecase }}</p>
+        <shrd-status-icon [status]="jobStatus"></shrd-status-icon>
+    </div>
+    <div class="flex justify-center items-center">
+        <div class="px-1">
+            <label tabindex="0" class="btn btn-ghost btn-circle">
+                <div class="indicator">
+                    <img src="../../../../assets/settings-icon-grey.svg" alt="setting-icon" />
+                </div>
+            </label>
+        </div>
+        <div class="px-1">
+            <label tabindex="0" class="btn btn-ghost btn-circle">
+                <div class="indicator">
+                    <img src="../../../../assets/copy-icon-lg.svg" alt="copy-icon" />
+                </div>
+            </label>
+        </div>
+        <div class="px-1">
+            <!-- TODO: fn to download -->
+            <label tabindex="0" class="btn btn-ghost btn-circle">
+                <div class="indicator">
+                    <img src="../../../../assets/download-cloud-icon-grey.svg" alt="download-icon" />
+                </div>
+            </label>
+        </div>
+        <div class="px-1">
+            <label tabindex="0" class="btn btn-ghost btn-circle">
+                <div class="indicator">
+                    <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
+                </div>
+            </label>
+        </div>
+    </div>
+</div>
