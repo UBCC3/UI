@@ -1,4 +1,3 @@
-# DB_NAME = "ccc"
 DB_NAME = "ubcc3"
 
 JOB_TAGS_TABLE_NAME = "job_tags"

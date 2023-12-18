@@ -1,19 +1,22 @@
-create virtual environment
-python3 -m venv env
+Set host and username for database inside db_engine.py
 
-activate the environment
-source env/bin/activate
+Create virtual environment:
+`python3 -m venv env`
 
-update pip
-pip install -U pip
+Activate the environment:
+`source env/bin/activate`
 
-install packages
-pip install -r requirements.txt
+Update pip:
+`pip install -U pip`
 
-to deactivate the environment
-deactive
+Install package:
+`pip install -r requirements.txt`
 
-uvicorn app.main:app --reload
+To deactivate the environment:
+`deactivate`
 
-to use ngrok
-USE_NGROK=True uvicorn app.main:app --reload
+Start the server:
+`uvicorn app.main:app --reload`
+
+Start the server with ngrok:
+`USE_NGROK=True uvicorn app.main:app --reload`
