@@ -11,8 +11,6 @@ class DB_Engine(BaseModel):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        # host = "webqc.urysegal.com"
-        # db_username = "ccc"
         host = "localhost"
         db_username="postgres"
         db_passwd = os.environ["PG_PASSWD"]
