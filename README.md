@@ -2,9 +2,9 @@
 
 Open-source web application for computational chemistry developed with an Angular front-end and FastAPI back-end.
 
-#Local Development
+# Local Development
 
-##Prerequisites
+## Prerequisites
 
 -   Node
 -   Python
