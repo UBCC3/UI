@@ -14,11 +14,15 @@ import {
     loadAvailableMethods,
     loadAvailableMethodsFail,
     loadAvailableMethodsSuccess,
+    loadAvailableSolventEffects,
+    loadAvailableSolventEffectsFail,
+    loadAvailableSolventEffectsSuccess,
 } from '../actions/calculation-management.actions';
 import {
     selectAvailableBasisSets,
     selectAvailableCalculations,
     selectAvailableMethods,
+    selectAvailableSolventEffects,
 } from '../selectors/calculation-management.selectors';
 import { ToastService } from '../../shared/services/toast.service';
 import { ToastType } from '../../shared/models/toast-type.enum';
@@ -91,6 +95,32 @@ export class CalculationManagementEffects {
                                 type: ToastType.Error,
                             });
                             return of(loadAvailableMethodsFail({ error }));
+                        })
+                    );
+                }
+            })
+        )
+    );
+
+    loadAvailableSolventEffects$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(loadAvailableSolventEffects),
+            withLatestFrom(this.store.select(selectAvailableSolventEffects)), // Check if data exists in the state
+            switchMap(([action, availableSolventEffects]) => {
+                if (availableSolventEffects.length > 0) {
+                    // Data already exists in the state, no need to fetch
+                    return of(loadAvailableSolventEffectsSuccess({ availableSolventEffects }));
+                } else {
+                    // Data doesn't exist in the state, fetch it from the API
+                    return this.newCalculationService.getAvailableSolventEffects$().pipe(
+                        map((availableSolventEffects) =>
+                            loadAvailableSolventEffectsSuccess({ availableSolventEffects })
+                        ),
+                        catchError((error) => {
+                            this.toastService.toast({
+                                type: ToastType.Error,
+                            });
+                            return of(loadAvailableSolventEffectsFail({ error }));
                         })
                     );
                 }
