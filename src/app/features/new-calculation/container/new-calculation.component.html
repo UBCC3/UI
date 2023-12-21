@@ -16,8 +16,8 @@
                 <div class="flex w-full justify-between items-center p-4">
                     <div class="flex items-center basis-1/3">
                         <p class="">Type of Calculation</p>
-                        <!-- NOTE: tooltip msg -->
-                        <div class="tooltip ml-2" data-tip="hello">
+                        <!-- TODO: tooltip msg -->
+                        <div class="tooltip ml-2" data-tip="TODO">
                             <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
                         </div>
                     </div>
@@ -38,8 +38,8 @@
                 <div class="flex w-full justify-between p-4" [class.items-center]="!form.get('file')?.value">
                     <div class="flex items-centerbasis-1/3">
                         <p [class.pt-2.5]="form.get('file')?.value">Structure</p>
-                        <!-- NOTE: tooltip msg -->
-                        <div class="tooltip ml-2" data-tip="hello">
+                        <!-- TODO: tooltip msg -->
+                        <div class="tooltip ml-2" data-tip="TODO">
                             <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
                         </div>
                     </div>
@@ -52,9 +52,10 @@
                                 (change)="handleFileUpload($event)"
                             />
                             <label class="btn bg-white rounded-full" for="file-input"> From a File </label>
+                            <!-- NOTE: these buttons are disabled for now, add functionality to them later -->
                             <!-- TODO: add on click handler for the rest -->
-                            <button class="btn bg-white rounded-full">From Database</button>
-                            <button class="btn bg-white rounded-full">From previous calculation</button>
+                            <!-- <button class="btn bg-white rounded-full">From Database</button>
+                            <button class="btn bg-white rounded-full">From previous calculation</button> -->
                         </div>
 
                         <p class="text-red-500 pt-2" *ngIf="extensionError">{{ extensionError }}</p>
@@ -100,8 +101,8 @@
                 <div class="flex w-full justify-between items-center p-4">
                     <div class="flex items-centerbasis-1/3">
                         <p>Theory</p>
-                        <div class="tooltip ml-2" data-tip="hello">
-                            <!-- NOTE: tooltip msg -->
+                        <!-- TODO: tooltip msg -->
+                        <div class="tooltip ml-2" data-tip="TODO">
                             <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
                         </div>
                     </div>
@@ -122,8 +123,8 @@
                 <div class="flex w-full justify-between items-center p-4">
                     <div class="flex items-center basis-1/3">
                         <p>Basis Set</p>
-                        <div class="tooltip ml-2" data-tip="hello">
-                            <!-- NOTE: tooltip msg -->
+                        <!-- TODO: tooltip msg -->
+                        <div class="tooltip ml-2" data-tip="TODO">
                             <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
                         </div>
                     </div>
@@ -167,13 +168,13 @@
                             />
                         </svg>
                     </label>
-
+                    <!-- TODO: what fields to put in more settings as well as the values -->
                     <div class="collapsible" [@collapse]="!moreSettings">
                         <div class="flex w-full justify-between items-center py-4">
                             <div class="flex items-center basis-1/3">
                                 <p>Solvent Effects</p>
-                                <div class="tooltip ml-2" data-tip="hello">
-                                    <!-- NOTE: tooltip msg -->
+                                <!-- TODO: tooltip msg -->
+                                <div class="tooltip ml-2" data-tip="TODO">
                                     <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
                                 </div>
                             </div>
@@ -184,16 +185,18 @@
                                     formControlName="solventEffects"
                                 >
                                     <option value="" disabled selected>Select an option</option>
-                                    <option value="basis-set1">solvent effect1</option>
-                                    <option value="basis-set2">solvent effect2</option>
+                                    <option *ngFor="let types of solventEffects" [value]="types.name">
+                                        {{ types.name }}
+                                    </option>
                                 </select>
                             </div>
                         </div>
-                        <div class="flex w-full justify-between items-center py-4">
+                        <!-- NOTE: current disabled, need to get further specifications on what fields and values for this section  -->
+                        <!-- <div class="flex w-full justify-between items-center py-4">
                             <div class="flex items-center basis-1/3">
                                 <p>Wave Theory</p>
-                                <div class="tooltip ml-2" data-tip="hello">
-                                    <!-- TODO: tooltip msg -->
+                                TODO: tooltip msg
+                                <div class="tooltip ml-2" data-tip="TODO">
                                     <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
                                 </div>
                             </div>
@@ -208,7 +211,7 @@
                                     <option value="basis-set2">wave theory2</option>
                                 </select>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 
