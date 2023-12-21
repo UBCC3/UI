@@ -13,12 +13,15 @@ import {
     selectAvailableCalculationsAreLoaded,
     selectAvailableMethods,
     selectAvailableMethodsAreLoaded,
+    selectAvailableSolventEffects,
+    selectAvailableSolventEffectsAreLoaded,
     selectNewCalculationForm,
 } from '../../../store/selectors/calculation-management.selectors';
 import {
     loadAvailableBasisSets,
     loadAvailableCalculations,
     loadAvailableMethods,
+    loadAvailableSolventEffects,
     resetNewCalculationForm,
     setNewCalculationForm,
 } from '../../../store/actions/calculation-management.actions';
@@ -51,6 +54,7 @@ export class NewCalculationComponent implements OnInit {
     calculationTypes!: CalculationOption[] | null;
     basisSets!: CalculationOption[] | null;
     methods!: CalculationOption[] | null;
+    solventEffects!: CalculationOption[] | null;
     email!: string | undefined;
     availableCalculationsAreLoaded$!: Observable<boolean>;
     availableBasisSetsAreLoaded$!: Observable<boolean>;
@@ -86,14 +90,16 @@ export class NewCalculationComponent implements OnInit {
         this.store.dispatch(loadAvailableCalculations());
         this.store.dispatch(loadAvailableBasisSets());
         this.store.dispatch(loadAvailableMethods());
+        this.store.dispatch(loadAvailableSolventEffects());
 
         this.dataIsLoaded$ = combineLatest([
             this.store.pipe(select(selectAvailableCalculationsAreLoaded)),
             this.store.pipe(select(selectAvailableBasisSetsAreLoaded)),
             this.store.pipe(select(selectAvailableMethodsAreLoaded)),
+            this.store.pipe(select(selectAvailableSolventEffectsAreLoaded)),
         ]).pipe(
-            map(([calculationsAreLoaded, basisSetsAreLoaded, methodsAreLoaded]) => {
-                return calculationsAreLoaded && basisSetsAreLoaded && methodsAreLoaded;
+            map(([calculationsAreLoaded, basisSetsAreLoaded, methodsAreLoaded, solventEffectsAreLoaded]) => {
+                return calculationsAreLoaded && basisSetsAreLoaded && methodsAreLoaded && solventEffectsAreLoaded;
             })
         );
 
@@ -103,11 +109,13 @@ export class NewCalculationComponent implements OnInit {
             this.store.select(selectAvailableCalculations),
             this.store.select(selectAvailableBasisSets),
             this.store.select(selectAvailableMethods),
+            this.store.select(selectAvailableSolventEffects),
             this.store.select(selectUserEmail),
-        ]).subscribe(([calculationTypes, basisSets, methods, email]) => {
+        ]).subscribe(([calculationTypes, basisSets, methods, solventEffects, email]) => {
             this.calculationTypes = calculationTypes;
             this.basisSets = basisSets;
             this.methods = methods;
+            this.solventEffects = solventEffects;
             this.email = email;
         });
 

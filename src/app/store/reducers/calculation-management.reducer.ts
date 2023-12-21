@@ -12,6 +12,9 @@ import {
     loadAvailableMethodsFail,
     setNewCalculationForm,
     resetNewCalculationForm,
+    loadAvailableSolventEffects,
+    loadAvailableSolventEffectsSuccess,
+    loadAvailableSolventEffectsFail,
 } from '../actions/calculation-management.actions';
 import { EntityAdapter, EntityState, createEntityAdapter } from '@ngrx/entity';
 import { NewCalculationForm } from '../../shared/models/jobs.model';
@@ -20,6 +23,7 @@ export interface CalculationManagementState {
     availableCalculations: AvailableCalculationsEntityState;
     availableBasisSets: AvailableBasisSetsEntityState;
     availableMethods: AvailableMethodsEntityState;
+    availableSolventEffects: AvailableSolventEffectsEntityState;
     newCalculationForm: NewCalculationFormState;
 }
 
@@ -47,6 +51,15 @@ export interface AvailableMethodsEntityState extends EntityState<CalculationOpti
 
 export const availableMethodsAdapter: EntityAdapter<CalculationOption> = createEntityAdapter<CalculationOption>();
 
+export interface AvailableSolventEffectsEntityState extends EntityState<CalculationOption> {
+    availableSolventEffectsAreLoading: boolean;
+    availableSolventEffectsAreLoaded: boolean;
+    availableSolventEffectsError: string | null;
+}
+
+export const availableSolventEffectsAdapter: EntityAdapter<CalculationOption> =
+    createEntityAdapter<CalculationOption>();
+
 export interface NewCalculationFormState {
     newCalculationForm: NewCalculationForm | null;
     newCalculationFormError: string | null;
@@ -70,6 +83,13 @@ export const initialAvailableMethodsState: AvailableMethodsEntityState = availab
     availableMethodsAreLoading: false,
     availableMethodsError: null,
 });
+
+export const initialAvailableSolventEffectsState: AvailableSolventEffectsEntityState =
+    availableMethodsAdapter.getInitialState({
+        availableSolventEffectsAreLoaded: false,
+        availableSolventEffectsAreLoading: false,
+        availableSolventEffectsError: null,
+    });
 
 export const initialNewCalculationState: NewCalculationFormState = {
     newCalculationForm: null,
@@ -136,6 +156,26 @@ export const availableMethodsReducer = createReducer<AvailableMethodsEntityState
     }))
 );
 
+export const availableSolventEffectsReducer = createReducer<AvailableSolventEffectsEntityState>(
+    initialAvailableSolventEffectsState,
+    on(loadAvailableSolventEffects, (state) => ({
+        ...state,
+        availableSolventEffectsAreLoading: true,
+    })),
+    on(loadAvailableSolventEffectsSuccess, (state, { availableSolventEffects }) =>
+        availableSolventEffectsAdapter.addMany(availableSolventEffects, {
+            ...state,
+            availableSolventEffectsAreLoaded: true,
+            availableSolventEffectsAreLoading: false,
+        })
+    ),
+    on(loadAvailableSolventEffectsFail, (state, { error }) => ({
+        ...state,
+        availableSolventEffectsAreLoading: false,
+        availableSolventEffectsError: error,
+    }))
+);
+
 export const newCalculationFormReducer = createReducer<NewCalculationFormState>(
     initialNewCalculationState,
     on(setNewCalculationForm, (state, { newCalculationForm }) => {
@@ -156,6 +196,7 @@ export const reducers = combineReducers({
     availableCalculations: availableCalculationsReducer,
     availableBasisSets: availableBasisSetsReducer,
     availableMethods: availableMethodsReducer,
+    availableSolventEffects: availableSolventEffectsReducer,
     newCalculationForm: newCalculationFormReducer,
 });
 

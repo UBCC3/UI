@@ -4,6 +4,7 @@ import {
     availableBasisSetsAdapter,
     availableCalculationsAdapter,
     availableMethodsAdapter,
+    availableSolventEffectsAdapter,
 } from '../reducers/calculation-management.reducer';
 
 // Available Calculations
@@ -101,6 +102,42 @@ export const selectAvailableMethodsAreLoaded = createSelector(
 export const selectAvailableMethodsError = createSelector(
     selectAvailableMethodsState,
     (state) => state?.availableMethodsError
+);
+
+// Available Solvent Effects
+const {
+    selectAll: selectAllAvailableSolventEffects,
+    selectEntities: selectEntitiesAvailableSolventEffects,
+    selectIds: selectIdsAvailableSolventEffects,
+} = availableSolventEffectsAdapter.getSelectors();
+
+export const selectAvailableSolventEffectsState = createSelector(
+    selectCalculationManagementState,
+    (state: CalculationManagementState) => state?.availableSolventEffects
+);
+export const selectAvailableSolventEffects = createSelector(
+    selectAvailableSolventEffectsState,
+    selectAllAvailableSolventEffects
+);
+export const selectAvailableSolventEffectsById = createSelector(
+    selectAvailableSolventEffectsState,
+    selectEntitiesAvailableSolventEffects
+);
+export const selectAvailableSolventEffectsId = createSelector(
+    selectAvailableSolventEffectsState,
+    selectIdsAvailableSolventEffects
+);
+export const selectAvailableSolventEffectsAreLoading = createSelector(
+    selectAvailableSolventEffectsState,
+    (state) => state?.availableSolventEffectsAreLoading
+);
+export const selectAvailableSolventEffectsAreLoaded = createSelector(
+    selectAvailableSolventEffectsState,
+    (state) => state?.availableSolventEffectsAreLoaded
+);
+export const selectAvailableSolventEffectsError = createSelector(
+    selectAvailableSolventEffectsState,
+    (state) => state?.availableSolventEffectsError
 );
 
 // New Calculation Form

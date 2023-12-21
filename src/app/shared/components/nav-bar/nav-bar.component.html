@@ -13,8 +13,12 @@
 
     <div *ngIf="auth.isAuthenticated$ | async; else loggedOut">
         <div class="flex justify-center items-center">
-            <!-- NOTE: how to handle help icon -->
-            <div class="px-1">
+            <!-- 
+                NOTE: help icon and notification icon disabled for now
+                TODO: get specifications on what to put on the help icon
+                TODO: notification on the backend
+            -->
+            <!-- <div class="px-1">
                 <label tabindex="0" class="btn btn-ghost btn-circle">
                     <div class="indicator">
                         <img src="../../../../assets/help-circle.svg" alt="help-circle-icon" />
@@ -25,17 +29,15 @@
                 <label tabindex="0" class="btn btn-ghost btn-circle">
                     <div class="indicator">
                         <img src="../../../../assets/bell-icon.svg" alt="bell-icon" />
-                        <!-- NOTE: fetch number to display for notification -->
                         <span class="badge badge-sm indicator-item">1</span>
                     </div>
                 </label>
-                <!-- NOTE: fetch notifications to display -->
                 <div tabindex="0" class="mt-3 z-[1] card card-compact dropdown-content w-96 bg-white shadow">
                     <div class="card-body">
                         <span class="text-gray-500">Job 1 is completed</span>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <!-- dropdown -->
             <div class="dropdown dropdown-end ml-3" *ngIf="user$ | async as user">
                 <label tabindex="0" class="btn btn-ghost btn-circle avatar">
