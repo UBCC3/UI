@@ -17,6 +17,3 @@ To deactivate the environment:
 
 Start the server:
 `uvicorn app.main:app --reload`
-
-Start the server with ngrok:
-`USE_NGROK=True uvicorn app.main:app --reload`
