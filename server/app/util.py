@@ -7,17 +7,23 @@ import boto3
 from botocore.exceptions import ClientError
 import logging
 from uuid import UUID
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
+from pathlib import Path
 
-
+dotenv_path = os.getcwd()+"/.env"
+print(dotenv_path)
+load_dotenv(dotenv_path)
 def set_up():
     """Sets up configuration for the app"""
     load_dotenv()
 
     config = {
-        "DOMAIN": os.getenv("DOMAIN", "your.domain.com"),
-        "API_AUDIENCE": os.getenv("API_AUDIENCE", "your.audience.com"),
-        "ISSUER": os.getenv("ISSUER", "https://your.domain.com/"),
-        "ALGORITHMS": os.getenv("ALGORITHMS", "RS256"),
+        "DOMAIN": os.environ.get("AUTH0_DOMAIN"),
+        "API_AUDIENCE": os.environ.get("AUTH0_AUDIENCE"),
+        "ISSUER": os.environ.get("AUTH0_ISSUER"),
+        "ALGORITHMS": os.environ.get("AUTH0_ALGORITHM"),
     }
 
     return config
