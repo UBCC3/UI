@@ -10,7 +10,9 @@ Update pip:
 `pip install -U pip`
 
 Install package:
-`pip install -r requirements.txt`
+`pip install  --no-cache-dir -r requirements.txt`
+
+The specific versions stated in the requirements file can cause packages to be re-compiled if the current versions are more uptodate. This is turn may force series of packages to be installed in the operating system in order to supply the needed libraries and header files for such compilations. To avoid this, replace all instances of `==` with `>=` in requirements.txt to allow the latest versions of the packages to be installed instead. The code should work fine with the updated packages. Only if there is a problem does one need to revert to the older version specified in the requirements file.
 
 To deactivate the environment:
 `deactivate`
