@@ -17,7 +17,7 @@ class DB_Engine(BaseModel):
         super().__init__(**kwargs)
         host = os.environ.get("RDS_HOST")
         db_username= os.environ.get("RDS_USERNAME")
-        db_passwd = os.environ.get("PG_PASSWD")
+        db_passwd = os.environ.get("RDS_PASSWORD")
 
         db_url = f"postgresql://{db_username}:{db_passwd}@{host}/{DB_NAME}"
         self._engine = create_engine(db_url, echo=True)
