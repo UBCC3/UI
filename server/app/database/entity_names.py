@@ -1,4 +1,4 @@
-DB_NAME = "ubcc3"
+DB_NAME = "ubchemica"
 
 JOB_TAGS_TABLE_NAME = "job_tags"
 STRUCTURE_PROPERTIES_TABLE_NAME = "structure_properties"
