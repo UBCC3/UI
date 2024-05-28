@@ -11,9 +11,9 @@ export const environment = {
         errorPath: '/callback',
     },
     api: {
-        serverUrl: 'http://ec2-3-99-64-179.ca-central-1.compute.amazonaws.com/api',
+        serverUrl: 'http://localhost:8000',
     },
     httpInterceptor: {
-        allowedList: ['http://ec2-3-99-64-179.ca-central-1.compute.amazonaws.com/api/*'],
+        allowedList: ['http://localhost:8000/*'],
     },
 };
