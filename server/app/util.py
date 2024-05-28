@@ -4,17 +4,14 @@ from dotenv import load_dotenv
 from fastapi import Depends, status, HTTPException, File
 from fastapi.security import HTTPBearer
 import boto3
+from botocore.config import Config
 from botocore.exceptions import ClientError
 import logging
 from uuid import UUID
-import os
-from os.path import join, dirname
-from dotenv import load_dotenv
-from pathlib import Path
 
 dotenv_path = os.getcwd()+"/.env"
-print(dotenv_path)
 load_dotenv(dotenv_path)
+
 def set_up():
     """Sets up configuration for the app"""
     load_dotenv()
@@ -23,7 +20,7 @@ def set_up():
         "DOMAIN": os.environ.get("AUTH0_DOMAIN"),
         "API_AUDIENCE": os.environ.get("AUTH0_AUDIENCE"),
         "ISSUER": os.environ.get("AUTH0_ISSUER"),
-        "ALGORITHMS": os.environ.get("AUTH0_ALGORITHM"),
+        "ALGORITHMS": os.environ.get("AUTH0_ALGO"),
     }
 
     return config
@@ -36,6 +33,7 @@ def token_auth(token: str = Depends(token_auth_schema)):
     result = VerifyToken(token.credentials).verify()
     if result.get("status"):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=result)
+    return result
 
 
 class VerifyToken:
@@ -116,11 +114,22 @@ class VerifyToken:
 
 # TODO: use openbabel to convert file type for consistency *.xyz
 def upload_to_s3(file: File, structure_id: UUID):
-    s3 = boto3.client("s3")
-    # TODO: update to actual bucketname
-    bucket_name = "alexy-devel"
+    my_config = Config(
+        region_name = os.environ.get("AWS_REGION_NAME"),
+    )
+    
+    s3 = boto3.client(
+        "s3", 
+        config=my_config,
+        aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
+        aws_session_token=os.environ.get("AWS_SESSION_TOKEN"),
+    )
+    bucket_name = "ubchemica-bucket-1"
+    
     try:
         response = s3.upload_fileobj(
+            # TODO: decide the value of the third parameter (directly upload the file or use a folder)
             file.file, bucket_name, str(structure_id) + "/" + file.filename
         )
     except ClientError as e:
@@ -131,8 +140,7 @@ def upload_to_s3(file: File, structure_id: UUID):
 #       files in s3 should all be in .xyz from the upload fn
 def download_from_s3(file_name: str, structure_id: UUID):
     s3 = boto3.client("s3")
-    # TODO: replace bucket name with actual bucket
-    bucket_name = "alexy-devel"
+    bucket_name = "ubchemica-bucket-1"
     file = file_name + '.xyz'
     file_key = str(structure_id) + "/" + file
     try:
@@ -150,8 +158,7 @@ def download_from_s3(file_name: str, structure_id: UUID):
 # NOTE: route for reading file disabled for now
 def read_from_s3(file_name: str, structure_id: UUID):
     s3 = boto3.client("s3")
-    # TODO: replace bucket name with actual bucket
-    bucket_name = "alexy-devel"
+    bucket_name = "ubchemica-bucket-1"
     file_key = structure_id + "/" + file_name
     try:
         response = s3.get_object(Bucket=bucket_name, Key=file_key)
