@@ -1,4 +1,10 @@
-DB_NAME = "ubchemica"
+import os
+from dotenv import load_dotenv
+
+dotenv_path = os.getcwd()+"/.env"
+load_dotenv(dotenv_path)
+
+DB_NAME = os.environ.get("RDS_DBNAME")
 
 JOB_TAGS_TABLE_NAME = "job_tags"
 STRUCTURE_PROPERTIES_TABLE_NAME = "structure_properties"
