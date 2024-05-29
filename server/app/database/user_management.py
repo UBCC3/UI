@@ -8,6 +8,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from ..models import UserModel
 from typing import List
 
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
+from pathlib import Path
+
 
 def check_user_exists(email: str) -> bool:
     """Checks if user exists in DB
