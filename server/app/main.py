@@ -4,14 +4,17 @@ from fastapi import Depends, FastAPI
 from fastapi.logger import logger
 from pydantic_settings import BaseSettings
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 
 from .routers import users, calculations, jobs, structures
 
 import psutil
 
+dotenv_path = os.getcwd()+"/.env"
+load_dotenv(dotenv_path)
 
 class Settings(BaseSettings):
-    BASE_URL: str = "http://localhost:8000"
+    BASE_URL: str = os.environ.get("BASE_URL")
 
 settings = Settings()
 
@@ -19,7 +22,7 @@ settings = Settings()
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],  # Replace with the URL of frontend
+    allow_origins=[os.environ.get("FE_URL")],  # Replace with the URL of frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
