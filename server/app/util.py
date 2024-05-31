@@ -118,19 +118,12 @@ def upload_to_s3(file: File, structure_id: UUID):
         region_name = os.environ.get("AWS_REGION_NAME"),
     )
     
-    s3 = boto3.client(
-        "s3", 
-        config=my_config,
-        aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"),
-        aws_session_token=os.environ.get("AWS_SESSION_TOKEN"),
-    )
-    bucket_name = "ubchemica-bucket-1"
+    s3 = boto3.client("s3")
     
     try:
         response = s3.upload_fileobj(
             # TODO: decide the value of the third parameter (directly upload the file or use a folder)
-            file.file, bucket_name, str(structure_id) + "/" + file.filename
+            file.file, os.environ.get("S3_BUCKET"), str(structure_id) + "/" + file.filename
         )
     except ClientError as e:
         logging.error(e)
@@ -140,13 +133,12 @@ def upload_to_s3(file: File, structure_id: UUID):
 #       files in s3 should all be in .xyz from the upload fn
 def download_from_s3(file_name: str, structure_id: UUID):
     s3 = boto3.client("s3")
-    bucket_name = "ubchemica-bucket-1"
     file = file_name + '.xyz'
     file_key = str(structure_id) + "/" + file
     try:
         response = s3.generate_presigned_url(
             "get_object",
-            Params={"Bucket": bucket_name, "Key": file_key},
+            Params={"Bucket": os.environ.get("S3_BUCKET"), "Key": file_key},
             ExpiresIn=60,  # One minute, should be enough time to download file?
         )
         print('respnse', response)
@@ -158,10 +150,9 @@ def download_from_s3(file_name: str, structure_id: UUID):
 # NOTE: route for reading file disabled for now
 def read_from_s3(file_name: str, structure_id: UUID):
     s3 = boto3.client("s3")
-    bucket_name = "ubchemica-bucket-1"
     file_key = structure_id + "/" + file_name
     try:
-        response = s3.get_object(Bucket=bucket_name, Key=file_key)
+        response = s3.get_object(Bucket=os.environ.get("S3_BUCKET"), Key=file_key)
         bytes = response["Body"].read()
         # pythonObject = json.loads(obj['Body'].read().decode('utf-8'))
         return bytes
