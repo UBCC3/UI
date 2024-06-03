@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "npx jest",
     "lint": "ng lint",
-    "start_micro": "node --max_old_space_size=2000 ./node_modules/@angular/cli/bin/ng serve"
+    "start_micro": "node --max_old_space_size=2000 ./node_modules/@angular/cli/bin/ng serve",
+    "build_micro": "node --max_old_space_size=2000 ./node_modules/@angular/cli/bin/ng build"
   },
   "private": true,
   "dependencies": {
