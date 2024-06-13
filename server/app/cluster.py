@@ -14,22 +14,28 @@ from models import JobStatus
 
 def interaction_with_cluster():
     jobs_dict = get_all_running_jobs_as_dict()
+    json_data = json.dumps(jobs_dict)
     
-    ssh_command = "ssh cluster 'python3 check_status.py"
+    ssh_command = ["ssh", "cluster", "python3 check_status.py"]
     
     try:
+        result = subprocess.run(ssh_command, capture_output=True, text=True, check=True)
         process = subprocess.Popen(
-            ssh_command, shell=True, stdin=subprocess.PIPE, text=True
+            ssh_command,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
         )
-        process.communicate(input=json.dumps(jobs_dict))
-        
-        # TODO: handle the result send back from the cluster
-     
+        stdout, stderr = process.communicate(input=json_data)
+        if process.returncode != 0:
+            raise HTTPException(status_code=500, detail=stderr)
+        returned_data = json.loads(stdout)
+        #TODO: process the data
+
     except subprocess.CalledProcessError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    
-    
-            
+        raise HTTPException(status_code=500, detail=str(e))
+        
 def get_all_running_jobs_as_dict() -> Dict[UUID, int]:
     status_values = [JobStatus.RUNNING, JobStatus.SUBMITTED]
     jobs_dict = {}
