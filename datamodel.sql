@@ -74,9 +74,9 @@ CREATE TABLE AVAILABLE_BASIS_SETS(
     NAME VARCHAR(255) NOT NULL,
 );
 INSERT INTO AVAILABLE_CALCULATIONS (name)
-VALUES ('Single Point Calculation'),
-    ('Geometry Optimization'),
-    ('Vibrational Frequencies');
+VALUES ('Single-Point-Calculation'),
+    ('Geometry-Optimization'),
+    ('Vibrational-Frequencies');
 INSERT INTO AVAILABLE_METHODS (name)
 VALUES ('Hartree-Fock'),
     ('Moller-Plesset (MP2)'),

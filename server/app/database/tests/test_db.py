@@ -40,9 +40,9 @@ class TestDB(unittest.TestCase):
 
     def test_get_available_calculations(self):
         available_calculations = [
-            {"id": 1, "name": "Single Point Calculation"},
-            {"id": 2, "name": "Geometry Optimization"},
-            {"id": 3, "name": "Vibrational Frequencies"},
+            {"id": 1, "name": "Single-Point-Calculation"},
+            {"id": 2, "name": "Geometry-Optimization"},
+            {"id": 3, "name": "Vibrational-Frequencies"},
         ]
 
         available_calculations_response = get_all_available_calculations()

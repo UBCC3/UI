@@ -8,6 +8,8 @@ from typing import List, Union
 
 
 from typing import List
+import sys
+import subprocess
 import uuid
 from ..models import JobModel, JobStatus, CreateJobDTO, UpdateJobDTO, StructureOrigin
 from fastapi import File, UploadFile
@@ -147,6 +149,7 @@ def post_new_job(
     with Session(db_engine.engine) as session:
         try:
             # create new row in job table
+            # TODO: ensure auth0 makes the email accessible.
             job = Job(
                 id=uuid.uuid4(),
                 userid=email,
@@ -157,7 +160,6 @@ def post_new_job(
 
             session.add(job)
             session.commit()
-
             # if source is upload, create new row in structure table
             if job.parameters["source"] == StructureOrigin.UPLOADED:
                 structure = Structure(
@@ -176,8 +178,12 @@ def post_new_job(
                 session.commit()
 
             session.refresh(job)
-
-
+            # TODO: change for deployment
+            script_location = "cluster-api/submit_job.py"
+            cluster_command = [
+                "ssh","cluster","python3", script_location, job.parameters
+            ]
+            print("Parameters: ",job.parameters, "\n")
             return item_to_dict(job)
         except SQLAlchemyError as e:
             session.rollback()
