@@ -6,7 +6,7 @@ export const environment = {
         clientId: process.env["AUTH0_CLIENTID"] || 'DEF_A',
         authorizationParams: {
             redirect_uri: 'http://localhost:4200/callback',
-            audience: '',
+            audience: process.env["AUTH0_AUDIENCE"] || 'DEF_A',
         },
         errorPath: '/callback',
     },
