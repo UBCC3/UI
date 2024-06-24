@@ -8,7 +8,6 @@ S3, depending on data size.
 Users table
 
   * email - an email address - unique key
-  * name - human name of user
   * last login - date/time
   * SSO authentication mechanism - enum : "google", "UBC" etc. (how do we get this information?)
   * login count - how many times the user logged in
@@ -18,7 +17,7 @@ Structure table
   * Structure ID - UUID4, unique key. Eg. "978b13f7-4e8b-4944-aba8-647651bdddba"
   * source: enum "uploaded by user", "calculated"
   * created_by_job_id: JobID or NULL
-  * username
+  * username - email address of user that uploaded structure or ran a job that created it
   * structure name - as entered by the user (string)
   * Job IDs - list of job IDs that used this structure
 
