@@ -131,7 +131,7 @@ export class JobEffects {
         this.actions$.pipe(
             ofType(updateJob),
             switchMap((action) =>
-                this.newCalculationService.patchJob$(action.jobId, action.dto).pipe(
+                this.newCalculationService.cancelJob$(action.jobId).pipe(
                     switchMap((res) => {
                         if (res) {
                             return [
