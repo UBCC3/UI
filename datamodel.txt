@@ -1,16 +1,15 @@
 # Data Model
 
-Data is either stored at a database (e.g. Postgres ) or in large files on AWS
+Data is either stored either in a database (e.g. Postgres ) or in large files on AWS
 S3, depending on data size.
-
 
 ## Information in a Database
 
 Users table
 
-  * username - an email address - unique key
+  * email - an email address - unique key
   * last login - date/time
-  * SSO authentication mechanism - enum : "google", "UBC" etc.
+  * SSO authentication mechanism - enum : "google", "UBC" etc. (how do we get this information?)
   * login count - how many times the user logged in
 
 Structure table
@@ -18,10 +17,11 @@ Structure table
   * Structure ID - UUID4, unique key. Eg. "978b13f7-4e8b-4944-aba8-647651bdddba"
   * source: enum "uploaded by user", "calculated"
   * created_by_job_id: JobID or NULL
-  * username
+  * username - email address of user that uploaded structure or ran a job that created it
   * structure name - as entered by the user (string)
+  * Job IDs - list of job IDs that used this structure
 
-Struture properties table
+Struture properties table (delete - not needed)
   * Structure ID - UUID4
   * Job ID that calculated the property
   * energy - number
@@ -37,7 +37,9 @@ Jobs table
   * username that submitted the job
   * job start time - first time the job has ran
   * job finish time - last time the jb has ran
-  * job status - technical job status : enum: "submitted", "running", "failed", "stopped", "completed". It does not signify that the calculation goal was achieved
+  * job status - technical job status : enum: "submitted", "running", "failed", "stopped", "completed". It does not signify that the calculation goal was achieved ( delete this line )
+  * job status - technical job status : enum: "submitted", "running", "failed", "cancelled", "completed". It does not signify that the calculation goal was achieved
+  * job error message - string of standard error for the job or NULL
   * job tags ( pairs of name=value)
   * job parameter - JSON with all parameters needed for the job. E.g.
 
@@ -54,25 +56,8 @@ Jobs table
 
 ## Large data in AWS S3
 
-All information is in one bucket. Below it is assumed the bucket name is "ubcc3", and the job id is specified by <job-id>,
-which will be replaced by a UUID.
+All information is in one bucket under the main object /ubchemica, with <job-id> replaced by the job UUID.
 
-* ubcc3/structures/<UUID>.mol - geometry file of the job, in whatever format it was originally sent by the user
-* ubcc3/structures/<UUID>.mo - molecular orbitals of the structure
-* ubcc3/structures/<UUID>.freq - vibrational frequencies of the structure
-The output files are stored in a subdirectory named after the job id, and package-specific files are under
-a subdirectory named after the package used.
-
-* ubcc3/<job-id>/mo-energies.bin - molecular orbital energies
-
-* ubcc3/<job-id>/<package>/core-hamiltonian.bin - core hamiltonian of the system
-
-* ubcc3/<job-id>/<package>/overlap.bin - overlap matrix of the system
-
-* ubcc3/<job-id>/<package>/initial-guess.bin - initial density guess
-
-* ubcc3/<job-id>/<package>/two-electron/- directory containing the parts of the two-electron integrals. File names are ERI_x_0_0_0_y_0_0_0.bin, where x and y are two indices between 0 and the number of basis functions.
-
-* ubcc3/<job-id>/<package>/fock-matrix/- directory containing the various fock matrices created while computing, in the format fock_matrix_n.bin , where n is the iteration number
-
-* ubcc3/<job-id>/<package>/densities/- directory containing the various densities matrices created while computing, in the format density_n.bin , where n is the iteration number
+* /ubchemica/structures/<UUID>.mol - geometry file of the structure in .mol format (do we need different formats?)
+* /ubchemica/jobs/<job-id>.json - JSON file containing parsed results from output of job (used for frontend UI)
+* /ubchemica/archive/<job-id>.zip - zipped file of complete output from job - this is what user can download
