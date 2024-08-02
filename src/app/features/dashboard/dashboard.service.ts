@@ -12,7 +12,9 @@ export class DashboardService {
 
     getInProgressJobs$(email: string): Observable<Job[]> {
         const params = new HttpParams().set('email', email);
-        return this.http.get<Job[]>(`${environment.api.serverUrl}/jobs/in-progress`, { params });
+        const res = this.http.get<Job[]>(`${environment.api.serverUrl}/jobs/in-progress`, { params });
+        console.log(res);
+        return res;
     }
 
     getCompletedJobs$(email: string, limit: number, offset: number, filter: string): Observable<PaginatedJob> {
