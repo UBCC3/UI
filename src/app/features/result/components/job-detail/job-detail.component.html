@@ -1,29 +1,41 @@
 <div *ngIf="job$ | async as job; else loading">
-    <p> job detail works! </p>
-    <h2>Job Details</h2>
-    <div>
-        <h3>Job Name:</h3>
-        <p>{{ job.job_name }}</p>
-    </div>
-    <div>
-        <h3>Status:</h3>
-        <p>{{ job.status }}</p>
-    </div>
-    <div>
-        <h3>Created:</h3>
-        <p>{{ job.created | date:'short' }}</p>
-    </div>
-    <div *ngIf="job.submitted">
-        <h3>Submitted:</h3>
-        <p>{{ job.submitted | date:'short' }}</p>
-    </div>
-    <div *ngIf="job.started">
-        <h3>Started:</h3>
-        <p>{{ job.started | date:'short' }}</p>
-    </div>
-    <div *ngIf="job.finished">
-        <h3>Finished:</h3>
-        <p>{{ job.finished | date:'short' }}</p>
+    <p class="text-xl text-gray-700 mb-4">Job Details</p>
+    <div class="job-details-table">
+        <div class="job-detail-row">
+            <div class="job-detail-label">Job ID:</div>
+            <div class="job-detail-value">{{ job.id }}</div>
+        </div>
+        <div class="job-detail-row">
+            <div class="job-detail-label">Job Name:</div>
+            <div class="job-detail-value">{{ job.job_name }}</div>
+        </div>
+        <div class="job-detail-row">
+            <div class="job-detail-label">Status:</div>
+            <div class="job-detail-value">{{ job.status }}</div>
+        </div>
+        <div class="job-detail-row">
+            <div class="job-detail-label">Created:</div>
+            <div class="job-detail-value">{{ job.created | date:'short' }}</div>
+        </div>
+        <div *ngIf="job.submitted" class="job-detail-row">
+            <div class="job-detail-label">Submitted:</div>
+            <div class="job-detail-value">{{ job.submitted | date:'short' }}</div>
+        </div>
+        <div *ngIf="job.started" class="job-detail-row">
+            <div class="job-detail-label">Started:</div>
+            <div class="job-detail-value">{{ job.started | date:'short' }}</div>
+        </div>
+        <div *ngIf="job.finished" class="job-detail-row">
+            <div class="job-detail-label">Finished:</div>
+            <div class="job-detail-value">{{ job.finished | date:'short' }}</div>
+        </div>
+    </div> 
+    <p class="text-xl text-gray-700 mt-10 mb-4">Calculation Details</p> 
+    <div *ngIf="job.parameters" class="job-details-table">
+        <div *ngFor="let param of parameterEntries" class="job-detail-row">
+            <div class="job-detail-label">{{ param.key }}:</div>
+            <div class="job-detail-value">{{ param.value }}</div>
+        </div>
     </div>
 </div>
 <ng-template #loading>

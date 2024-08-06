@@ -1,0 +1,24 @@
+.job-details-table {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.job-detail-row {
+    display: flex;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.job-detail-label {
+    padding: 8px;
+    font-weight: bold;
+    text-align: left;
+    background-color: #f9f9f9;
+    flex: 1;
+}
+
+.job-detail-value {
+    padding: 8px;
+    text-align: left;
+    flex: 2;
+}
