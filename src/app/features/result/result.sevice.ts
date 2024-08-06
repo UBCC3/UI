@@ -11,6 +11,6 @@ export class ResultService {
     constructor(private http: HttpClient) {}
 
     getJobById$(jobId: string): Observable<Job> {
-        return this.http.get<Job>(`${environment.api.serverUrl}/jobs//${jobId}`);
+        return this.http.get<Job>(`${environment.api.serverUrl}/jobs/${jobId}`);
     }
 }
