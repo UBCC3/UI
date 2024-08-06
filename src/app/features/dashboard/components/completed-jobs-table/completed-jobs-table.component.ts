@@ -7,6 +7,7 @@ import { AppState } from '../../../../store';
 import { selectCompletedJobsAreLoading } from '../../../../store/selectors/complete-job.selector';
 import { DisplayEnum } from '../../../../shared/models/display.enum';
 import { deleteCompletedJob, loadCompletedJobs } from '../../../../store/actions/job.actions';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-completed-jobs-table',
@@ -42,7 +43,7 @@ export class CompletedJobsTableComponent implements OnInit {
 
     dataIsLoading$!: Observable<boolean>;
 
-    constructor(public store: Store<AppState>) {
+    constructor(public store: Store<AppState>, private router: Router) {
         this.selectedJobs = [];
         this.previousEvent = new EventEmitter();
         this.nextEvent = new EventEmitter();
@@ -133,8 +134,8 @@ export class CompletedJobsTableComponent implements OnInit {
     }
 
     openJob(jobId: string): void {
-        // TODO: service file to emit event
         console.log('open job', jobId);
+        this.router.navigate(['/result', jobId]);
     }
 
     get isSelected(): boolean | undefined {

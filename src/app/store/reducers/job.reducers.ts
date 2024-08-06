@@ -18,11 +18,15 @@ import {
     updateJob,
     updateJobFail,
     updateJobSuccess,
+    loadJobById,
+    loadJobByIdSuccess,
+    loadJobByIdFail,
 } from '../actions/job.actions';
 
 export interface JobState {
     inProgressJobs: InProgressJobsEntityState;
     completedJobs: CompletedJobsEntityState;
+    jobDetail: JobDetailEntityState;
 }
 
 export interface InProgressJobsEntityState extends EntityState<Job> {
@@ -43,6 +47,13 @@ export interface CompletedJobsEntityState {
     error: string | null;
 }
 
+export interface JobDetailEntityState {
+    jobDetail: Job | null;
+    jobDetailAreLoading: boolean;
+    jobDetailAreLoaded: boolean;
+    error: string | null;
+}
+
 export const initialInProgressJobsState: InProgressJobsEntityState = inProgressJobsAdapter.getInitialState({
     inProgressJobsAreLoading: false,
     inProgressJobsAreLoaded: false,
@@ -56,6 +67,13 @@ export const initialCompletedJobsState: CompletedJobsEntityState = {
     paginatedJobs: null,
     completedJobsAreLoading: false,
     completedJobsAreLoaded: false,
+    error: null,
+};
+
+export const initialJobDetailState: JobDetailEntityState = {
+    jobDetail: null,
+    jobDetailAreLoading: false,
+    jobDetailAreLoaded: false,
     error: null,
 };
 
@@ -181,9 +199,35 @@ export const completedJobsReducer = createReducer<CompletedJobsEntityState>(
     })
 );
 
+export const JobDetailReducer = createReducer<JobDetailEntityState>(
+    initialJobDetailState,
+    on(loadJobById, (state) => {
+        return {
+            ...state,
+            jobDetailAreLoading: true,
+            jobDetailAreLoaded: false,
+        };
+    }),
+    on(loadJobByIdSuccess, (state, { job }) => {
+        return {
+            ...state,
+            jobDetailAreLoaded: true,
+            jobDetailAreLoading: false,
+            jobDetail: job,
+        };
+    }),
+    on(loadJobByIdFail, (state, { error }) => {
+        return {
+            ...state,
+            error,
+        };
+    })
+);
+
 export const reducers = combineReducers({
     inProgressJobs: inProgressJobsReducer,
     completedJobs: completedJobsReducer,
+    jobDetail: JobDetailReducer,
 });
 
 export function jobReducer(state: JobState | undefined, action: Action): JobState {

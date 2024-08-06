@@ -17,9 +17,13 @@ import {
     postNewJobSuccess,
     updateJob,
     updateJobFail,
+    loadJobById,
+    loadJobByIdSuccess,
+    loadJobByIdFail,
 } from '../actions/job.actions';
 import { selectUserEmail } from '../selectors/user.selectors';
 import { DashboardService } from '../../features/dashboard/dashboard.service';
+import { ResultService } from '../../features/result/result.sevice';
 import { NewCalculationService } from '../../features/new-calculation/new-calculation.service';
 import { Router } from '@angular/router';
 import { ToastService } from '../../shared/services/toast.service';
@@ -160,10 +164,30 @@ export class JobEffects {
         )
     );
 
+    loadJobById$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(loadJobById),
+            mergeMap((action) =>
+                this.resultService.getJobById$(action.jobId).pipe(
+                    map((job) => {
+                        return loadJobByIdSuccess({ job });
+                    }),
+                    catchError((error) => {
+                        this.toastService.toast({
+                            type: ToastType.Error,
+                        });
+                        return of(loadJobByIdFail({ error }));
+                    })
+                )
+            )
+        )
+    );
+
     constructor(
         private actions$: Actions,
         private store: Store,
         private dashboardService: DashboardService,
+        private resultService: ResultService,
         private newCalculationService: NewCalculationService,
         private router: Router,
         private toastService: ToastService
