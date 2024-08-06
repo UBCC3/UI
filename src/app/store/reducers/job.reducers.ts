@@ -205,6 +205,7 @@ export const JobDetailReducer = createReducer<JobDetailEntityState>(
         return {
             ...state,
             jobDetailAreLoading: true,
+            jobDetailAreLoaded: false,
         };
     }),
     on(loadJobByIdSuccess, (state, { job }) => {
@@ -212,7 +213,7 @@ export const JobDetailReducer = createReducer<JobDetailEntityState>(
             ...state,
             jobDetailAreLoaded: true,
             jobDetailAreLoading: false,
-            job,
+            jobDetail: job,
         };
     }),
     on(loadJobByIdFail, (state, { error }) => {
@@ -226,7 +227,7 @@ export const JobDetailReducer = createReducer<JobDetailEntityState>(
 export const reducers = combineReducers({
     inProgressJobs: inProgressJobsReducer,
     completedJobs: completedJobsReducer,
-    jobDetail: JobDetailReducer
+    jobDetail: JobDetailReducer,
 });
 
 export function jobReducer(state: JobState | undefined, action: Action): JobState {

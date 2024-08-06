@@ -169,8 +169,15 @@ export class JobEffects {
             ofType(loadJobById),
             mergeMap((action) =>
                 this.resultService.getJobById$(action.jobId).pipe(
-                    map((job) => loadJobByIdSuccess({ job })),
-                    catchError((error) => of(loadJobByIdFail({ error })))
+                    map((job) => {
+                        return loadJobByIdSuccess({ job });
+                    }),
+                    catchError((error) => {
+                        this.toastService.toast({
+                            type: ToastType.Error,
+                        });
+                        return of(loadJobByIdFail({ error }));
+                    })
                 )
             )
         )
