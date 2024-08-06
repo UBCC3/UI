@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ResultComponent } from './result.component';
+import { ResultContainerComponent } from './container/result-container.component';
 
 const routes: Routes = [
     {
         path: '',
-        component: ResultComponent,
+        component: ResultContainerComponent,
     },
 ];
 
