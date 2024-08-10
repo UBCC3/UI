@@ -43,3 +43,9 @@ export const updateJob = createAction('[Jobs] update in progress job', props<{ j
 export const updateJobSuccess = createAction('[Jobs] update job success', props<{ jobId: string }>());
 
 export const updateJobFail = createAction('[Jobs] update job fail', props<{ error: string }>());
+
+export const loadJobById = createAction('[Job] load job by id', props<{ jobId: string }>());
+
+export const loadJobByIdSuccess = createAction('[Job] load job by id success', props<{ job: Job }>());
+
+export const loadJobByIdFail = createAction('[Job] load job by id fail', props<{ error: string }>());
