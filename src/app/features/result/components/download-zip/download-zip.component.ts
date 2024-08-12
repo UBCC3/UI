@@ -9,36 +9,21 @@ import { Job } from '../../../../shared/models/jobs.model';
     templateUrl: './download-zip.component.html',
     styleUrls: ['./download-zip.component.scss'],
 })
-export class DownloadZipComponent implements OnInit {
-    @Input() job$: Observable<Job | null> | null = null;
+export class DownloadZipComponent {
+    @Input() job_id: string | null = null;
 
-    job: Job | null = null;
-    parameterEntries: { key: string; value: string }[] = [];
 
     constructor(private http: HttpClient) {
     }
 
-    ngOnInit(): void {
-        if (this.job$) {
-            this.job$.subscribe((job) => {
-                this.job = job;
-                if (job) {
-                    this.parameterEntries = Object.entries(job.parameters || {})
-                        .filter(([key, value]) => value !== null && value !== undefined)
-                        .map(([key, value]) => ({ key, value: value as string }));
-                }
-            });
-        }
-    }
-
     onButtonClick(){
-        console.log('Button Clicked!');
+        console.log(this.job_id);
         this.getZipFile();
     }
 
     getZipFile() {
-        if (this.job) {
-            this.http.get(`${environment.api.serverUrl}/download/${this.job.id}`).subscribe(
+        if (this.job_id) {
+            this.http.get(`${environment.api.serverUrl}/jobs/download/${this.job_id}`).subscribe(
                 (response: any) => {
                     const presignedUrl = response.url;
                     this.downloadFile(presignedUrl);
@@ -51,10 +36,10 @@ export class DownloadZipComponent implements OnInit {
     }
 
     downloadFile(url: string) {
-        if (this.job) {
+        if (this.job_id) {
             const anchor = document.createElement('a');
             anchor.href = url;
-            anchor.download = this.job.id;
+            anchor.download = this.job_id;
             anchor.click();
         }
     }
