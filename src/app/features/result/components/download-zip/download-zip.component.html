@@ -1,0 +1,6 @@
+<div *ngIf="job$ | async as job; else loading">
+    <button (click)="onButtonClick()">Download All Files</button>
+</div>
+<ng-template #loading>
+    <p>Loading job details...</p>
+</ng-template>
