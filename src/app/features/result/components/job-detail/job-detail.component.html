@@ -29,7 +29,8 @@
             <div class="job-detail-label">Finished:</div>
             <div class="job-detail-value">{{ job.finished | date:'short' }}</div>
         </div>
-    </div> 
+    </div>
+    <app-download-zip [job_id]="job.id"></app-download-zip> 
     <p class="text-xl text-gray-700 mt-10 mb-4">Calculation Details</p> 
     <div *ngIf="job.parameters" class="job-details-table">
         <div *ngFor="let param of parameterEntries" class="job-detail-row">
