@@ -16,7 +16,7 @@ export class StructureDetailComponent implements AfterViewInit {
     // constructor(private structureDetailService: StructureDetailService) {}
     private appletObject: any;
     JSmolStyle = {
-        width: '95vw',
+        // width: '95vw',
         height: 'calc(100vh - 66.5px)',
     };
     constructor(private renderer: Renderer2) {}

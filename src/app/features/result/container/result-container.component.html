@@ -1,7 +1,11 @@
 <app-layout>
-    <div class="result-container flex flex-col px-10 pt-10 pb-6">
-        <app-job-detail [job$]="job$"></app-job-detail>
-        <app-download-zip [job_id]="jobId"></app-download-zip> 
-        <app-structure-detail [jobId]="jobId"></app-structure-detail>
+    <div class="result-container flex px-4 pb-6">
+        <div class="structure-container mr-4">
+            <app-structure-detail [jobId]="jobId"></app-structure-detail>
+        </div>
+        <div class="job-container flex flex-col">
+            <app-job-detail [job$]="job$"></app-job-detail>
+            <app-download-zip [job_id]="jobId"></app-download-zip>
+        </div>
     </div>
 </app-layout>
