@@ -1,6 +1,7 @@
 <app-layout>
     <div class="result-container flex flex-col px-10 pt-10 pb-6">
         <app-job-detail [job$]="job$"></app-job-detail>
+        <app-download-zip [job_id]="jobId"></app-download-zip> 
         <app-structure-detail [jobId]="jobId"></app-structure-detail>
     </div>
 </app-layout>
