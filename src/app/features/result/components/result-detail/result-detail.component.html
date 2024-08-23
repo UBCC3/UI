@@ -20,8 +20,10 @@
             </thead>
             <tbody>
               <tr *ngFor="let row of table.rows">
-                <td *ngFor="let cell of row.value; let i = index" 
-                    (click)="handleClick(row.id, i, cell)">
+                <td *ngFor="let cell of row.value; let i = index">
+                <!-- <td *ngFor="let cell of row.value; let i = index" 
+                    (click)="handleClick(row.id, i, cell)"
+                    > -->
                   {{ cell }}
                 </td>
               </tr>
