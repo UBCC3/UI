@@ -5,10 +5,10 @@ import { ResultRoutingModule } from './result-routing.module';
 import { SharedModule } from '../../shared/shared.module';
 import { JobDetailComponent } from './components/job-detail/job-detail.component';
 import { DownloadZipComponent } from './components/download-zip/download-zip.component';
-import { StructureDetailComponent } from './components/structure-detail/structure-detail.component';
+import { ResultDetailComponent } from './components/result-detail/result-detail.component';
 
 @NgModule({
-    declarations: [ResultContainerComponent, JobDetailComponent, DownloadZipComponent, StructureDetailComponent],
+    declarations: [ResultContainerComponent, JobDetailComponent, DownloadZipComponent, ResultDetailComponent],
     imports: [CommonModule, ResultRoutingModule, SharedModule],
 })
 export class ResultModule {}
