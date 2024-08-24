@@ -1,0 +1,39 @@
+<div class="result-page flex">
+    <div class="jsmol-result-viewer-section" #appletContainer  [ngStyle]="JSmolStyle"></div>
+    <div class="result-data-section" *ngIf="resultData?.['structure information']">
+      <app-job-detail [job$]="job$"></app-job-detail>
+      <app-download-zip [job_id]="jobId"></app-download-zip>
+      <div *ngFor="let key of resultData?.['structure information'] | keyvalue">
+        <p class="text-xl text-gray-700 mb-4 pt-4">Result Details</p>
+        <p>{{ key.value.genericData.structureName }}</p>
+        <p>{{ key.value.genericData.structureId }}</p> 
+        <div *ngFor="let table of key.value.tableData">
+          <h3>{{ table.tableName }}</h3>
+          <table class="result-table-section">
+            <!-- Error need to be fixed: the table header can not be displayed on the UI -->
+            <thead>
+              <tr *ngFor="let headerRow of table.headers">
+                <th *ngFor="let header of headerRow" [attr.colspan]="header.span || 1">
+                  {{ header.label }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of table.rows">
+                <td *ngFor="let cell of row.value; let i = index">
+                <!-- <td *ngFor="let cell of row.value; let i = index" 
+                    (click)="handleClick(row.id, i, cell)"
+                    > -->
+                  {{ cell }}
+                </td>
+              </tr>
+            </tbody>
+            <tfoot *ngIf="table.footers">
+              <tr>
+                <td [attr.colspan]="table.headers[0].length || 1">{{ table.footers }}</td>
+              </tr>
+            </tfoot>
+          </table>
+      </div>
+    </div>
+</div>

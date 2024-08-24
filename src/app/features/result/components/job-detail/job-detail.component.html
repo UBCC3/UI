@@ -1,5 +1,5 @@
 <div *ngIf="job$ | async as job; else loading">
-    <p class="text-xl text-gray-700 mb-4">Job Details</p>
+    <p class="text-xl text-gray-700 mb-4 pt-4">Job Details</p>
     <div class="job-details-table">
         <div class="job-detail-row">
             <div class="job-detail-label">Job ID:</div>
@@ -29,14 +29,14 @@
             <div class="job-detail-label">Finished:</div>
             <div class="job-detail-value">{{ job.finished | date:'short' }}</div>
         </div>
-    </div> 
-    <p class="text-xl text-gray-700 mt-10 mb-4">Calculation Details</p> 
+    </div>
+    <!-- <p class="text-xl text-gray-700 mt-10 mb-4">Calculation Details</p> 
     <div *ngIf="job.parameters" class="job-details-table">
         <div *ngFor="let param of parameterEntries" class="job-detail-row">
             <div class="job-detail-label">{{ param.key }}:</div>
             <div class="job-detail-value">{{ param.value }}</div>
         </div>
-    </div>
+    </div> -->
 </div>
 <ng-template #loading>
     <p>Loading job details...</p>

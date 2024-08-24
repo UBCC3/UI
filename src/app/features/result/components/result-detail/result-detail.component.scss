@@ -1,0 +1,30 @@
+.jsmol-result-viewer-section {
+    flex: 3;
+}
+  
+.result-data-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    grid-gap: 20px;
+}
+
+.result-table-section {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1em;
+}
+
+.result-table-section thead th {
+    background-color: #f4f4f4;
+    padding: 0.5em;
+    border-bottom: 1px solid #ddd;
+}
+
+.result-table-section tbody td {
+    padding: 0.5em;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+  
