@@ -48,4 +48,7 @@ export class NewCalculationService {
     patchJob$(jobId: string, dto: UpdateJobDTO): Observable<boolean> {
         return this.http.patch<boolean>(`${environment.api.serverUrl}/jobs/${jobId}`, dto);
     }
+    cancelJob$(jobId: string): Observable<boolean> {
+        return this.http.delete<boolean>(`${environment.api.serverUrl}/jobs/cancel/${jobId}`);
+    }
 }
